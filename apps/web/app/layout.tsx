@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://glitchgrab.dev"),
   title: "Glitchgrab — Turn messy bugs into GitHub issues with AI",
   description:
     "Convert handwritten notes, screenshots, production errors, and user complaints into well-structured GitHub issues. Powered by AI. Open source.",
