@@ -1,0 +1,5 @@
+{
+  "ignore": {
+    "routes": ["/api/auth/**", "/api/webhooks/**"]
+  }
+}
