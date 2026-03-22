@@ -24,6 +24,9 @@
     },
     "lint": {
       "cache": false
+    },
+    "validate": {
+      "cache": false
     }
   }
 }
