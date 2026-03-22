@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { sendWelcomeEmail, notifyNewSignup, notifySurveyResponse } from "@/lib/mail";
 
 export async function POST(request: Request) {
   try {
@@ -22,7 +23,7 @@ export async function POST(request: Request) {
 
     const normalizedEmail = email.toLowerCase().trim();
 
-    // If survey data, update existing entry
+    // If survey data, update existing entry and notify
     if (priceFeel || topFeature || currentTool || suggestion) {
       await prisma.waitlist.update({
         where: { email: normalizedEmail },
@@ -33,13 +34,27 @@ export async function POST(request: Request) {
           suggestion: suggestion || undefined,
         },
       });
+
+      // Send survey notification (non-blocking)
+      notifySurveyResponse(normalizedEmail, { priceFeel, topFeature, currentTool, suggestion }).catch(
+        (err) => console.error("Survey email failed:", err)
+      );
+
       return NextResponse.json({ success: true });
     }
 
-    // Otherwise, create new entry
+    // Create new entry
     await prisma.waitlist.create({
       data: { email: normalizedEmail },
     });
+
+    // Send emails (non-blocking — don't let email failures break the signup)
+    sendWelcomeEmail(normalizedEmail).catch((err) =>
+      console.error("Welcome email failed:", err)
+    );
+    notifyNewSignup(normalizedEmail).catch((err) =>
+      console.error("Notify email failed:", err)
+    );
 
     return NextResponse.json({ success: true });
   } catch (error: unknown) {
