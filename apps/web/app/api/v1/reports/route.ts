@@ -46,6 +46,14 @@ export async function POST(request: Request) {
       );
     }
 
+    // Convert screenshot to base64 data URL if provided
+    let screenshotDataUrl: string | null = null;
+    if (screenshotFile) {
+      const buffer = Buffer.from(await screenshotFile.arrayBuffer());
+      const base64 = buffer.toString("base64");
+      screenshotDataUrl = `data:${screenshotFile.type};base64,${base64}`;
+    }
+
     // Create the report
     const report = await prisma.report.create({
       data: {
@@ -53,7 +61,7 @@ export async function POST(request: Request) {
         source: "DASHBOARD_UPLOAD",
         status: "PENDING",
         rawInput: description || null,
-        screenshot: screenshotFile ? "pending_upload" : null,
+        screenshot: screenshotDataUrl,
       },
     });
 
