@@ -103,13 +103,20 @@ export default function WebViewScreen({
       // Force first viewport to our settings
       if (metas[0]) metas[0].content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover';
 
-      // Force 16px on inputs to prevent iOS zoom
+      // Force 16px on inputs + fix layout for mobile WebView
       var s = document.createElement('style');
-      s.textContent = 'input,textarea,select{font-size:16px!important}';
+      s.textContent = 'input,textarea,select{font-size:16px!important} html{height:100vh;height:100dvh}';
       document.head.appendChild(s);
 
       document.body.style.overscrollBehavior = 'none';
       document.addEventListener('gesturestart', function(e) { e.preventDefault(); });
+
+      // Keep input visible when keyboard opens
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', function() {
+          document.documentElement.style.setProperty('--vh', window.visualViewport.height + 'px');
+        });
+      }
     })();
     true;
   `;
@@ -142,11 +149,7 @@ export default function WebViewScreen({
   }
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
-    >
-      <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container}>
         <StatusBar barStyle="light-content" backgroundColor={DARK_BG} />
 
         {loading && (
@@ -207,7 +210,6 @@ export default function WebViewScreen({
           keyboardDisplayRequiresUserAction={false}
         />
       </SafeAreaView>
-    </KeyboardAvoidingView>
   );
 }
 
