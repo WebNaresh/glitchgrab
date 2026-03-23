@@ -109,11 +109,31 @@ export default function WebViewScreen({
 
       // Force 16px on all inputs to prevent iOS auto-zoom on focus
       var s = document.createElement('style');
-      s.textContent = 'input,textarea,select{font-size:16px!important}';
+      s.textContent = [
+        'input,textarea,select{font-size:16px!important}',
+        'html,body{height:100%!important;overflow:hidden!important}',
+        'body>div{height:100dvh!important;overflow:hidden!important}',
+      ].join('');
       document.head.appendChild(s);
+
+      // Handle iOS keyboard — use visualViewport to resize content
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', function() {
+          document.documentElement.style.height = window.visualViewport.height + 'px';
+        });
+        window.visualViewport.addEventListener('scroll', function() {
+          // Prevent scroll offset when keyboard opens
+          window.scrollTo(0, 0);
+        });
+      }
 
       // Block pinch-to-zoom gesture
       document.addEventListener('gesturestart', function(e) { e.preventDefault(); });
+
+      // Prevent page scroll when keyboard opens
+      document.addEventListener('focusin', function() {
+        setTimeout(function() { window.scrollTo(0, 0); }, 100);
+      });
     })();
     true;
   `;
@@ -202,6 +222,8 @@ export default function WebViewScreen({
         setSupportMultipleWindows={false}
         scalesPageToFit={false}
         automaticallyAdjustContentInsets={false}
+        automaticallyAdjustsScrollIndicatorInsets={false}
+        keyboardDisplayRequiresUserAction={false}
       />
     </SafeAreaView>
   );
