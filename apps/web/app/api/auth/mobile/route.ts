@@ -181,10 +181,11 @@ export async function POST(req: NextRequest) {
         picture: user.image,
         sub: user.id,
         id: user.id,
-      } as Record<string, unknown>,
+      },
       secret,
+      salt: "authjs.session-token",
       maxAge: 30 * 24 * 60 * 60,
-    } as Parameters<typeof encode>[0]);
+    });
 
     return NextResponse.json({
       success: true,
