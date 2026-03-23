@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { processReport } from "@/lib/pipeline";
+import sharp from "sharp";
 
 export async function POST(request: Request) {
   try {
@@ -46,12 +47,16 @@ export async function POST(request: Request) {
       );
     }
 
-    // Convert screenshot to base64 data URL if provided
+    // Convert screenshot to base64 data URL — resize to max 1024px for AI + storage
     let screenshotDataUrl: string | null = null;
     if (screenshotFile) {
       const buffer = Buffer.from(await screenshotFile.arrayBuffer());
-      const base64 = buffer.toString("base64");
-      screenshotDataUrl = `data:${screenshotFile.type};base64,${base64}`;
+      const resized = await sharp(buffer)
+        .resize(1024, 1024, { fit: "inside", withoutEnlargement: true })
+        .jpeg({ quality: 80 })
+        .toBuffer();
+      const base64 = resized.toString("base64");
+      screenshotDataUrl = `data:image/jpeg;base64,${base64}`;
     }
 
     // Create the report
