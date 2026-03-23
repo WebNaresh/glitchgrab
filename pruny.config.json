@@ -8,6 +8,7 @@
       "/api/v1/github/**",
       "/api/waitlist"
     ],
+    "folders": [".glitchgrab"],
     "files": [
       "**/utils.ts",
       "**/db-sync.ts",
