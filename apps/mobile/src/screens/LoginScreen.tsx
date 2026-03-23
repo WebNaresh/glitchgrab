@@ -14,7 +14,7 @@ import {
 import * as AuthSession from "expo-auth-session";
 import * as WebBrowser from "expo-web-browser";
 import * as SecureStore from "expo-secure-store";
-import { exchangeCodeForAccessToken, exchangeCodeForSession } from "../api";
+import { exchangeCodeForSession } from "../api";
 
 // Ensure browser auth session completes properly
 WebBrowser.maybeCompleteAuthSession();
@@ -24,7 +24,7 @@ const PRIMARY = "#22d3ee";
 const TEXT = "#fafafa";
 const MUTED = "#a1a1aa";
 
-const GITHUB_CLIENT_ID = "Ov23li297WDZdxlPvK9y";
+const GITHUB_CLIENT_ID = "Ov23liOC0Kkx2zyMh7HQ";
 
 // GitHub OAuth endpoints
 const discovery: AuthSession.DiscoveryDocument = {
@@ -74,13 +74,10 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
 
       const code = result.params.code;
 
-      // Step 1: Exchange code for GitHub access token
-      const accessToken = await exchangeCodeForAccessToken(code);
+      // Send code to our backend — it handles the full exchange securely
+      const { sessionToken } = await exchangeCodeForSession(code);
 
-      // Step 2: Exchange access token for our session token
-      const { sessionToken } = await exchangeCodeForSession(accessToken);
-
-      // Step 3: Store session token securely
+      // Store session token securely
       await SecureStore.setItemAsync("session_token", sessionToken);
 
       // Step 4: Navigate to WebView
