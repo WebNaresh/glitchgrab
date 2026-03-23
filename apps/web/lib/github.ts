@@ -74,6 +74,34 @@ export async function createGitHubIssue(
   };
 }
 
+// ─── Update Issue Body ─────────────────────────────────
+
+export async function updateIssueBody(
+  accessToken: string,
+  owner: string,
+  repo: string,
+  issueNumber: number,
+  appendContent: string
+): Promise<void> {
+  // First fetch the current body
+  const getUrl = `${GITHUB_API}/repos/${owner}/${repo}/issues/${issueNumber}`;
+  const getRes = await fetch(getUrl, { method: "GET", headers: headers(accessToken) });
+  if (!getRes.ok) throw new Error(`Failed to fetch issue #${issueNumber}: ${getRes.status}`);
+
+  const issue = (await getRes.json()) as { body: string | null };
+  const currentBody = issue.body ?? "";
+
+  // Append the new content
+  const updatedBody = `${currentBody}\n\n---\n\n## Update\n\n${appendContent}`;
+
+  const patchRes = await fetch(getUrl, {
+    method: "PATCH",
+    headers: headers(accessToken),
+    body: JSON.stringify({ body: updatedBody }),
+  });
+  if (!patchRes.ok) throw new Error(`Failed to update issue #${issueNumber}: ${patchRes.status}`);
+}
+
 // ─── Comment on Issue ──────────────────────────────────
 
 export async function commentOnIssue(
