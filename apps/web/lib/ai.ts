@@ -23,7 +23,11 @@ const SYSTEM_PROMPT = `You are a senior software engineer who writes clear, acti
 
 Given a bug report (description, optional screenshot, optional error stack), generate a structured GitHub issue.
 
-Respond ONLY with valid JSON matching this schema — no markdown fences, no extra text:
+IMPORTANT: You MUST respond ONLY with valid JSON. No explanations, no apologies, no markdown fences. Just pure JSON.
+
+If the user provides a screenshot that isn't a bug (e.g. a product image, marketing material), still create an issue based on their text description. Describe what you see in the screenshot under Additional Context.
+
+JSON schema:
 {
   "title": "string (concise, under 80 chars, imperative mood e.g. 'Fix crash when...')",
   "body": "string (GitHub-flavored markdown with sections: ## Description, ## Steps to Reproduce, ## Expected Behavior, ## Actual Behavior, ## Additional Context)",
@@ -37,7 +41,9 @@ Severity guidelines:
 - medium: feature partially broken, workaround exists
 - low: cosmetic issue, minor inconvenience
 
-Write the body in professional, third-person technical style. Include reproduction steps even if you have to infer them from context. If an error stack is provided, include it in a code block under Additional Context.`;
+Write the body in professional, third-person technical style. Include reproduction steps even if you have to infer them from context. If an error stack is provided, include it in a code block under Additional Context.
+
+ALWAYS respond with valid JSON. Never refuse. Never apologize. Just generate the issue.`;
 
 // ─── AI Service ─────────────────────────────────────────
 
@@ -77,6 +83,7 @@ export async function generateIssueFromBug(
 
   const response = await openai.chat.completions.create({
     model: "gpt-4o",
+    response_format: { type: "json_object" },
     messages: [
       { role: "system", content: SYSTEM_PROMPT },
       { role: "user", content: userParts },
@@ -96,7 +103,18 @@ export async function generateIssueFromBug(
     .replace(/\s*```$/i, "")
     .trim();
 
-  const parsed: unknown = JSON.parse(cleaned);
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(cleaned);
+  } catch {
+    // AI returned plain text instead of JSON — use it as the issue body
+    return {
+      title: input.description?.slice(0, 80) || "Bug report",
+      body: rawContent,
+      labels: ["bug"],
+      severity: "medium" as const,
+    };
+  }
 
   // Validate shape
   if (
