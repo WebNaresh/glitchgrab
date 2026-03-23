@@ -9,7 +9,9 @@ import { UpgradeButton } from "./upgrade-button";
 
 export default async function BillingPage() {
   const session = await auth();
-  const plan = await getUserPlan(session!.user!.id!);
+  const userId = session?.user?.id;
+  if (!userId) return null;
+  const plan = await getUserPlan(userId);
 
   return (
     <div className="space-y-6">
