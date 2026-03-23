@@ -74,6 +74,51 @@ export async function createGitHubIssue(
   };
 }
 
+// ─── Upload Screenshot ─────────────────────────────────
+
+export async function uploadScreenshotToRepo(
+  accessToken: string,
+  owner: string,
+  repo: string,
+  base64DataUrl: string,
+  reportId: string
+): Promise<string | null> {
+  try {
+    // Extract base64 content from data URL
+    const base64Match = base64DataUrl.match(/^data:image\/(\w+);base64,(.+)$/);
+    if (!base64Match) return null;
+
+    const ext = base64Match[1] === "jpeg" ? "jpg" : base64Match[1];
+    const base64Content = base64Match[2];
+    const path = `.glitchgrab/screenshots/${reportId}.${ext}`;
+
+    const url = `${GITHUB_API}/repos/${owner}/${repo}/contents/${path}`;
+
+    const response = await fetch(url, {
+      method: "PUT",
+      headers: headers(accessToken),
+      body: JSON.stringify({
+        message: `[Glitchgrab] Add screenshot for report ${reportId}`,
+        content: base64Content,
+      }),
+    });
+
+    if (!response.ok) {
+      console.error(`Failed to upload screenshot (${response.status})`);
+      return null;
+    }
+
+    const data = (await response.json()) as {
+      content: { download_url: string };
+    };
+
+    return data.content.download_url;
+  } catch (error) {
+    console.error("Screenshot upload failed:", error);
+    return null;
+  }
+}
+
 // ─── Fetch Repo Labels ─────────────────────────────────
 
 export async function fetchRepoLabels(
