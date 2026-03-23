@@ -90,7 +90,12 @@ export default function WebViewScreen({
         meta.name = 'viewport';
         document.head.appendChild(meta);
       }
-      meta.content = 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no';
+      meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover';
+
+      // Remove any other viewport metas
+      document.querySelectorAll('meta[name="viewport"]').forEach(function(m, i) {
+        if (i > 0) m.remove();
+      });
 
       var theme = document.querySelector('meta[name="theme-color"]');
       if (!theme) {
@@ -101,6 +106,11 @@ export default function WebViewScreen({
       theme.content = '${DARK_BG}';
 
       document.body.style.overscrollBehavior = 'none';
+
+      // Prevent iOS auto-zoom on inputs (font-size < 16px triggers zoom)
+      var style = document.createElement('style');
+      style.textContent = 'input, textarea, select { font-size: 16px !important; }';
+      document.head.appendChild(style);
     })();
     true;
   `;
@@ -187,6 +197,8 @@ export default function WebViewScreen({
         decelerationRate="normal"
         contentMode="mobile"
         setSupportMultipleWindows={false}
+        scalesPageToFit={false}
+        automaticallyAdjustContentInsets={false}
       />
     </SafeAreaView>
   );
