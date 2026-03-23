@@ -41,7 +41,11 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
 
   const redirectUri = AuthSession.makeRedirectUri({
     scheme: "glitchgrab",
+    preferLocalhost: true,
   });
+
+  // Log redirect URI so you can add it to GitHub OAuth settings
+  console.info("Expo redirect URI:", redirectUri);
 
   const [request, response, promptAsync] = AuthSession.useAuthRequest(
     {
@@ -141,9 +145,11 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
 /** Simple GitHub icon rendered with View/Text */
 function GitHubIcon() {
   return (
-    <View style={styles.githubIcon}>
-      <Text style={styles.githubIconText}>G</Text>
-    </View>
+    <Image
+      source={{ uri: "https://github.com/fluidicon.png" }}
+      style={{ width: 22, height: 22, borderRadius: 11 }}
+      resizeMode="contain"
+    />
   );
 }
 
