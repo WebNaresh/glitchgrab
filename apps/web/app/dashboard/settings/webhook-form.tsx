@@ -22,6 +22,7 @@ const AVAILABLE_EVENTS = [
   { value: "issue.created", label: "Issue Created" },
   { value: "issue.updated", label: "Issue Updated" },
   { value: "issue.closed", label: "Issue Closed" },
+  { value: "issue.commented", label: "Developer Commented on GitHub" },
 ];
 
 interface WebhookInfo {
