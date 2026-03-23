@@ -27,7 +27,9 @@
       "adaptiveIcon": {
         "backgroundColor": "#09090b",
         "foregroundImage": "./assets/icon.png"
-      }
+      },
+      "permissions": ["INTERNET"],
+      "usesClearTextTraffic": true
     },
     "scheme": "glitchgrab"
   }
