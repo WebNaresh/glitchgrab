@@ -1,13 +1,13 @@
-# @glitchgrab/nextjs
+# glitchgrab
 
 Drop-in error capture and bug reporting for Next.js apps. Production errors automatically become GitHub issues.
 
 ## Install
 
 ```bash
-npm install @glitchgrab/nextjs
+npm install glitchgrab
 # or
-bun add @glitchgrab/nextjs
+bun add glitchgrab
 ```
 
 ## Quick Start
@@ -16,7 +16,7 @@ Wrap your app with `GlitchgrabProvider` — that's it:
 
 ```tsx
 // app/layout.tsx
-import { GlitchgrabProvider } from "@glitchgrab/nextjs";
+import { GlitchgrabProvider } from "glitchgrab";
 
 export default function RootLayout({ children }) {
   return (
@@ -56,7 +56,7 @@ Build your own report button or trigger:
 
 ```tsx
 "use client";
-import { useGlitchgrab } from "@glitchgrab/nextjs";
+import { useGlitchgrab } from "glitchgrab";
 
 function MyReportButton() {
   const { reportBug } = useGlitchgrab();
@@ -84,7 +84,7 @@ reportBug("Payment failed", {
 If you want a ready-made floating button:
 
 ```tsx
-import { GlitchgrabProvider, ReportButton } from "@glitchgrab/nextjs";
+import { GlitchgrabProvider, ReportButton } from "glitchgrab";
 
 <GlitchgrabProvider token="gg_your_token">
   {children}
@@ -106,7 +106,7 @@ Options:
 Wrap specific sections with a custom fallback:
 
 ```tsx
-import { GlitchgrabErrorBoundary } from "@glitchgrab/nextjs";
+import { GlitchgrabErrorBoundary } from "glitchgrab";
 
 <GlitchgrabErrorBoundary
   token="gg_your_token"

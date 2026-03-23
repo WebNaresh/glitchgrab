@@ -140,7 +140,7 @@ export default async function LandingPage() {
               <pre className="text-muted-foreground leading-relaxed text-xs sm:text-sm overflow-x-auto font-mono">
                 <code>
 {`import { `}<span className="text-primary">GlitchgrabProvider</span>{` }
-  from "@glitchgrab/nextjs"
+  from "glitchgrab"
 
 export default function Layout({
   children
