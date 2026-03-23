@@ -2,69 +2,45 @@ export const dynamic = "force-dynamic";
 
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { GitFork, Key, Bug, CheckCircle } from "lucide-react";
+import { BugChat } from "./bug-chat";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { GitFork } from "lucide-react";
 
 export default async function DashboardPage() {
   const session = await auth();
   const userId = session?.user?.id;
 
-  const [repoCount, tokenCount, reportCount, issueCount] = await Promise.all([
-    prisma.repo.count({ where: { userId } }),
-    prisma.apiToken.count({ where: { repo: { userId } } }),
-    prisma.report.count({ where: { repo: { userId } } }),
-    prisma.issue.count({ where: { repo: { userId } } }),
-  ]);
+  const repos = await prisma.repo.findMany({
+    where: { userId },
+    select: { id: true, fullName: true, owner: true, name: true },
+    orderBy: { createdAt: "desc" },
+  });
 
-  const stats = [
-    { label: "Repos", value: repoCount, icon: GitFork },
-    { label: "API Tokens", value: tokenCount, icon: Key },
-    { label: "Reports", value: reportCount, icon: Bug },
-    { label: "Issues Created", value: issueCount, icon: CheckCircle },
-  ];
-
-  return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Dashboard</h1>
-        <p className="text-sm text-muted-foreground">
-          Welcome back, {session?.user?.name?.split(" ")[0] ?? "there"}
-        </p>
-      </div>
-
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {stats.map((stat) => (
-          <Card key={stat.label}>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                {stat.label}
-              </CardTitle>
-              <stat.icon className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold">{stat.value}</p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {repoCount === 0 && (
-        <Card className="border-dashed">
+  if (repos.length === 0) {
+    return (
+      <div className="flex flex-1 items-center justify-center">
+        <Card className="border-dashed max-w-sm w-full">
           <CardContent className="flex flex-col items-center justify-center py-12 text-center">
             <GitFork className="h-12 w-12 text-muted-foreground mb-4" />
             <h3 className="text-lg font-semibold mb-2">No repos connected</h3>
-            <p className="text-sm text-muted-foreground mb-4 max-w-sm">
-              Connect a GitHub repo to start capturing bugs and generating
-              issues automatically.
+            <p className="text-sm text-muted-foreground mb-4">
+              Connect a GitHub repo to start reporting bugs.
             </p>
             <Link href="/dashboard/repos">
               <Button>Connect a Repo</Button>
             </Link>
           </CardContent>
         </Card>
-      )}
-    </div>
+      </div>
+    );
+  }
+
+  return (
+    <BugChat
+      repos={repos}
+      userName={session?.user?.name?.split(" ")[0] ?? "there"}
+    />
   );
 }
