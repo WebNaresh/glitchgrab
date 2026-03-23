@@ -12,7 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { ImagePlus, Send, X, Loader2, GitFork } from "lucide-react";
+import { ImagePlus, Send, X, Loader2, GitFork, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
 
 interface Repo {
@@ -27,7 +27,9 @@ interface Message {
   role: "user" | "assistant";
   content: string;
   screenshot?: string;
+  screenshotFile?: File;
   issueUrl?: string;
+  failed?: boolean;
 }
 
 export function BugChat({
@@ -74,22 +76,7 @@ export function BugChat({
     if (fileInputRef.current) fileInputRef.current.value = "";
   }
 
-  async function handleSend() {
-    if (!input.trim() && !screenshot) return;
-    if (!selectedRepo) {
-      toast.error("Select a repo first");
-      return;
-    }
-
-    const userMsg: Message = {
-      id: Date.now().toString(),
-      role: "user",
-      content: input.trim(),
-      screenshot: screenshot ?? undefined,
-    };
-
-    setMessages((prev) => [...prev, userMsg]);
-    setInput("");
+  async function sendReport(description: string, file?: File) {
     setSending(true);
 
     const thinkingMsg: Message = {
@@ -102,9 +89,9 @@ export function BugChat({
     try {
       const formData = new FormData();
       formData.append("repoId", selectedRepo);
-      formData.append("description", userMsg.content);
-      if (screenshotFile) {
-        formData.append("screenshot", screenshotFile);
+      formData.append("description", description);
+      if (file) {
+        formData.append("screenshot", file);
       }
 
       const res = await fetch("/api/v1/reports", {
@@ -122,8 +109,9 @@ export function BugChat({
             role: "assistant",
             content: data.success
               ? `Issue created: **${data.data?.title ?? "Bug report"}**`
-              : `Failed: ${data.error ?? "Something went wrong. Try again."}`,
+              : `Failed: ${data.error ?? "Something went wrong."}`,
             issueUrl: data.data?.issueUrl,
+            failed: !data.success,
           })
       );
 
@@ -138,13 +126,48 @@ export function BugChat({
             id: Date.now().toString(),
             role: "assistant",
             content: "Something went wrong. Please try again.",
+            failed: true,
           })
       );
     }
 
-    removeScreenshot();
     setSending(false);
     setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
+  }
+
+  async function handleSend() {
+    if (!input.trim() && !screenshot) return;
+    if (!selectedRepo) {
+      toast.error("Select a repo first");
+      return;
+    }
+
+    const userMsg: Message = {
+      id: Date.now().toString(),
+      role: "user",
+      content: input.trim(),
+      screenshot: screenshot ?? undefined,
+      screenshotFile: screenshotFile ?? undefined,
+    };
+
+    setMessages((prev) => [...prev, userMsg]);
+    const desc = input.trim();
+    const file = screenshotFile ?? undefined;
+    setInput("");
+    removeScreenshot();
+
+    await sendReport(desc, file);
+  }
+
+  async function handleRetry() {
+    // Find the last user message
+    const lastUserMsg = [...messages].reverse().find((m) => m.role === "user");
+    if (!lastUserMsg) return;
+
+    // Remove the failed assistant message
+    setMessages((prev) => prev.filter((m) => !m.failed));
+
+    await sendReport(lastUserMsg.content, lastUserMsg.screenshotFile);
   }
 
   function handleKeyDown(e: React.KeyboardEvent) {
@@ -198,6 +221,18 @@ export function BugChat({
                         View on GitHub →
                       </Badge>
                     </a>
+                  )}
+                  {msg.failed && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="mt-2 gap-1.5 text-xs"
+                      onClick={handleRetry}
+                      disabled={sending}
+                    >
+                      <RotateCcw className="h-3 w-3" />
+                      Retry
+                    </Button>
                   )}
                 </>
               )}
