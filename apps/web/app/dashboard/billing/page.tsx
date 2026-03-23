@@ -91,9 +91,9 @@ export default async function BillingPage() {
           </Card>
 
           {/* Platform */}
-          <Card className="border-2 border-primary relative">
-            <CardContent className="p-6">
-              <Badge className="absolute -top-2.5 right-4">Recommended</Badge>
+          <Card className="border-2 border-primary overflow-visible relative">
+            <CardContent className="p-6 pt-8">
+              <Badge className="absolute -top-2.5 left-4 sm:left-auto sm:right-4 z-10">Recommended</Badge>
               <div className="flex items-center gap-2 mb-3">
                 <Cpu className="h-5 w-5 text-primary" />
                 <h3 className="font-semibold">Pro (Platform AI)</h3>

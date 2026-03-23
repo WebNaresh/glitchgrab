@@ -335,9 +335,9 @@ export default function Layout({
           </Card>
 
           {/* Platform */}
-          <Card className="border-2 border-primary relative">
-            <CardContent className="p-5 sm:p-8">
-              <Badge className="absolute -top-2.5 right-4 sm:-top-3 sm:right-6">Recommended</Badge>
+          <Card className="border-2 border-primary overflow-visible relative">
+            <CardContent className="p-5 pt-7 sm:p-8 sm:pt-8">
+              <Badge className="absolute -top-2.5 left-4 sm:left-auto sm:right-6 sm:-top-3 z-10">Recommended</Badge>
               <h3 className="text-lg font-semibold">Pro (Platform AI)</h3>
               <div className="mt-3 flex items-baseline gap-1 sm:mt-4">
                 <span className="text-3xl font-bold text-primary sm:text-4xl">$10</span>
