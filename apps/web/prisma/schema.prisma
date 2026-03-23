@@ -36,6 +36,7 @@ model User {
   repos    Repo[]
   aiConfig     AiConfig?
   subscription Subscription?
+  webhooks     Webhook[]
 }
 
 model Account {
@@ -208,6 +209,21 @@ model AiConfig {
   encryptedApiKey String?
   createdAt       DateTime   @default(now())
   updatedAt       DateTime   @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ─── Webhooks ──────────────────────────────────────────
+
+model Webhook {
+  id        String   @id @default(cuid())
+  userId    String
+  url       String
+  secret    String
+  events    String[]
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
