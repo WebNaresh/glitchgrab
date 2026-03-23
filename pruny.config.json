@@ -1,6 +1,6 @@
 {
   "ignore": {
     "routes": ["/api/auth/**", "/api/webhooks/**"],
-    "files": ["**/utils.ts", "**/button.tsx", "**/db-sync.ts"]
+    "files": ["**/utils.ts", "**/db-sync.ts", "**/components/ui/**", "**/proxy.ts"]
   }
 }
