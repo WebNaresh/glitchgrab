@@ -1,6 +1,22 @@
 {
   "ignore": {
-    "routes": ["/api/auth/**", "/api/webhooks/**"],
-    "files": ["**/utils.ts", "**/db-sync.ts", "**/components/ui/**", "**/proxy.ts"]
+    "routes": [
+      "/api/auth/**",
+      "/api/webhooks/**",
+      "/api/v1/sdk/**",
+      "/api/v1/billing/**",
+      "/api/v1/github/**",
+      "/api/waitlist"
+    ],
+    "files": [
+      "**/utils.ts",
+      "**/db-sync.ts",
+      "**/components/**",
+      "**/proxy.ts",
+      "**/lib/**",
+      "**/*actions*",
+      "**/*form*",
+      "**/(legal)/**"
+    ]
   }
 }
