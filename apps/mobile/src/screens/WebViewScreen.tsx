@@ -10,6 +10,7 @@ import {
   Text,
   TouchableOpacity,
   Image,
+  KeyboardAvoidingView,
 } from "react-native";
 import { WebView } from "react-native-webview";
 import type { WebViewNavigation } from "react-native-webview";
@@ -107,33 +108,13 @@ export default function WebViewScreen({
 
       document.body.style.overscrollBehavior = 'none';
 
-      // Force 16px on all inputs to prevent iOS auto-zoom on focus
+      // Force 16px on inputs to prevent iOS auto-zoom
       var s = document.createElement('style');
-      s.textContent = [
-        'input,textarea,select{font-size:16px!important}',
-        'html,body{height:100%!important;overflow:hidden!important}',
-        'body>div{height:100dvh!important;overflow:hidden!important}',
-      ].join('');
+      s.textContent = 'input,textarea,select{font-size:16px!important}';
       document.head.appendChild(s);
 
-      // Handle iOS keyboard — use visualViewport to resize content
-      if (window.visualViewport) {
-        window.visualViewport.addEventListener('resize', function() {
-          document.documentElement.style.height = window.visualViewport.height + 'px';
-        });
-        window.visualViewport.addEventListener('scroll', function() {
-          // Prevent scroll offset when keyboard opens
-          window.scrollTo(0, 0);
-        });
-      }
-
-      // Block pinch-to-zoom gesture
+      // Block pinch-to-zoom
       document.addEventListener('gesturestart', function(e) { e.preventDefault(); });
-
-      // Prevent page scroll when keyboard opens
-      document.addEventListener('focusin', function() {
-        setTimeout(function() { window.scrollTo(0, 0); }, 100);
-      });
     })();
     true;
   `;
@@ -166,66 +147,71 @@ export default function WebViewScreen({
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor={DARK_BG} />
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    >
+      <SafeAreaView style={styles.container}>
+        <StatusBar barStyle="light-content" backgroundColor={DARK_BG} />
 
-      {loading && (
-        <View style={styles.loadingOverlay}>
-          <Image
-            source={require("../../assets/icon.png")}
-            style={styles.loadingIcon}
-          />
-          <ActivityIndicator
-            size="small"
-            color={PRIMARY}
-            style={{ marginTop: 16 }}
-          />
-        </View>
-      )}
+        {loading && (
+          <View style={styles.loadingOverlay}>
+            <Image
+              source={require("../../assets/icon.png")}
+              style={styles.loadingIcon}
+            />
+            <ActivityIndicator
+              size="small"
+              color={PRIMARY}
+              style={{ marginTop: 16 }}
+            />
+          </View>
+        )}
 
-      <WebView
-        ref={webViewRef}
-        source={{
-          uri: `${BASE_URL}/dashboard`,
-          headers: {
-            Cookie: `authjs.session-token=${sessionToken}`,
-          },
-        }}
-        style={styles.webview}
-        onNavigationStateChange={handleNavigationStateChange}
-        onShouldStartLoadWithRequest={handleShouldStartLoad}
-        onLoadEnd={() => setLoading(false)}
-        onError={() => {
-          setLoading(false);
-          setError(true);
-        }}
-        onHttpError={(syntheticEvent) => {
-          const { nativeEvent } = syntheticEvent;
-          if (nativeEvent.statusCode >= 500) {
+        <WebView
+          ref={webViewRef}
+          source={{
+            uri: `${BASE_URL}/dashboard`,
+            headers: {
+              Cookie: `authjs.session-token=${sessionToken}`,
+            },
+          }}
+          style={styles.webview}
+          onNavigationStateChange={handleNavigationStateChange}
+          onShouldStartLoadWithRequest={handleShouldStartLoad}
+          onLoadEnd={() => setLoading(false)}
+          onError={() => {
+            setLoading(false);
             setError(true);
-          }
-        }}
-        injectedJavaScript={injectedJS}
-        javaScriptEnabled
-        domStorageEnabled
-        startInLoadingState={false}
-        allowsBackForwardNavigationGestures
-        sharedCookiesEnabled
-        thirdPartyCookiesEnabled
-        mediaPlaybackRequiresUserAction={false}
-        allowsInlineMediaPlayback
-        cacheEnabled
-        pullToRefreshEnabled
-        overScrollMode="never"
-        decelerationRate="normal"
-        contentMode="mobile"
-        setSupportMultipleWindows={false}
-        scalesPageToFit={false}
-        automaticallyAdjustContentInsets={false}
-        automaticallyAdjustsScrollIndicatorInsets={false}
-        keyboardDisplayRequiresUserAction={false}
-      />
-    </SafeAreaView>
+          }}
+          onHttpError={(syntheticEvent) => {
+            const { nativeEvent } = syntheticEvent;
+            if (nativeEvent.statusCode >= 500) {
+              setError(true);
+            }
+          }}
+          injectedJavaScript={injectedJS}
+          javaScriptEnabled
+          domStorageEnabled
+          startInLoadingState={false}
+          allowsBackForwardNavigationGestures
+          sharedCookiesEnabled
+          thirdPartyCookiesEnabled
+          mediaPlaybackRequiresUserAction={false}
+          allowsInlineMediaPlayback
+          cacheEnabled
+          pullToRefreshEnabled={false}
+          overScrollMode="never"
+          decelerationRate="normal"
+          contentMode="mobile"
+          setSupportMultipleWindows={false}
+          scalesPageToFit={false}
+          automaticallyAdjustContentInsets={false}
+          automaticallyAdjustsScrollIndicatorInsets={false}
+          keyboardDisplayRequiresUserAction={false}
+        />
+      </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 }
 
