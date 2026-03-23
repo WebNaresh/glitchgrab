@@ -3,6 +3,7 @@ export const dynamic = "force-dynamic";
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { processReport } from "@/lib/pipeline";
 
 export async function POST(request: Request) {
   try {
@@ -56,14 +57,28 @@ export async function POST(request: Request) {
       },
     });
 
-    // TODO: Process with AI pipeline (normalize → enrich → dedup → generate → push to GitHub)
-    // For now, return success with the report ID
+    // Process with AI pipeline
+    const result = await processReport(report.id);
+
+    if (!result.success) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: result.error ?? "Pipeline failed",
+          data: { reportId: report.id, status: "FAILED" },
+        },
+        { status: 500 }
+      );
+    }
+
     return NextResponse.json({
       success: true,
       data: {
         reportId: report.id,
-        title: description?.slice(0, 80) || "Bug report from dashboard",
-        status: "PENDING",
+        issueUrl: result.issueUrl,
+        issueNumber: result.issueNumber,
+        title: result.title,
+        status: "CREATED",
       },
     });
   } catch (error) {
