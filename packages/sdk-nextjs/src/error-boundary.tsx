@@ -37,11 +37,14 @@ export class GlitchgrabErrorBoundary extends React.Component<
       const payload: ReportPayload = {
         token: this.props.token,
         source: "SDK_AUTO",
+        type: "BUG",
         errorMessage: error.message,
         errorStack: error.stack,
         componentStack: errorInfo.componentStack ?? undefined,
         pageUrl: context.url,
         userAgent: context.userAgent,
+        breadcrumbs: context.breadcrumbs,
+        deviceInfo: context.deviceInfo ?? undefined,
         metadata: {
           timestamp: context.timestamp,
           visitedPages: JSON.stringify(context.visitedPages),
