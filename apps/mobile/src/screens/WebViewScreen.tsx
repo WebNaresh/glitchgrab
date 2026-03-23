@@ -107,6 +107,13 @@ export default function WebViewScreen({
 
       document.body.style.overscrollBehavior = 'none';
 
+      // Force 16px on all inputs to prevent iOS auto-zoom on focus
+      var s = document.createElement('style');
+      s.textContent = 'input,textarea,select{font-size:16px!important}';
+      document.head.appendChild(s);
+
+      // Block pinch-to-zoom gesture
+      document.addEventListener('gesturestart', function(e) { e.preventDefault(); });
     })();
     true;
   `;
