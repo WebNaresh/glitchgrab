@@ -3,6 +3,8 @@ export const dynamic = "force-dynamic";
 import { auth } from "@/lib/auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { AiConfigForm } from "./ai-config-form";
+import { WebhookForm } from "./webhook-form";
 
 export default async function SettingsPage() {
   const session = await auth();
@@ -43,18 +45,9 @@ export default async function SettingsPage() {
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">AI Configuration</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground">
-            AI provider settings coming soon. You&apos;ll be able to choose
-            between platform-provided AI or bring your own key (Claude or
-            OpenAI).
-          </p>
-        </CardContent>
-      </Card>
+      <AiConfigForm />
+
+      <WebhookForm />
     </div>
   );
 }
