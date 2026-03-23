@@ -1,4 +1,6 @@
 import Image from "next/image";
+import Link from "next/link";
+import { auth } from "@/lib/auth";
 import { WaitlistForm } from "./waitlist-form";
 
 const FLOWS = [
@@ -54,7 +56,8 @@ function CellValue({ val }: { val: boolean | string }) {
   return <span className="text-yellow text-xs">{val}</span>;
 }
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  const session = await auth();
   return (
     <main className="min-h-screen">
       {/* Nav */}
@@ -64,12 +67,31 @@ export default function LandingPage() {
             <Image src="/logo.png" alt="Glitchgrab" width={32} height={32} className="rounded-full" />
             <span className="font-semibold text-lg tracking-tight">glitchgrab</span>
           </div>
-          <a
-            href="#waitlist"
-            className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-bg transition hover:bg-accent-hover"
-          >
-            Join Waitlist
-          </a>
+          <div className="flex items-center gap-3">
+            {session?.user ? (
+              <Link
+                href="/dashboard"
+                className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-bg transition hover:bg-accent-hover"
+              >
+                Dashboard
+              </Link>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="text-sm text-text-muted hover:text-text transition"
+                >
+                  Sign In
+                </Link>
+                <a
+                  href="#waitlist"
+                  className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-bg transition hover:bg-accent-hover"
+                >
+                  Join Waitlist
+                </a>
+              </>
+            )}
+          </div>
         </div>
       </nav>
 
