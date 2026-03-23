@@ -3,16 +3,8 @@
 import { useState, useRef } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { ImagePlus, Send, X, Loader2, GitFork, RotateCcw } from "lucide-react";
+import { ImagePlus, Send, X, Loader2, GitFork, RotateCcw, ChevronDown, Check } from "lucide-react";
 import { toast } from "sonner";
 
 interface Repo {
@@ -44,6 +36,8 @@ export function BugChat({
   const [input, setInput] = useState("");
   const [screenshot, setScreenshot] = useState<string | null>(null);
   const [screenshotFile, setScreenshotFile] = useState<File | null>(null);
+  const [repoPickerOpen, setRepoPickerOpen] = useState(false);
+  const [repoSearch, setRepoSearch] = useState("");
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "welcome",
@@ -301,20 +295,55 @@ export function BugChat({
       {/* Input */}
       <div className="shrink-0 rounded-xl border border-border bg-card p-2 sm:p-3">
           {/* Repo selector row */}
-          <div className="flex items-center gap-2 mb-1.5 pb-1.5 border-b border-border">
-            <GitFork className="h-4 w-4 text-muted-foreground shrink-0" />
-            <Select value={selectedRepoName} onValueChange={(val) => { if (val) setSelectedRepoName(val); }}>
-              <SelectTrigger className="h-7 border-0 bg-transparent shadow-none px-1 text-xs text-muted-foreground hover:text-foreground">
-                <SelectValue placeholder="Select repo" />
-              </SelectTrigger>
-              <SelectContent>
-                {repos.map((repo) => (
-                  <SelectItem key={repo.id} value={repo.fullName}>
-                    {repo.fullName}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <div className="relative mb-1.5 pb-1.5 border-b border-border">
+            <button
+              type="button"
+              onClick={() => setRepoPickerOpen(!repoPickerOpen)}
+              className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition px-1 py-0.5 rounded"
+            >
+              <GitFork className="h-3.5 w-3.5 shrink-0" />
+              <span className="truncate max-w-[200px]">{selectedRepoName || "Select repo"}</span>
+              <ChevronDown className="h-3 w-3 shrink-0" />
+            </button>
+
+            {repoPickerOpen && (
+              <div className="absolute bottom-full left-0 mb-1 w-72 rounded-lg border border-border bg-card shadow-lg z-50">
+                <div className="p-2 border-b border-border">
+                  <input
+                    type="text"
+                    value={repoSearch}
+                    onChange={(e) => setRepoSearch(e.target.value)}
+                    placeholder="Search repos..."
+                    className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+                    autoFocus
+                  />
+                </div>
+                <div className="max-h-48 overflow-y-auto p-1">
+                  {repos
+                    .filter((r) => r.fullName.toLowerCase().includes(repoSearch.toLowerCase()))
+                    .map((repo) => (
+                      <button
+                        key={repo.id}
+                        type="button"
+                        onClick={() => {
+                          setSelectedRepoName(repo.fullName);
+                          setRepoPickerOpen(false);
+                          setRepoSearch("");
+                        }}
+                        className="flex items-center justify-between w-full rounded-md px-2 py-1.5 text-sm hover:bg-muted transition"
+                      >
+                        <span className="truncate">{repo.fullName}</span>
+                        {selectedRepoName === repo.fullName && (
+                          <Check className="h-3.5 w-3.5 text-primary shrink-0" />
+                        )}
+                      </button>
+                    ))}
+                  {repos.filter((r) => r.fullName.toLowerCase().includes(repoSearch.toLowerCase())).length === 0 && (
+                    <p className="text-xs text-muted-foreground text-center py-3">No repos found</p>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
           {/* Input row */}
           <div className="flex items-end gap-2">
