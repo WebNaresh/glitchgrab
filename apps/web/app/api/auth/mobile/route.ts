@@ -14,7 +14,7 @@ import { encode } from "next-auth/jwt";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { code } = body;
+    const { code, code_verifier } = body;
 
     if (!code || typeof code !== "string") {
       return NextResponse.json(
@@ -24,6 +24,15 @@ export async function POST(req: NextRequest) {
     }
 
     // Step 1: Exchange code for GitHub access token (server-side with secret)
+    const tokenBody: Record<string, string> = {
+      client_id: process.env.GITHUB_MOBILE_CLIENT_ID!,
+      client_secret: process.env.GITHUB_MOBILE_CLIENT_SECRET!,
+      code,
+    };
+    if (code_verifier) {
+      tokenBody.code_verifier = code_verifier;
+    }
+
     const tokenRes = await fetch(
       "https://github.com/login/oauth/access_token",
       {
@@ -32,22 +41,22 @@ export async function POST(req: NextRequest) {
           "Content-Type": "application/json",
           Accept: "application/json",
         },
-        body: JSON.stringify({
-          client_id: process.env.GITHUB_MOBILE_CLIENT_ID,
-          client_secret: process.env.GITHUB_MOBILE_CLIENT_SECRET,
-          code,
-        }),
+        body: JSON.stringify(tokenBody),
       }
     );
 
-    if (!tokenRes.ok) {
-      return NextResponse.json(
-        { success: false, error: "GitHub token exchange failed" },
-        { status: 401 }
-      );
+    const tokenData = await tokenRes.json();
+
+    if (!tokenRes.ok || tokenData.error) {
+      console.error("GitHub token exchange failed:", {
+        status: tokenRes.status,
+        error: tokenData.error,
+        description: tokenData.error_description,
+        clientIdSet: !!process.env.GITHUB_MOBILE_CLIENT_ID,
+        clientSecretSet: !!process.env.GITHUB_MOBILE_CLIENT_SECRET,
+      });
     }
 
-    const tokenData = await tokenRes.json();
     if (tokenData.error) {
       return NextResponse.json(
         {
