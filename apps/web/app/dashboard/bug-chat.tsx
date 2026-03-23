@@ -366,7 +366,7 @@ export function BugChat({
               onPaste={handlePaste}
               placeholder="Describe a bug..."
               rows={1}
-              className="flex-1 resize-none bg-transparent border-0 outline-none text-sm placeholder:text-muted-foreground min-h-[36px] max-h-[120px] py-2"
+              className="flex-1 resize-none bg-transparent border-0 outline-none text-base placeholder:text-muted-foreground min-h-[36px] max-h-[120px] py-2"
               disabled={sending}
             />
             <Button
