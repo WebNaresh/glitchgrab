@@ -70,6 +70,26 @@ export function BugChat({
     reader.readAsDataURL(file);
   }
 
+  function handlePaste(e: React.ClipboardEvent) {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].type.startsWith("image/")) {
+        e.preventDefault();
+        const file = items[i].getAsFile();
+        if (!file) return;
+        setScreenshotFile(file);
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          setScreenshot(ev.target?.result as string);
+        };
+        reader.readAsDataURL(file);
+        toast.success("Screenshot pasted");
+        return;
+      }
+    }
+  }
+
   function removeScreenshot() {
     setScreenshot(null);
     setScreenshotFile(null);
@@ -301,7 +321,8 @@ export function BugChat({
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Describe the bug..."
+              onPaste={handlePaste}
+              placeholder="Describe the bug or paste a screenshot..."
               rows={1}
               className="flex-1 resize-none bg-transparent border-0 outline-none text-sm placeholder:text-muted-foreground min-h-[36px] max-h-[120px] py-2"
               disabled={sending}
