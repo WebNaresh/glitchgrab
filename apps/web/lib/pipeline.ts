@@ -3,7 +3,7 @@ import { classifyAndGenerate } from "@/lib/ai";
 import {
   createGitHubIssue,
   uploadScreenshotToRepo,
-  commentOnIssue,
+  updateIssueBody,
   closeIssue,
   fetchOpenIssues,
 } from "@/lib/github";
@@ -123,7 +123,7 @@ export async function processReport(reportId: string): Promise<PipelineResult> {
     }
 
     if (action.intent === "update") {
-      let comment = action.comment;
+      let updateContent = action.comment;
       if (report.screenshot?.startsWith("data:image/")) {
         const screenshotUrl = await uploadScreenshotToRepo(
           account.access_token,
@@ -133,17 +133,17 @@ export async function processReport(reportId: string): Promise<PipelineResult> {
           report.id
         );
         if (screenshotUrl) {
-          comment += `\n\n![Screenshot](${screenshotUrl})`;
+          updateContent += `\n\n![Screenshot](${screenshotUrl})`;
         }
       }
-      comment += "\n\n*Updated via [Glitchgrab](https://glitchgrab.dev)*";
+      updateContent += "\n\n*Updated via [Glitchgrab](https://glitchgrab.dev)*";
 
-      await commentOnIssue(
+      await updateIssueBody(
         account.access_token,
         report.repo.owner,
         report.repo.name,
         action.issueNumber,
-        comment
+        updateContent
       );
 
       await prisma.report.update({
