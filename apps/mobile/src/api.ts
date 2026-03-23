@@ -1,6 +1,21 @@
-const BASE_URL = __DEV__
-  ? "http://192.168.1.3:3000"
-  : "https://glitchgrab.dev";
+import Constants from "expo-constants";
+
+// In dev: use the Expo dev server host (same network as the dev machine)
+// In production: use glitchgrab.dev
+function getBaseUrl(): string {
+  if (!__DEV__) return "https://glitchgrab.dev";
+
+  // Expo provides the dev server host which is the machine's IP
+  const debuggerHost = Constants.expoConfig?.hostUri ?? Constants.manifest2?.extra?.expoGo?.debuggerHost;
+  const host = debuggerHost?.split(":")[0];
+
+  if (host) return `http://${host}:3000`;
+
+  // Fallback
+  return "http://localhost:3000";
+}
+
+const BASE_URL = getBaseUrl();
 
 export { BASE_URL };
 
