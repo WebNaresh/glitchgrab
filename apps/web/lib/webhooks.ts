@@ -45,7 +45,7 @@ async function dispatchAsync(
 
   const bodyString = JSON.stringify(body);
 
-  const deliveries = webhooks.map((webhook) =>
+  const deliveries = webhooks.map((webhook: typeof webhooks[number]) =>
     sendWithRetry(webhook.url, webhook.secret, bodyString)
   );
 
