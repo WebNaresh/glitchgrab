@@ -7,12 +7,15 @@ import { processReport } from "@/lib/pipeline";
 
 interface SdkReportBody {
   source: "SDK_AUTO" | "SDK_USER_REPORT";
+  type?: "BUG" | "FEATURE_REQUEST" | "QUESTION" | "OTHER";
   description?: string;
   errorMessage?: string;
   errorStack?: string;
   componentStack?: string;
   pageUrl?: string;
   userAgent?: string;
+  breadcrumbs?: { type: string; message: string; timestamp: string; data?: Record<string, string> }[];
+  deviceInfo?: Record<string, unknown>;
   metadata?: Record<string, string>;
 }
 
@@ -55,9 +58,21 @@ export async function POST(request: Request) {
       body.errorMessage && `**Error:** ${body.errorMessage}`,
       body.description,
       body.componentStack && `**Component Stack:**\n\`\`\`\n${body.componentStack}\n\`\`\``,
+      body.breadcrumbs?.length && `**Breadcrumbs (last ${body.breadcrumbs.length}):**\n${body.breadcrumbs.map((b) => `- [${b.type}] ${b.message}`).join("\n")}`,
     ]
       .filter(Boolean)
       .join("\n\n");
+
+    // Merge device info + metadata
+    const enrichedMetadata = {
+      ...body.metadata,
+      ...(body.deviceInfo
+        ? Object.fromEntries(
+            Object.entries(body.deviceInfo).map(([k, v]) => [`device_${k}`, String(v)])
+          )
+        : {}),
+      ...(body.type ? { reportType: body.type } : {}),
+    };
 
     // 4. Create report
     const report = await prisma.report.create({
@@ -70,7 +85,7 @@ export async function POST(request: Request) {
         errorStack: body.errorStack || null,
         pageUrl: body.pageUrl || null,
         userAgent: body.userAgent || null,
-        metadata: body.metadata ? JSON.parse(JSON.stringify(body.metadata)) : undefined,
+        metadata: JSON.parse(JSON.stringify(enrichedMetadata)),
       },
     });
 
