@@ -7,6 +7,7 @@ import {
   closeIssue,
   fetchOpenIssues,
 } from "@/lib/github";
+import { dispatchWebhook } from "@/lib/webhooks";
 
 // ─── Types ──────────────────────────────────────────────
 
@@ -113,6 +114,16 @@ export async function processReport(reportId: string): Promise<PipelineResult> {
         data: { status: "CREATED" },
       });
 
+      // Dispatch webhook for issue creation
+      dispatchWebhook(report.repo.userId, "issue.created", {
+        issueUrl: createdIssue.url,
+        issueNumber: createdIssue.number,
+        title: action.title,
+        labels: action.labels,
+        severity: action.severity,
+        repo: report.repo.fullName,
+      });
+
       return {
         success: true,
         intent: "create",
@@ -151,12 +162,21 @@ export async function processReport(reportId: string): Promise<PipelineResult> {
         data: { status: "CREATED" },
       });
 
+      const updateIssueUrl = `https://github.com/${report.repo.fullName}/issues/${action.issueNumber}`;
+
+      // Dispatch webhook for issue update
+      dispatchWebhook(report.repo.userId, "issue.updated", {
+        issueUrl: updateIssueUrl,
+        issueNumber: action.issueNumber,
+        repo: report.repo.fullName,
+      });
+
       return {
         success: true,
         intent: "update",
         message: `Updated issue #${action.issueNumber} with additional context`,
         issueNumber: action.issueNumber,
-        issueUrl: `https://github.com/${report.repo.fullName}/issues/${action.issueNumber}`,
+        issueUrl: updateIssueUrl,
       };
     }
 
@@ -175,6 +195,15 @@ export async function processReport(reportId: string): Promise<PipelineResult> {
         where: { id: reportId },
         data: { status: "CREATED" },
       });
+
+      // Dispatch webhook for each closed issue
+      for (const num of action.issueNumbers) {
+        dispatchWebhook(report.repo.userId, "issue.closed", {
+          issueUrl: `https://github.com/${report.repo.fullName}/issues/${num}`,
+          issueNumber: num,
+          repo: report.repo.fullName,
+        });
+      }
 
       const closed = action.issueNumbers.map((n) => `#${n}`).join(", ");
       return {
