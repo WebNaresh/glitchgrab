@@ -7,23 +7,60 @@ import { encode } from "next-auth/jwt";
 /**
  * POST /api/auth/mobile
  *
- * Receives a GitHub access_token from the mobile app.
- * Finds or creates the user in the database (same as NextAuth would),
- * then creates a JWT session token in the same format NextAuth uses.
+ * Receives a GitHub OAuth code from the mobile app.
+ * Exchanges it for an access token (server-side, with client secret),
+ * finds or creates the user, and returns a JWT session token.
  */
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { access_token } = body;
+    const { code } = body;
 
-    if (!access_token || typeof access_token !== "string") {
+    if (!code || typeof code !== "string") {
       return NextResponse.json(
-        { success: false, error: "Missing access_token" },
+        { success: false, error: "Missing code" },
         { status: 400 }
       );
     }
 
-    // Step 1: Fetch user profile from GitHub
+    // Step 1: Exchange code for GitHub access token (server-side with secret)
+    const tokenRes = await fetch(
+      "https://github.com/login/oauth/access_token",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          client_id: process.env.GITHUB_MOBILE_CLIENT_ID,
+          client_secret: process.env.GITHUB_MOBILE_CLIENT_SECRET,
+          code,
+        }),
+      }
+    );
+
+    if (!tokenRes.ok) {
+      return NextResponse.json(
+        { success: false, error: "GitHub token exchange failed" },
+        { status: 401 }
+      );
+    }
+
+    const tokenData = await tokenRes.json();
+    if (tokenData.error) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: tokenData.error_description || tokenData.error,
+        },
+        { status: 401 }
+      );
+    }
+
+    const access_token = tokenData.access_token as string;
+
+    // Step 2: Fetch user profile from GitHub
     const [profileRes, emailsRes] = await Promise.all([
       fetch("https://api.github.com/user", {
         headers: { Authorization: `Bearer ${access_token}` },
@@ -35,14 +72,17 @@ export async function POST(req: NextRequest) {
 
     if (!profileRes.ok) {
       return NextResponse.json(
-        { success: false, error: "Invalid GitHub access token" },
+        { success: false, error: "Failed to fetch GitHub profile" },
         { status: 401 }
       );
     }
 
     const profile = await profileRes.json();
-    const emails: Array<{ email: string; primary: boolean; verified: boolean }> =
-      emailsRes.ok ? await emailsRes.json() : [];
+    const emails: Array<{
+      email: string;
+      primary: boolean;
+      verified: boolean;
+    }> = emailsRes.ok ? await emailsRes.json() : [];
 
     const primaryEmail =
       emails.find((e) => e.primary && e.verified)?.email ||
@@ -51,14 +91,14 @@ export async function POST(req: NextRequest) {
 
     if (!primaryEmail) {
       return NextResponse.json(
-        { success: false, error: "No verified email found on GitHub account" },
+        { success: false, error: "No verified email found" },
         { status: 400 }
       );
     }
 
     const githubId = String(profile.id);
 
-    // Step 2: Find or create user + account (same as PrismaAdapter would)
+    // Step 3: Find or create user + account
     let account = await prisma.account.findUnique({
       where: {
         provider_providerAccountId: {
@@ -72,20 +112,17 @@ export async function POST(req: NextRequest) {
     let user;
 
     if (account) {
-      // Update the stored access token
       await prisma.account.update({
         where: { id: account.id },
         data: { access_token },
       });
       user = account.user;
     } else {
-      // Check if a user with this email already exists
       const existingUser = await prisma.user.findUnique({
         where: { email: primaryEmail },
       });
 
       if (existingUser) {
-        // Link the GitHub account to existing user
         await prisma.account.create({
           data: {
             userId: existingUser.id,
@@ -99,7 +136,6 @@ export async function POST(req: NextRequest) {
         });
         user = existingUser;
       } else {
-        // Create new user + account
         user = await prisma.user.create({
           data: {
             name: profile.name || profile.login,
@@ -120,10 +156,9 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Step 3: Create a JWT session token (same format as NextAuth)
+    // Step 4: Create JWT session token
     const secret = process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET;
     if (!secret) {
-      console.error("AUTH_SECRET is not set");
       return NextResponse.json(
         { success: false, error: "Server configuration error" },
         { status: 500 }
@@ -139,7 +174,7 @@ export async function POST(req: NextRequest) {
         id: user.id,
       } as Record<string, unknown>,
       secret,
-      maxAge: 30 * 24 * 60 * 60, // 30 days
+      maxAge: 30 * 24 * 60 * 60,
     } as Parameters<typeof encode>[0]);
 
     return NextResponse.json({
@@ -151,7 +186,7 @@ export async function POST(req: NextRequest) {
         image: user.image,
       },
     });
-  } catch (err: any) {
+  } catch (err) {
     console.error("Mobile auth error:", err);
     return NextResponse.json(
       { success: false, error: "Internal server error" },
