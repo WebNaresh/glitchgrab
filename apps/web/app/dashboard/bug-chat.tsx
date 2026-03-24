@@ -7,12 +7,18 @@ import { Badge } from "@/components/ui/badge";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ImagePlus, Send, X, Loader2, GitFork, RotateCcw, ChevronDown, Check, MessageSquarePlus } from "lucide-react";
 import { toast } from "sonner";
+import { InteractiveQuestions } from "@/components/dashboard/interactive-questions";
 
 interface Repo {
   id: string;
   fullName: string;
   owner: string;
   name: string;
+}
+
+interface ClarifyQuestion {
+  question: string;
+  options: string[];
 }
 
 interface Message {
@@ -23,6 +29,7 @@ interface Message {
   screenshotFiles?: File[];
   issueUrl?: string;
   failed?: boolean;
+  clarifyQuestions?: ClarifyQuestion[];
 }
 
 export function BugChat({
@@ -195,6 +202,12 @@ export function BugChat({
         }
       }
 
+      // Extract clarify questions if present
+      const clarifyQuestions: ClarifyQuestion[] | undefined =
+        data.data?.intent === "clarify" && Array.isArray(data.data?.clarifyQuestions)
+          ? data.data.clarifyQuestions
+          : undefined;
+
       setMessages((prev) =>
         prev
           .filter((m) => m.id !== "thinking")
@@ -204,6 +217,7 @@ export function BugChat({
             content,
             issueUrl: data.data?.issueUrl,
             failed: !data.success,
+            clarifyQuestions,
           })
       );
 
@@ -276,6 +290,51 @@ export function BugChat({
     await sendReport(lastUserMsg.content, lastUserMsg.screenshotFiles);
   }
 
+  async function handleClarifyComplete(
+    msgId: string,
+    answers: { question: string; answer: string }[]
+  ) {
+    // Clear the interactive questions from the message
+    setMessages((prev) =>
+      prev.map((m) =>
+        m.id === msgId ? { ...m, clarifyQuestions: undefined } : m
+      )
+    );
+
+    // Compile answers into a user message
+    const answerText = answers
+      .map((a) => `Q: ${a.question}\nA: ${a.answer}`)
+      .join("\n\n");
+
+    const userMsg: Message = {
+      id: Date.now().toString(),
+      role: "user",
+      content: answerText,
+    };
+    setMessages((prev) => [...prev, userMsg]);
+
+    await sendReport(answerText);
+  }
+
+  async function handleClarifyDismiss(msgId: string) {
+    // Remove the interactive questions
+    setMessages((prev) =>
+      prev.map((m) =>
+        m.id === msgId ? { ...m, clarifyQuestions: undefined } : m
+      )
+    );
+
+    // Send a message telling the AI the user declined
+    const userMsg: Message = {
+      id: Date.now().toString(),
+      role: "user",
+      content: "I don't want to answer these questions. Just create the issue with what you have.",
+    };
+    setMessages((prev) => [...prev, userMsg]);
+
+    await sendReport(userMsg.content);
+  }
+
   function handleKeyDown(e: React.KeyboardEvent) {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -292,7 +351,7 @@ export function BugChat({
         {messages.map((msg) => (
           <div
             key={msg.id}
-            className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+            className={`flex flex-col ${msg.role === "user" ? "items-end" : "items-start"}`}
           >
             <div
               className={`max-w-[85%] sm:max-w-[70%] rounded-2xl px-4 py-3 text-sm ${
@@ -353,6 +412,16 @@ export function BugChat({
                 </>
               )}
             </div>
+            {/* Interactive questions card — rendered outside bubble for full width */}
+            {msg.clarifyQuestions && msg.clarifyQuestions.length > 0 && (
+              <div className="w-full max-w-[95%] sm:max-w-[80%] mt-2">
+                <InteractiveQuestions
+                  questions={msg.clarifyQuestions}
+                  onComplete={(answers) => handleClarifyComplete(msg.id, answers)}
+                  onDismiss={() => handleClarifyDismiss(msg.id)}
+                />
+              </div>
+            )}
           </div>
         ))}
         <div ref={messagesEndRef} />
