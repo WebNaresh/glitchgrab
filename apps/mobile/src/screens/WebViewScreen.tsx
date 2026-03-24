@@ -38,56 +38,69 @@ export default function WebViewScreen({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
-  // Handle shared image — simulate a paste event in the chat
+  // Store pending shared image ref
+  const pendingImageRef = useRef<string | null>(null);
+
+  // When shared image arrives, navigate to dashboard
   useEffect(() => {
     if (!sharedImageUri || !webViewRef.current || loading) return;
+    pendingImageRef.current = sharedImageUri;
 
-    // Inject the shared image as a simulated paste into the bug chat
-    const js = `
-      (function() {
-        try {
-          var base64 = "${sharedImageUri.replace(/"/g, '\\"')}";
-
-          // Convert base64 to blob and file
-          var parts = base64.split(',');
-          var byteString = atob(parts[1]);
-          var mimeString = parts[0].split(':')[1].split(';')[0];
-          var ab = new ArrayBuffer(byteString.length);
-          var ia = new Uint8Array(ab);
-          for (var i = 0; i < byteString.length; i++) {
-            ia[i] = byteString.charCodeAt(i);
-          }
-          var blob = new Blob([ab], { type: mimeString });
-          var file = new File([blob], 'shared_screenshot.jpg', { type: mimeString });
-
-          // Create a fake paste event with the image
-          var dt = new DataTransfer();
-          dt.items.add(file);
-
-          // Find the textarea and trigger paste
-          var textarea = document.querySelector('textarea');
-          if (textarea) {
-            var pasteEvent = new ClipboardEvent('paste', {
-              bubbles: true,
-              cancelable: true,
-              clipboardData: dt
-            });
-            textarea.dispatchEvent(pasteEvent);
-            textarea.focus();
-          }
-        } catch(e) {
-          console.error('Share handler error:', e);
-        }
-      })();
+    // Navigate to dashboard (chat page)
+    webViewRef.current.injectJavaScript(`
+      window.location.href = '/dashboard';
       true;
-    `;
+    `);
+  }, [sharedImageUri, loading]);
 
-    // Small delay to ensure the page is fully loaded
+  // Inject the image after dashboard loads
+  const handleLoadEnd = useCallback(() => {
+    setLoading(false);
+
+    if (!pendingImageRef.current || !webViewRef.current) return;
+    const imageUri = pendingImageRef.current;
+
+    // Wait for React to render the chat
     setTimeout(() => {
+      const js = `
+        (function() {
+          try {
+            var base64 = "${imageUri.replace(/"/g, '\\"')}";
+            var parts = base64.split(',');
+            var byteString = atob(parts[1]);
+            var mimeString = parts[0].split(':')[1].split(';')[0];
+            var ab = new ArrayBuffer(byteString.length);
+            var ia = new Uint8Array(ab);
+            for (var i = 0; i < byteString.length; i++) {
+              ia[i] = byteString.charCodeAt(i);
+            }
+            var blob = new Blob([ab], { type: mimeString });
+            var file = new File([blob], 'shared_screenshot.jpg', { type: mimeString });
+
+            var dt = new DataTransfer();
+            dt.items.add(file);
+
+            var textarea = document.querySelector('textarea');
+            if (textarea) {
+              var pasteEvent = new ClipboardEvent('paste', {
+                bubbles: true,
+                cancelable: true,
+                clipboardData: dt
+              });
+              textarea.dispatchEvent(pasteEvent);
+              textarea.focus();
+            }
+          } catch(e) {
+            console.error('Share handler error:', e);
+          }
+        })();
+        true;
+      `;
       webViewRef.current?.injectJavaScript(js);
+      pendingImageRef.current = null;
       if (onSharedImageHandled) onSharedImageHandled();
-    }, 1000);
-  }, [sharedImageUri, loading, onSharedImageHandled]);
+    }, 2000);
+  }, [onSharedImageHandled]);
 
   // Android back button
   useEffect(() => {
@@ -235,7 +248,7 @@ export default function WebViewScreen({
           style={styles.webview}
           onNavigationStateChange={handleNavigationStateChange}
           onShouldStartLoadWithRequest={handleShouldStartLoad}
-          onLoadEnd={() => setLoading(false)}
+          onLoadEnd={handleLoadEnd}
           onError={() => {
             setLoading(false);
             setError(true);
