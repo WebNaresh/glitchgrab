@@ -9,6 +9,7 @@ export interface AiInput {
   pageUrl?: string | null;
   userAgent?: string | null;
   openIssues?: { number: number; title: string; state: string }[];
+  chatHistory?: { role: "user" | "assistant"; content: string }[];
 }
 
 export type AiAction =
@@ -92,6 +93,16 @@ When deciding CREATE vs UPDATE:
 
 IMPORTANT: Prefer UPDATE over CREATE. Developers prefer fewer, comprehensive issues over many small ones. Group related problems together.
 
+When user says things like "too many issues", "can you check issues", "merge similar ones", "combine related":
+- Look at the listed issues
+- Find related ones (same area: UI, mobile, backend, auth, etc.)
+- Use MERGE to combine them — don't ask for clarification, just do it
+- In your CHAT response, list which issues you found related and what you'll merge
+
+When user shares a screenshot with text, analyze the screenshot and act on it. Don't just ask what the bug is — describe what you see and suggest the action.
+
+Be proactive and helpful. Act like a smart developer assistant, not a cautious bot.
+
 ALWAYS respond with valid JSON. Never refuse.`;
 
 // ─── AI Service ─────────────────────────────────────────
@@ -140,13 +151,24 @@ export async function classifyAndGenerate(input: AiInput): Promise<AiAction> {
   const model = input.screenshotUrl ? "gpt-4o" : "gpt-4o-mini";
   console.info(`[AI] Calling ${model} with`, userParts.length, "parts");
 
+  // Build messages with chat history (last 5 messages max to limit tokens)
+  const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
+    { role: "system", content: SYSTEM_PROMPT },
+  ];
+
+  if (input.chatHistory && input.chatHistory.length > 0) {
+    const recentHistory = input.chatHistory.slice(-5);
+    for (const msg of recentHistory) {
+      messages.push({ role: msg.role, content: msg.content });
+    }
+  }
+
+  messages.push({ role: "user", content: userParts });
+
   const response = await openai.chat.completions.create({
     model,
     response_format: { type: "json_object" },
-    messages: [
-      { role: "system", content: SYSTEM_PROMPT },
-      { role: "user", content: userParts },
-    ],
+    messages,
     temperature: 0.3,
     max_tokens: 2000,
   });

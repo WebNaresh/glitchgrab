@@ -20,6 +20,7 @@ export async function POST(request: Request) {
     const repoId = formData.get("repoId") as string;
     const description = formData.get("description") as string;
     const screenshotFile = formData.get("screenshot") as File | null;
+    const chatHistoryRaw = formData.get("chatHistory") as string | null;
 
     if (!repoId) {
       return NextResponse.json(
@@ -70,8 +71,18 @@ export async function POST(request: Request) {
       },
     });
 
+    // Parse chat history if provided (last 5 messages for context)
+    let chatHistory: { role: "user" | "assistant"; content: string }[] | undefined;
+    if (chatHistoryRaw) {
+      try {
+        chatHistory = JSON.parse(chatHistoryRaw);
+      } catch {
+        // Ignore invalid chat history
+      }
+    }
+
     // Process with AI pipeline
-    const result = await processReport(report.id);
+    const result = await processReport(report.id, chatHistory);
 
     if (!result.success) {
       return NextResponse.json(

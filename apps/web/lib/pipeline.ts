@@ -23,7 +23,10 @@ interface PipelineResult {
 
 // ─── Pipeline ───────────────────────────────────────────
 
-export async function processReport(reportId: string): Promise<PipelineResult> {
+export async function processReport(
+  reportId: string,
+  chatHistory?: { role: "user" | "assistant"; content: string }[]
+): Promise<PipelineResult> {
   try {
     // 1. Fetch the report with repo data
     const report = await prisma.report.findUniqueOrThrow({
@@ -61,6 +64,7 @@ export async function processReport(reportId: string): Promise<PipelineResult> {
       pageUrl: report.pageUrl,
       userAgent: report.userAgent,
       openIssues,
+      chatHistory,
     });
 
     // Store AI response

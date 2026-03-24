@@ -109,6 +109,15 @@ export function BugChat({
         formData.append("screenshot", file);
       }
 
+      // Send last 5 chat messages for context (exclude thinking messages)
+      const history = messages
+        .filter((m) => m.id !== "welcome" && m.id !== "thinking")
+        .slice(-5)
+        .map((m) => ({ role: m.role, content: m.content }));
+      if (history.length > 0) {
+        formData.append("chatHistory", JSON.stringify(history));
+      }
+
       const res = await fetch("/api/v1/reports", {
         method: "POST",
         body: formData,
