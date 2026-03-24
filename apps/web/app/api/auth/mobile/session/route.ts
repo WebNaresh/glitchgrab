@@ -38,7 +38,18 @@ export async function GET(request: Request) {
 
   console.info("[mobile-session] Setting cookie:", cookieName, "token length:", token.length, "redirecting to:", dashboardUrl);
 
-  const html = `<!DOCTYPE html><html><head><meta charset="utf-8"/></head><body><script>window.location.replace("${dashboardUrl}");</script></body></html>`;
+  // Use a delayed redirect to ensure the cookie is persisted by the WebView
+  // before navigating. The script checks document.cookie to verify persistence.
+  const html = `<!DOCTYPE html>
+<html><head><meta charset="utf-8"/>
+<meta http-equiv="refresh" content="2;url=${dashboardUrl}"/>
+</head><body>
+<script>
+setTimeout(function() {
+  window.location.replace("${dashboardUrl}");
+}, 1500);
+</script>
+</body></html>`;
 
   const response = new NextResponse(html, {
     status: 200,
