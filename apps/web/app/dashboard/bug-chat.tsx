@@ -263,7 +263,7 @@ export function BugChat({
   const hasConversation = messages.length > 1;
 
   return (
-    <div className="flex flex-col h-full max-h-[calc(100dvh-100px)] md:max-h-[calc(100dvh-0px)]">
+    <div className="flex flex-col h-full max-h-[calc(var(--app-height,100dvh)-100px)] md:max-h-[calc(var(--app-height,100dvh)-0px)]">
       {/* Messages */}
       <div className="flex-1 overflow-y-auto space-y-4 pb-4">
         {messages.map((msg) => (
