@@ -21,7 +21,7 @@ export default async function ReposPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold">Repos</h1>
           <p className="text-sm text-muted-foreground">
@@ -47,9 +47,9 @@ export default async function ReposPage() {
           {repos.map((repo: typeof repos[number]) => (
             <Card key={repo.id}>
               <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-base">{repo.fullName}</CardTitle>
-                  <Badge variant={repo.isPrivate ? "secondary" : "outline"}>
+                <div className="flex items-center justify-between gap-2">
+                  <CardTitle className="text-base truncate min-w-0">{repo.fullName}</CardTitle>
+                  <Badge variant={repo.isPrivate ? "secondary" : "outline"} className="shrink-0">
                     {repo.isPrivate ? "Private" : "Public"}
                   </Badge>
                 </div>
