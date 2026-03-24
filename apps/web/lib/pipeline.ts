@@ -185,13 +185,28 @@ export async function processReport(
     }
 
     if (action.intent === "close") {
+      // Upload screenshot if provided
+      let closeComment = action.comment;
+      if (report.screenshot?.startsWith("data:image/")) {
+        const screenshotUrl = await uploadScreenshotToRepo(
+          account.access_token,
+          report.repo.owner,
+          report.repo.name,
+          report.screenshot,
+          report.id
+        );
+        if (screenshotUrl) {
+          closeComment += `\n\n![Screenshot](${screenshotUrl})`;
+        }
+      }
+
       for (const num of action.issueNumbers) {
         await closeIssue(
           account.access_token,
           report.repo.owner,
           report.repo.name,
           num,
-          action.comment
+          closeComment
         );
       }
 
@@ -218,13 +233,28 @@ export async function processReport(
     }
 
     if (action.intent === "merge") {
+      // Upload screenshot if provided and append to merged body
+      let mergeContent = action.mergedBody;
+      if (report.screenshot?.startsWith("data:image/")) {
+        const screenshotUrl = await uploadScreenshotToRepo(
+          account.access_token,
+          report.repo.owner,
+          report.repo.name,
+          report.screenshot,
+          report.id
+        );
+        if (screenshotUrl) {
+          mergeContent += `\n\n## Screenshot\n\n![Screenshot](${screenshotUrl})`;
+        }
+      }
+
       // Update the kept issue with merged content
       await updateIssueBody(
         account.access_token,
         report.repo.owner,
         report.repo.name,
         action.keepIssue,
-        action.mergedBody + "\n\n*Merged via [Glitchgrab](https://glitchgrab.dev)*"
+        mergeContent + "\n\n*Merged via [Glitchgrab](https://glitchgrab.dev)*"
       );
 
       // Update the title of the kept issue
