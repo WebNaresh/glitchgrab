@@ -353,12 +353,13 @@ export function BugChat({
             key={msg.id}
             className={`flex flex-col ${msg.role === "user" ? "items-end" : "items-start"}`}
           >
+            {/* Hide text bubble when interactive questions are shown */}
             <div
               className={`max-w-[85%] sm:max-w-[70%] rounded-2xl px-4 py-3 text-sm ${
                 msg.role === "user"
                   ? "bg-primary text-primary-foreground rounded-br-md"
                   : "bg-card border border-border rounded-bl-md"
-              }`}
+              } ${msg.clarifyQuestions && msg.clarifyQuestions.length > 0 ? "hidden" : ""}`}
             >
               {msg.id === "thinking" ? (
                 <div className="flex items-center gap-2">
