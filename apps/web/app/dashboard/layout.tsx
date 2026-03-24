@@ -1,7 +1,7 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { Sidebar } from "@/components/dashboard/sidebar";
-import { MobileNav } from "@/components/dashboard/mobile-nav";
+import { BottomNav } from "@/components/dashboard/bottom-nav";
 
 export default async function DashboardLayout({
   children,
@@ -21,8 +21,8 @@ export default async function DashboardLayout({
     <div className="flex h-screen bg-background">
       <Sidebar user={user} />
       <div className="flex flex-1 flex-col overflow-hidden">
-        <MobileNav user={user} />
-        <main className="flex-1 overflow-y-auto p-4 md:p-6">{children}</main>
+        <main className="flex-1 overflow-y-auto p-4 pb-20 md:p-6 md:pb-6">{children}</main>
+        <BottomNav user={user} />
       </div>
     </div>
   );
