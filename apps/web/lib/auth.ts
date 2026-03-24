@@ -7,6 +7,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET,
   adapter: PrismaAdapter(prisma),
   session: { strategy: "jwt" },
+  useSecureCookies: false,
   providers: [
     GitHub({
       clientId: process.env.GITHUB_CLIENT_ID,
