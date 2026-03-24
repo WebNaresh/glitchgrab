@@ -6,6 +6,7 @@ import {
   updateIssueBody,
   closeIssue,
   fetchRecentIssues,
+  fetchIssueBody,
 } from "@/lib/github";
 import { dispatchWebhook } from "@/lib/webhooks";
 
@@ -233,8 +234,30 @@ export async function processReport(
     }
 
     if (action.intent === "merge") {
-      // Upload screenshot if provided and append to merged body
       let mergeContent = action.mergedBody;
+
+      // Collect screenshots from ALL issues being closed (their full bodies)
+      const allIssueNumbers = [action.keepIssue, ...action.closeIssues];
+      const screenshotRefs: string[] = [];
+      for (const num of allIssueNumbers) {
+        const body = await fetchIssueBody(
+          account.access_token,
+          report.repo.owner,
+          report.repo.name,
+          num
+        );
+        // Extract all markdown image references from the issue body
+        const imageMatches = body.match(/!\[(?:Screenshot|.*?)\]\([^)]+\)/g);
+        if (imageMatches) {
+          for (const img of imageMatches) {
+            if (!screenshotRefs.includes(img)) {
+              screenshotRefs.push(img);
+            }
+          }
+        }
+      }
+
+      // Upload current report's screenshot if provided
       if (report.screenshot?.startsWith("data:image/")) {
         const screenshotUrl = await uploadScreenshotToRepo(
           account.access_token,
@@ -244,8 +267,16 @@ export async function processReport(
           report.id
         );
         if (screenshotUrl) {
-          mergeContent += `\n\n## Screenshot\n\n![Screenshot](${screenshotUrl})`;
+          const ref = `![Screenshot](${screenshotUrl})`;
+          if (!screenshotRefs.includes(ref)) {
+            screenshotRefs.push(ref);
+          }
         }
+      }
+
+      // Append all collected screenshots to merged body
+      if (screenshotRefs.length > 0) {
+        mergeContent += `\n\n## Screenshots\n\n${screenshotRefs.join("\n\n")}`;
       }
 
       // Update the kept issue with merged content
@@ -280,6 +311,27 @@ export async function processReport(
           `Merged into #${action.keepIssue} via Glitchgrab`
         );
       }
+
+      // Update the kept issue's DB record with merged title and body
+      await prisma.issue.updateMany({
+        where: {
+          repoId: report.repo.id,
+          githubNumber: action.keepIssue,
+        },
+        data: {
+          title: action.mergedTitle,
+          body: mergeContent,
+        },
+      });
+
+      // Mark closed issues as duplicates in DB
+      await prisma.issue.updateMany({
+        where: {
+          repoId: report.repo.id,
+          githubNumber: { in: action.closeIssues },
+        },
+        data: { isDuplicate: true },
+      });
 
       await prisma.report.update({
         where: { id: reportId },
