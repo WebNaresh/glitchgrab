@@ -145,24 +145,24 @@ export async function closeIssue(
   }
 }
 
-// ─── Fetch Open Issues ─────────────────────────────────
+// ─── Fetch Recent Issues (open + recently closed) ─────
 
-export async function fetchOpenIssues(
+export async function fetchRecentIssues(
   accessToken: string,
   owner: string,
   repo: string
-): Promise<{ number: number; title: string }[]> {
-  const url = `${GITHUB_API}/repos/${owner}/${repo}/issues?state=open&per_page=50&sort=updated`;
+): Promise<{ number: number; title: string; state: string }[]> {
+  // Fetch both open and recent issues for better dedup context
+  const url = `${GITHUB_API}/repos/${owner}/${repo}/issues?state=all&per_page=20&sort=updated`;
   const response = await fetch(url, {
     method: "GET",
     headers: headers(accessToken),
   });
   if (!response.ok) return [];
-  const data = (await response.json()) as { number: number; title: string; pull_request?: unknown }[];
-  // Filter out PRs (GitHub API returns PRs in issues endpoint)
+  const data = (await response.json()) as { number: number; title: string; state: string; pull_request?: unknown }[];
   return data
     .filter((i) => !i.pull_request)
-    .map((i) => ({ number: i.number, title: i.title }));
+    .map((i) => ({ number: i.number, title: i.title, state: i.state }));
 }
 
 // ─── Upload Screenshot ─────────────────────────────────

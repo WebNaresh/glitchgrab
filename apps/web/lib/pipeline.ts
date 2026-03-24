@@ -5,7 +5,7 @@ import {
   uploadScreenshotToRepo,
   updateIssueBody,
   closeIssue,
-  fetchOpenIssues,
+  fetchRecentIssues,
 } from "@/lib/github";
 import { dispatchWebhook } from "@/lib/webhooks";
 
@@ -47,7 +47,7 @@ export async function processReport(reportId: string): Promise<PipelineResult> {
     }
 
     // 4. Fetch open issues for dedup context
-    const openIssues = await fetchOpenIssues(
+    const openIssues = await fetchRecentIssues(
       account.access_token,
       report.repo.owner,
       report.repo.name

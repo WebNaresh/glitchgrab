@@ -8,7 +8,7 @@ export interface AiInput {
   errorStack?: string | null;
   pageUrl?: string | null;
   userAgent?: string | null;
-  openIssues?: { number: number; title: string }[];
+  openIssues?: { number: number; title: string; state: string }[];
 }
 
 export type AiAction =
@@ -19,16 +19,21 @@ export type AiAction =
 
 // ─── System prompt ──────────────────────────────────────
 
-const SYSTEM_PROMPT = `You are a smart GitHub issue assistant. You help developers manage bugs and issues.
+const SYSTEM_PROMPT = `You are a smart GitHub issue assistant. You help developers manage bugs and issues through conversation.
 
-Given user input (text, optional screenshot, optional error stack) and a list of OPEN issues in the repo, decide what to do:
+Given user input (text, optional screenshot, optional error stack) and a list of recent issues in the repo, decide what to do:
 
-1. **CREATE** a new issue — if the bug is new and doesn't match any open issue
-2. **UPDATE** an existing issue — if the bug is similar/related to an open issue (add a comment instead of creating a duplicate)
+1. **CREATE** a new issue — ONLY if the bug is completely new and doesn't relate to any existing issue
+2. **UPDATE** an existing issue — if the bug is similar, related, or in the same area as an existing open issue. Group related problems together.
 3. **CLOSE** issues — if the user asks to close specific issues or all issues
-4. **CHAT** — if the user is asking a question or the input isn't actionable
+4. **CHAT** — if the input is vague, unclear, a question, or needs clarification before taking action
 
-IMPORTANT: Respond ONLY with valid JSON. Pick ONE action:
+IMPORTANT:
+- Respond ONLY with valid JSON. Pick ONE action.
+- If the user's description is vague or unclear, use CHAT to ask for clarification before creating/updating.
+- If a screenshot is provided, describe what you see and ask if that's the bug they mean.
+- Prefer UPDATE over CREATE — developers want fewer comprehensive issues, not many small ones.
+- Small related issues (UI, styling, icons, layout, responsiveness) should be ONE issue.
 
 For CREATE:
 {
@@ -66,9 +71,13 @@ Severity guidelines:
 - low: cosmetic issue, minor inconvenience
 
 When deciding CREATE vs UPDATE:
-- If an open issue has a very similar title/topic, choose UPDATE
-- If it's clearly a different bug, choose CREATE
-- When in doubt, CREATE a new issue
+- If an open issue covers the same AREA (e.g., UI, mobile, icons, layout, responsiveness), choose UPDATE
+- Small related UI issues (icons broken + layout not responsive + styling off) should be ONE issue, not separate
+- Only CREATE a new issue if the bug is in a completely different feature/area
+- When in doubt, UPDATE an existing related issue rather than creating a new one
+- Think like a developer: would fixing issue X also fix this new report? If yes, UPDATE
+
+IMPORTANT: Prefer UPDATE over CREATE. Developers prefer fewer, comprehensive issues over many small ones. Group related problems together.
 
 ALWAYS respond with valid JSON. Never refuse.`;
 
@@ -97,12 +106,12 @@ export async function classifyAndGenerate(input: AiInput): Promise<AiAction> {
   }
 
   if (input.openIssues && input.openIssues.length > 0) {
-    textContent += "\n\nCurrently OPEN issues in this repo:";
+    textContent += "\n\nRecent issues in this repo (consider updating these instead of creating new ones):";
     for (const issue of input.openIssues) {
-      textContent += `\n- #${issue.number}: ${issue.title}`;
+      textContent += `\n- #${issue.number} [${issue.state}]: ${issue.title}`;
     }
   } else {
-    textContent += "\n\nNo open issues in this repo.";
+    textContent += "\n\nNo issues in this repo yet.";
   }
 
   userParts.push({ type: "text", text: textContent });
@@ -114,10 +123,12 @@ export async function classifyAndGenerate(input: AiInput): Promise<AiAction> {
     });
   }
 
-  console.info("[AI] Calling gpt-4o-mini with", userParts.length, "parts");
+  // Use gpt-4o for screenshots (better vision), gpt-4o-mini for text-only
+  const model = input.screenshotUrl ? "gpt-4o" : "gpt-4o-mini";
+  console.info(`[AI] Calling ${model} with`, userParts.length, "parts");
 
   const response = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
+    model,
     response_format: { type: "json_object" },
     messages: [
       { role: "system", content: SYSTEM_PROMPT },
