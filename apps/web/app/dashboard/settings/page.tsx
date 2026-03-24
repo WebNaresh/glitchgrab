@@ -24,19 +24,19 @@ export default async function SettingsPage() {
           <CardTitle className="text-base">Account</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center gap-4">
-            <Avatar className="h-16 w-16">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <Avatar className="h-12 w-12 sm:h-16 sm:w-16 shrink-0">
               <AvatarImage
                 src={user?.image ?? undefined}
                 alt={user?.name ?? "User"}
               />
-              <AvatarFallback className="text-lg">
+              <AvatarFallback className="text-base sm:text-lg">
                 {user?.name?.charAt(0) ?? "U"}
               </AvatarFallback>
             </Avatar>
-            <div>
-              <p className="font-semibold text-lg">{user?.name}</p>
-              <p className="text-sm text-muted-foreground">{user?.email}</p>
+            <div className="min-w-0">
+              <p className="font-semibold text-base sm:text-lg truncate">{user?.name}</p>
+              <p className="text-xs sm:text-sm text-muted-foreground truncate">{user?.email}</p>
               <p className="text-xs text-muted-foreground mt-1">
                 Signed in via GitHub
               </p>
