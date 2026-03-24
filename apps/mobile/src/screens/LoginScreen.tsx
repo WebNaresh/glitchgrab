@@ -74,14 +74,17 @@ export default function LoginScreen({ onLoginSuccess }: LoginScreenProps) {
 
       const code = result.params.code;
       const codeVerifier = request?.codeVerifier;
+      console.info("Got OAuth code, exchanging...");
 
       // Send code + verifier to our backend
       const { sessionToken } = await exchangeCodeForSession(code, codeVerifier);
+      console.info("Got session token:", sessionToken ? "yes" : "no", "length:", sessionToken?.length);
 
       // Store session token securely
       await SecureStore.setItemAsync("session_token", sessionToken);
+      console.info("Stored token, navigating to WebView...");
 
-      // Step 4: Navigate to WebView
+      // Navigate to WebView
       onLoginSuccess(sessionToken);
     } catch (err: any) {
       console.error("Login error:", err);
