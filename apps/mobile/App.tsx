@@ -6,11 +6,10 @@ import {
   View,
   StatusBar,
   Image,
-  Linking,
-  Platform,
 } from "react-native";
 import * as SecureStore from "expo-secure-store";
 import * as FileSystem from "expo-file-system";
+import { useShareIntent } from "expo-share-intent";
 import LoginScreen from "./src/screens/LoginScreen";
 import WebViewScreen from "./src/screens/WebViewScreen";
 
@@ -22,7 +21,10 @@ type AppState = "loading" | "login" | "authenticated";
 export default function App() {
   const [state, setState] = useState<AppState>("loading");
   const [sessionToken, setSessionToken] = useState<string | null>(null);
-  const [sharedImageUri, setSharedImageUri] = useState<string | null>(null);
+  const [sharedImageBase64, setSharedImageBase64] = useState<string | null>(null);
+
+  // Listen for shared content
+  const { shareIntent, resetShareIntent } = useShareIntent();
 
   // Check for existing session on mount
   useEffect(() => {
@@ -41,44 +43,27 @@ export default function App() {
     })();
   }, []);
 
-  // Handle shared images (Android share intent)
+  // Handle shared image when it arrives
   useEffect(() => {
-    async function handleSharedContent(url: string) {
+    if (!shareIntent?.files?.length) return;
+
+    const file = shareIntent.files[0];
+    if (!file?.path) return;
+
+    (async () => {
       try {
-        if (!url) return;
-
-        // Android content:// URI — read the shared image
-        if (url.startsWith("content://") || url.startsWith("file://")) {
-          // Copy to app's cache directory for access
-          const fileName = `shared_${Date.now()}.jpg`;
-          const destUri = `${FileSystem.cacheDirectory}${fileName}`;
-          await FileSystem.copyAsync({ from: url, to: destUri });
-
-          // Read as base64
-          const base64 = await FileSystem.readAsStringAsync(destUri, {
-            encoding: FileSystem.EncodingType.Base64,
-          });
-
-          setSharedImageUri(`data:image/jpeg;base64,${base64}`);
-        }
+        const base64 = await FileSystem.readAsStringAsync(file.path, {
+          encoding: FileSystem.EncodingType.Base64,
+        });
+        const mimeType = file.mimeType || "image/jpeg";
+        setSharedImageBase64(`data:${mimeType};base64,${base64}`);
+        resetShareIntent();
       } catch (err) {
-        console.error("Failed to handle shared image:", err);
+        console.error("Failed to read shared image:", err);
+        resetShareIntent();
       }
-    }
-
-    // Check if app was opened with a shared image
-    if (Platform.OS === "android") {
-      Linking.getInitialURL().then((url) => {
-        if (url) handleSharedContent(url);
-      });
-
-      const sub = Linking.addEventListener("url", (event) => {
-        handleSharedContent(event.url);
-      });
-
-      return () => sub.remove();
-    }
-  }, []);
+    })();
+  }, [shareIntent, resetShareIntent]);
 
   const handleLoginSuccess = useCallback((token: string) => {
     setSessionToken(token);
@@ -89,13 +74,12 @@ export default function App() {
     try {
       await SecureStore.deleteItemAsync("session_token");
     } catch {
-      // Ignore SecureStore errors on logout
+      // Ignore
     }
     setSessionToken(null);
     setState("login");
   }, []);
 
-  // Splash/loading state
   if (state === "loading") {
     return (
       <SafeAreaView style={styles.container}>
@@ -115,18 +99,16 @@ export default function App() {
     );
   }
 
-  // Login screen
   if (state === "login") {
     return <LoginScreen onLoginSuccess={handleLoginSuccess} />;
   }
 
-  // Authenticated — show WebView
   return (
     <WebViewScreen
       sessionToken={sessionToken!}
       onLogout={handleLogout}
-      sharedImageUri={sharedImageUri}
-      onSharedImageHandled={() => setSharedImageUri(null)}
+      sharedImageUri={sharedImageBase64}
+      onSharedImageHandled={() => setSharedImageBase64(null)}
     />
   );
 }
