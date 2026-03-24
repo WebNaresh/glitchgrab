@@ -20,7 +20,12 @@ export type AiAction =
   | { intent: "close"; issueNumbers: number[]; comment: string }
   | { intent: "merge"; keepIssue: number; closeIssues: number[]; mergedTitle: string; mergedBody: string }
   | { intent: "chat"; message: string }
-  | { intent: "clarify"; questions: string[] };
+  | { intent: "clarify"; questions: ClarifyQuestion[] };
+
+export interface ClarifyQuestion {
+  question: string;
+  options: string[]; // 4 AI-generated options
+}
 
 // ─── System prompt ──────────────────────────────────────
 
@@ -86,10 +91,17 @@ For CLARIFY (need more info before creating issue):
 {
   "intent": "clarify",
   "questions": [
-    "Specific question 1 based on repo context?",
-    "Specific question 2 with options when possible?"
+    {
+      "question": "Which page is slow?",
+      "options": ["Dashboard", "Settings page", "Landing page", "API routes"]
+    },
+    {
+      "question": "When does it happen?",
+      "options": ["On initial load", "After clicking something", "After login", "Randomly"]
+    }
   ]
 }
+IMPORTANT: Each question MUST have exactly 4 options. Options should be short, specific, and relevant to the repo context. The user can also type a custom answer or skip, so options should cover the most likely answers.
 
 For CREATE:
 {
@@ -271,9 +283,23 @@ export async function classifyAndGenerate(input: AiInput): Promise<AiAction> {
   const intent = parsed.intent as string;
 
   if (intent === "clarify") {
-    const questions = Array.isArray(parsed.questions)
-      ? parsed.questions.map((q) => String(q))
-      : ["Could you provide more details about what you'd like?"];
+    const rawQuestions = Array.isArray(parsed.questions) ? parsed.questions : [];
+    const questions: ClarifyQuestion[] = rawQuestions.map((q: unknown) => {
+      if (q && typeof q === "object" && "question" in q) {
+        const qObj = q as Record<string, unknown>;
+        return {
+          question: String(qObj.question ?? ""),
+          options: Array.isArray(qObj.options)
+            ? qObj.options.map(String).slice(0, 4)
+            : [],
+        };
+      }
+      // Fallback for plain string questions (backward compat)
+      return { question: String(q), options: [] };
+    });
+    if (questions.length === 0) {
+      questions.push({ question: "Could you provide more details?", options: [] });
+    }
     return { intent: "clarify", questions };
   }
 
