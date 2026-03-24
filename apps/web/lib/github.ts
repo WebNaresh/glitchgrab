@@ -151,7 +151,7 @@ export async function fetchRecentIssues(
   accessToken: string,
   owner: string,
   repo: string
-): Promise<{ number: number; title: string; state: string }[]> {
+): Promise<{ number: number; title: string; state: string; body: string }[]> {
   // Fetch both open and recent issues for better dedup context
   const url = `${GITHUB_API}/repos/${owner}/${repo}/issues?state=all&per_page=20&sort=updated`;
   const response = await fetch(url, {
@@ -159,10 +159,16 @@ export async function fetchRecentIssues(
     headers: headers(accessToken),
   });
   if (!response.ok) return [];
-  const data = (await response.json()) as { number: number; title: string; state: string; pull_request?: unknown }[];
+  const data = (await response.json()) as { number: number; title: string; state: string; body: string | null; pull_request?: unknown }[];
   return data
     .filter((i) => !i.pull_request)
-    .map((i) => ({ number: i.number, title: i.title, state: i.state }));
+    .map((i) => ({
+      number: i.number,
+      title: i.title,
+      state: i.state,
+      // Truncate body to ~500 chars to keep token usage reasonable
+      body: (i.body ?? "").slice(0, 500),
+    }));
 }
 
 // ─── Upload Screenshot ─────────────────────────────────
