@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { ImagePlus, Send, X, Loader2, GitFork, RotateCcw, ChevronDown, Check } from "lucide-react";
+import { ImagePlus, Send, X, Loader2, GitFork, RotateCcw, ChevronDown, Check, MessageSquarePlus } from "lucide-react";
 import { toast } from "sonner";
 
 interface Repo {
@@ -19,8 +19,8 @@ interface Message {
   id: string;
   role: "user" | "assistant";
   content: string;
-  screenshot?: string;
-  screenshotFile?: File;
+  screenshots?: string[];
+  screenshotFiles?: File[];
   issueUrl?: string;
   failed?: boolean;
 }
@@ -35,8 +35,8 @@ export function BugChat({
   const [selectedRepoName, setSelectedRepoName] = useState(repos[0]?.fullName ?? "");
   const selectedRepo = repos.find((r) => r.fullName === selectedRepoName)?.id ?? "";
   const [input, setInput] = useState("");
-  const [screenshot, setScreenshot] = useState<string | null>(null);
-  const [screenshotFile, setScreenshotFile] = useState<File | null>(null);
+  const [screenshots, setScreenshots] = useState<string[]>([]);
+  const [screenshotFiles, setScreenshotFiles] = useState<File[]>([]);
   const [repoPickerOpen, setRepoPickerOpen] = useState(false);
   const [repoSearch, setRepoSearch] = useState("");
   const [messages, setMessages] = useState<Message[]>([
@@ -50,48 +50,84 @@ export function BugChat({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (!file.type.startsWith("image/")) {
-      toast.error("Please upload an image file");
+  function addFiles(files: FileList | File[]) {
+    const newFiles: File[] = [];
+    const newPreviews: string[] = [];
+
+    for (const file of Array.from(files)) {
+      if (!file.type.startsWith("image/")) continue;
+      newFiles.push(file);
+    }
+
+    if (newFiles.length === 0) {
+      toast.error("Please upload image files");
       return;
     }
-    setScreenshotFile(file);
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      setScreenshot(ev.target?.result as string);
-    };
-    reader.readAsDataURL(file);
+
+    let loaded = 0;
+    for (const file of newFiles) {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        newPreviews.push(ev.target?.result as string);
+        loaded++;
+        if (loaded === newFiles.length) {
+          setScreenshots((prev) => [...prev, ...newPreviews]);
+          setScreenshotFiles((prev) => [...prev, ...newFiles]);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    addFiles(files);
   }
 
   function handlePaste(e: React.ClipboardEvent) {
     const items = e.clipboardData?.items;
     if (!items) return;
+    const imageFiles: File[] = [];
     for (let i = 0; i < items.length; i++) {
       if (items[i].type.startsWith("image/")) {
         e.preventDefault();
         const file = items[i].getAsFile();
-        if (!file) return;
-        setScreenshotFile(file);
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-          setScreenshot(ev.target?.result as string);
-        };
-        reader.readAsDataURL(file);
-        toast.success("Screenshot pasted");
-        return;
+        if (file) imageFiles.push(file);
       }
+    }
+    if (imageFiles.length > 0) {
+      addFiles(imageFiles);
+      toast.success(`Screenshot${imageFiles.length > 1 ? "s" : ""} pasted`);
     }
   }
 
-  function removeScreenshot() {
-    setScreenshot(null);
-    setScreenshotFile(null);
+  function removeScreenshot(index: number) {
+    setScreenshots((prev) => prev.filter((_, i) => i !== index));
+    setScreenshotFiles((prev) => prev.filter((_, i) => i !== index));
     if (fileInputRef.current) fileInputRef.current.value = "";
   }
 
-  async function sendReport(description: string, file?: File) {
+  function removeAllScreenshots() {
+    setScreenshots([]);
+    setScreenshotFiles([]);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  }
+
+  function handleNewChat() {
+    setMessages([
+      {
+        id: "welcome",
+        role: "assistant",
+        content: `Hey ${userName}! Describe a bug, paste a screenshot, or both — I'll create a GitHub issue for you.`,
+      },
+    ]);
+    setInput("");
+    removeAllScreenshots();
+    setSending(false);
+  }
+
+  async function sendReport(description: string, files?: File[]) {
     setSending(true);
 
     const thinkingMsg: Message = {
@@ -105,8 +141,9 @@ export function BugChat({
       const formData = new FormData();
       formData.append("repoId", selectedRepo);
       formData.append("description", description);
-      if (file) {
-        formData.append("screenshot", file);
+      if (files && files.length > 0) {
+        // Send first screenshot as main (API currently supports one)
+        formData.append("screenshot", files[0]);
       }
 
       // Send last 5 chat messages for context (exclude thinking messages)
@@ -180,7 +217,7 @@ export function BugChat({
   }
 
   async function handleSend() {
-    if (!input.trim() && !screenshot) return;
+    if (!input.trim() && screenshots.length === 0) return;
     if (!selectedRepo) {
       toast.error("Select a repo first");
       return;
@@ -190,17 +227,17 @@ export function BugChat({
       id: Date.now().toString(),
       role: "user",
       content: input.trim(),
-      screenshot: screenshot ?? undefined,
-      screenshotFile: screenshotFile ?? undefined,
+      screenshots: screenshots.length > 0 ? [...screenshots] : undefined,
+      screenshotFiles: screenshotFiles.length > 0 ? [...screenshotFiles] : undefined,
     };
 
     setMessages((prev) => [...prev, userMsg]);
     const desc = input.trim();
-    const file = screenshotFile ?? undefined;
+    const files = screenshotFiles.length > 0 ? [...screenshotFiles] : undefined;
     setInput("");
-    removeScreenshot();
+    removeAllScreenshots();
 
-    await sendReport(desc, file);
+    await sendReport(desc, files);
   }
 
   async function handleRetry() {
@@ -211,7 +248,7 @@ export function BugChat({
     // Remove the failed assistant message
     setMessages((prev) => prev.filter((m) => !m.failed));
 
-    await sendReport(lastUserMsg.content, lastUserMsg.screenshotFile);
+    await sendReport(lastUserMsg.content, lastUserMsg.screenshotFiles);
   }
 
   function handleKeyDown(e: React.KeyboardEvent) {
@@ -221,8 +258,10 @@ export function BugChat({
     }
   }
 
+  const hasConversation = messages.length > 1;
+
   return (
-    <div className="flex flex-col h-full max-h-[calc(100dvh-60px)] md:max-h-[calc(100dvh-0px)]">
+    <div className="flex flex-col h-full max-h-[calc(100dvh-100px)] md:max-h-[calc(100dvh-0px)]">
       {/* Messages */}
       <div className="flex-1 overflow-y-auto space-y-4 pb-4">
         {messages.map((msg) => (
@@ -244,15 +283,23 @@ export function BugChat({
                 </div>
               ) : (
                 <>
-                  <p className="whitespace-pre-wrap">{msg.content}</p>
-                  {msg.screenshot && (
-                    <Image
-                      src={msg.screenshot}
-                      alt="Screenshot"
-                      width={300}
-                      height={200}
-                      className="mt-2 rounded-lg border border-border"
-                    />
+                  {msg.content && <p className="whitespace-pre-wrap">{msg.content}</p>}
+                  {msg.screenshots && msg.screenshots.length > 0 && (
+                    <div className={`mt-2 flex flex-wrap gap-2 ${msg.screenshots.length === 1 ? "" : "grid grid-cols-2"}`}>
+                      {msg.screenshots.map((src, i) => {
+                        const isSingle = msg.screenshots?.length === 1;
+                        return (
+                          <Image
+                            key={i}
+                            src={src}
+                            alt={`Screenshot ${i + 1}`}
+                            width={isSingle ? 300 : 150}
+                            height={isSingle ? 200 : 100}
+                            className="rounded-lg border border-border object-cover"
+                          />
+                        );
+                      })}
+                    </div>
                   )}
                   {msg.issueUrl && (
                     <a
@@ -286,29 +333,33 @@ export function BugChat({
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Screenshot preview */}
-      {screenshot && (
-        <div className="relative inline-block mb-2">
-          <Image
-            src={screenshot}
-            alt="Attached screenshot"
-            width={120}
-            height={80}
-            className="rounded-lg border border-border"
-          />
-          <button
-            onClick={removeScreenshot}
-            className="absolute -top-2 -right-2 rounded-full bg-destructive text-destructive-foreground p-0.5"
-          >
-            <X className="h-3 w-3" />
-          </button>
+      {/* Screenshot previews */}
+      {screenshots.length > 0 && (
+        <div className="flex gap-2 flex-wrap mb-2">
+          {screenshots.map((src, i) => (
+            <div key={i} className="relative inline-block">
+              <Image
+                src={src}
+                alt={`Attached screenshot ${i + 1}`}
+                width={80}
+                height={56}
+                className="rounded-lg border border-border object-cover bg-transparent"
+              />
+              <button
+                onClick={() => removeScreenshot(i)}
+                className="absolute -top-1.5 -right-1.5 rounded-full bg-destructive text-destructive-foreground p-0.5"
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </div>
+          ))}
         </div>
       )}
 
       {/* Input */}
       <div className="shrink-0 rounded-xl border border-border bg-card p-2 sm:p-3">
           {/* Repo selector row */}
-          <div className="mb-1.5 pb-1.5 border-b border-border">
+          <div className="mb-1.5 pb-1.5 border-b border-border flex items-center justify-between">
             <Popover open={repoPickerOpen} onOpenChange={(open) => { setRepoPickerOpen(open); if (!open) setRepoSearch(""); }}>
               <PopoverTrigger className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition px-1 py-0.5 rounded">
                 <GitFork className="h-3.5 w-3.5 shrink-0" />
@@ -351,6 +402,16 @@ export function BugChat({
                 </div>
               </PopoverContent>
             </Popover>
+            {hasConversation && (
+              <button
+                onClick={handleNewChat}
+                className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition px-1.5 py-0.5 rounded hover:bg-muted"
+                title="New chat"
+              >
+                <MessageSquarePlus className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">New chat</span>
+              </button>
+            )}
           </div>
           {/* Input row */}
           <div className="flex items-end gap-2">
@@ -358,6 +419,7 @@ export function BugChat({
               ref={fileInputRef}
               type="file"
               accept="image/*"
+              multiple
               onChange={handleFileSelect}
               className="hidden"
             />
@@ -383,7 +445,7 @@ export function BugChat({
             <Button
               size="icon"
               onClick={handleSend}
-              disabled={sending || (!input.trim() && !screenshot)}
+              disabled={sending || (!input.trim() && screenshots.length === 0)}
               className="shrink-0"
             >
               {sending ? (
