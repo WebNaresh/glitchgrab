@@ -30,9 +30,9 @@ export async function PATCH(
       );
     }
 
-    await prisma.collaborator.update({
+    // Delete the collaborator and their repo access entirely
+    await prisma.collaborator.delete({
       where: { id },
-      data: { status: "REVOKED" },
     });
 
     return NextResponse.json({ success: true });
