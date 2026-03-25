@@ -13,38 +13,44 @@ export default async function DashboardPage() {
   const session = await auth();
   const collabSession = await getCollabSession();
 
-  let repos: { id: string; fullName: string; owner: string; name: string }[];
-  let userName: string;
+  const userName = session?.user?.name?.split(" ")[0]
+    ?? collabSession?.email.split("@")[0]
+    ?? "there";
 
-  if (session?.user?.id) {
-    // Owner: show their own repos
-    repos = await prisma.repo.findMany({
-      where: { userId: session.user.id },
-      select: { id: true, fullName: true, owner: true, name: true },
-      orderBy: { createdAt: "desc" },
-    });
-    userName = session.user.name?.split(" ")[0] ?? "there";
-  } else if (collabSession) {
-    // Collaborator: show shared repos from owner
-    const collabRepos = await prisma.collaboratorRepo.findMany({
-      where: {
-        collaborator: {
-          id: collabSession.collaboratorId,
-          status: "ACCEPTED",
+  // Fetch own repos (if logged in via GitHub)
+  const ownRepos = session?.user?.id
+    ? await prisma.repo.findMany({
+        where: { userId: session.user.id },
+        select: { id: true, fullName: true, owner: true, name: true },
+        orderBy: { createdAt: "desc" },
+      })
+    : [];
+
+  // Fetch shared repos (if has collab session)
+  const sharedRepos = collabSession
+    ? await prisma.collaboratorRepo.findMany({
+        where: {
+          collaborator: {
+            id: collabSession.collaboratorId,
+            status: "ACCEPTED",
+          },
         },
-      },
-      include: {
-        repo: { select: { id: true, fullName: true, owner: true, name: true } },
-      },
-    });
-    repos = collabRepos.map((cr) => cr.repo);
-    userName = collabSession.email.split("@")[0];
-  } else {
-    repos = [];
-    userName = "there";
-  }
+        include: {
+          repo: { select: { id: true, fullName: true, owner: true, name: true } },
+        },
+      })
+    : [];
 
-  if (repos.length === 0) {
+  // Merge both, deduplicate by repo id
+  const seenIds = new Set(ownRepos.map((r) => r.id));
+  const mergedRepos = [
+    ...ownRepos,
+    ...sharedRepos
+      .map((cr) => cr.repo)
+      .filter((r) => !seenIds.has(r.id)),
+  ];
+
+  if (mergedRepos.length === 0) {
     return (
       <div className="flex flex-1 items-center justify-center">
         <Card className="border-dashed max-w-sm w-full">
@@ -52,11 +58,11 @@ export default async function DashboardPage() {
             <GitFork className="h-12 w-12 text-muted-foreground mb-4" />
             <h3 className="text-lg font-semibold mb-2">No repos connected</h3>
             <p className="text-sm text-muted-foreground mb-4">
-              {collabSession
+              {collabSession && !session?.user?.id
                 ? "No repositories have been shared with you yet."
                 : "Connect a GitHub repo to start reporting bugs."}
             </p>
-            {!collabSession && (
+            {session?.user?.id && (
               <Link href="/dashboard/repos">
                 <Button>Connect a Repo</Button>
               </Link>
@@ -67,5 +73,5 @@ export default async function DashboardPage() {
     );
   }
 
-  return <BugChat repos={repos} userName={userName} />;
+  return <BugChat repos={mergedRepos} userName={userName} />;
 }
