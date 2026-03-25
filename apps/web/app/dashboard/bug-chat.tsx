@@ -3,13 +3,31 @@
 import { useState, useRef, memo } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { ImagePlus, Send, X, Loader2, GitFork, RotateCcw, ChevronDown, Check, MessageSquarePlus } from "lucide-react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  ImagePlus,
+  Send,
+  X,
+  Loader2,
+  GitFork,
+  RotateCcw,
+  ChevronDown,
+  Check,
+  MessageSquarePlus,
+} from "lucide-react";
 import { toast } from "sonner";
 import { InteractiveQuestions } from "@/components/dashboard/interactive-questions";
 
 /** Compress an image file client-side to stay under Vercel's 4.5MB payload limit */
-async function compressImage(file: File, maxWidth = 1024, quality = 0.7): Promise<File> {
+async function compressImage(
+  file: File,
+  maxWidth = 1024,
+  quality = 0.7,
+): Promise<File> {
   if (file.size <= 500_000) return file; // skip if already small
 
   const bitmap = await createImageBitmap(file);
@@ -24,7 +42,9 @@ async function compressImage(file: File, maxWidth = 1024, quality = 0.7): Promis
   bitmap.close();
 
   const blob = await canvas.convertToBlob({ type: "image/jpeg", quality });
-  return new File([blob], file.name.replace(/\.\w+$/, ".jpg"), { type: "image/jpeg" });
+  return new File([blob], file.name.replace(/\.\w+$/, ".jpg"), {
+    type: "image/jpeg",
+  });
 }
 
 /* ── Memoized message bubble to prevent re-rendering all messages on state change ── */
@@ -38,11 +58,16 @@ const MessageBubble = memo(function MessageBubble({
   msg: Message;
   sending: boolean;
   onRetry: () => void;
-  onClarifyComplete: (msgId: string, answers: { question: string; answer: string }[]) => void;
+  onClarifyComplete: (
+    msgId: string,
+    answers: { question: string; answer: string }[],
+  ) => void;
   onClarifyDismiss: (msgId: string) => void;
 }) {
   return (
-    <div className={`flex flex-col ${msg.role === "user" ? "items-end" : "items-start"}`}>
+    <div
+      className={`flex flex-col ${msg.role === "user" ? "items-end" : "items-start"}`}
+    >
       <div
         className={`max-w-[85%] sm:max-w-[70%] rounded-2xl px-4 py-3 text-sm ${
           msg.role === "user"
@@ -57,9 +82,13 @@ const MessageBubble = memo(function MessageBubble({
           </div>
         ) : (
           <>
-            {msg.content && <p className="whitespace-pre-wrap">{msg.content}</p>}
+            {msg.content && (
+              <p className="whitespace-pre-wrap">{msg.content}</p>
+            )}
             {msg.screenshots && msg.screenshots.length > 0 && (
-              <div className={`mt-2 flex flex-wrap gap-2 ${msg.screenshots.length === 1 ? "" : "grid grid-cols-2"}`}>
+              <div
+                className={`mt-2 flex flex-wrap gap-2 ${msg.screenshots.length === 1 ? "" : "grid grid-cols-2"}`}
+              >
                 {msg.screenshots.map((src, i) => (
                   /* eslint-disable-next-line @next/next/no-img-element */
                   <img
@@ -74,14 +103,25 @@ const MessageBubble = memo(function MessageBubble({
               </div>
             )}
             {msg.issueUrl && (
-              <a href={msg.issueUrl} target="_blank" rel="noopener noreferrer" className="inline-block mt-2">
+              <a
+                href={msg.issueUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block mt-2"
+              >
                 <Badge variant="outline" className="gap-1 hover:bg-primary/10">
                   View on GitHub →
                 </Badge>
               </a>
             )}
             {msg.failed && (
-              <Button variant="outline" size="sm" className="mt-2 gap-1.5 text-xs" onClick={onRetry} disabled={sending}>
+              <Button
+                variant="outline"
+                size="sm"
+                className="mt-2 gap-1.5 text-xs"
+                onClick={onRetry}
+                disabled={sending}
+              >
                 <RotateCcw className="h-3 w-3" />
                 Retry
               </Button>
@@ -132,8 +172,11 @@ export function BugChat({
   repos: Repo[];
   userName: string;
 }) {
-  const [selectedRepoName, setSelectedRepoName] = useState(repos[0]?.fullName ?? "");
-  const selectedRepo = repos.find((r) => r.fullName === selectedRepoName)?.id ?? "";
+  const [selectedRepoName, setSelectedRepoName] = useState(
+    repos[0]?.fullName ?? "",
+  );
+  const selectedRepo =
+    repos.find((r) => r.fullName === selectedRepoName)?.id ?? "";
   const [input, setInput] = useState("");
   const [screenshots, setScreenshots] = useState<string[]>([]);
   const [screenshotFiles, setScreenshotFiles] = useState<File[]>([]);
@@ -171,8 +214,8 @@ export function BugChat({
             reader.onload = (ev) => resolve(ev.target?.result as string);
             reader.onerror = reject;
             reader.readAsDataURL(file);
-          })
-      )
+          }),
+      ),
     )
       .then((previews) => {
         setScreenshots((prev) => [...prev, ...previews]);
@@ -252,7 +295,11 @@ export function BugChat({
       if (allFiles.length === 0) {
         for (let i = messages.length - 1; i >= 0; i--) {
           const m = messages[i];
-          if (m.role === "user" && m.screenshotFiles && m.screenshotFiles.length > 0) {
+          if (
+            m.role === "user" &&
+            m.screenshotFiles &&
+            m.screenshotFiles.length > 0
+          ) {
             allFiles.push(...m.screenshotFiles);
             break;
           }
@@ -303,12 +350,17 @@ export function BugChat({
       // Extract clarify questions if present
       let clarifyQuestions: ClarifyQuestion[] | undefined;
       if (data.data?.intent === "clarify") {
-        if (Array.isArray(data.data?.clarifyQuestions) && data.data.clarifyQuestions.length > 0) {
+        if (
+          Array.isArray(data.data?.clarifyQuestions) &&
+          data.data.clarifyQuestions.length > 0
+        ) {
           // Structured format from API
           clarifyQuestions = data.data.clarifyQuestions;
         } else if (content) {
           // Fallback: parse numbered questions from the text message
-          const lines = content.split("\n").filter((l: string) => /^\d+\.\s/.test(l.trim()));
+          const lines = content
+            .split("\n")
+            .filter((l: string) => /^\d+\.\s/.test(l.trim()));
           if (lines.length > 0) {
             clarifyQuestions = lines.map((line: string) => ({
               question: line.replace(/^\d+\.\s*/, "").trim(),
@@ -318,7 +370,9 @@ export function BugChat({
         }
       }
 
-      const isTerminalAction = data.success && ["create", "update", "close", "merge"].includes(data.data?.intent);
+      const isTerminalAction =
+        data.success &&
+        ["create", "update", "close", "merge"].includes(data.data?.intent);
 
       // Single state update instead of two — prevents double re-render
       setMessages((prev) => {
@@ -336,7 +390,7 @@ export function BugChat({
         // Clear screenshotFiles from all messages after terminal actions
         if (isTerminalAction) {
           updated = updated.map((m) =>
-            m.screenshotFiles ? { ...m, screenshotFiles: undefined } : m
+            m.screenshotFiles ? { ...m, screenshotFiles: undefined } : m,
           );
         }
 
@@ -359,12 +413,15 @@ export function BugChat({
             role: "assistant",
             content: "Something went wrong. Please try again.",
             failed: true,
-          })
+          }),
       );
     }
 
     setSending(false);
-    setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
+    setTimeout(
+      () => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }),
+      100,
+    );
   }
 
   // Test mode: detect "ask me questions" and show sample interactive questions locally
@@ -386,7 +443,12 @@ export function BugChat({
       clarifyQuestions: [
         {
           question: "What type of bug are you reporting?",
-          options: ["UI/Visual issue", "Crash/Error", "Performance", "Feature not working"],
+          options: [
+            "UI/Visual issue",
+            "Crash/Error",
+            "Performance",
+            "Feature not working",
+          ],
         },
         {
           question: "Which part of the app is affected?",
@@ -394,7 +456,12 @@ export function BugChat({
         },
         {
           question: "How severe is this issue?",
-          options: ["Blocks my work", "Annoying but usable", "Minor cosmetic", "Just a suggestion"],
+          options: [
+            "Blocks my work",
+            "Annoying but usable",
+            "Minor cosmetic",
+            "Just a suggestion",
+          ],
         },
       ],
     };
@@ -420,7 +487,8 @@ export function BugChat({
       role: "user",
       content: input.trim(),
       screenshots: screenshots.length > 0 ? [...screenshots] : undefined,
-      screenshotFiles: screenshotFiles.length > 0 ? [...screenshotFiles] : undefined,
+      screenshotFiles:
+        screenshotFiles.length > 0 ? [...screenshotFiles] : undefined,
     };
 
     setMessages((prev) => [...prev, userMsg]);
@@ -445,13 +513,13 @@ export function BugChat({
 
   async function handleClarifyComplete(
     msgId: string,
-    answers: { question: string; answer: string }[]
+    answers: { question: string; answer: string }[],
   ) {
     // Clear the interactive questions from the message
     setMessages((prev) =>
       prev.map((m) =>
-        m.id === msgId ? { ...m, clarifyQuestions: undefined } : m
-      )
+        m.id === msgId ? { ...m, clarifyQuestions: undefined } : m,
+      ),
     );
 
     // Compile answers into a user message
@@ -473,8 +541,8 @@ export function BugChat({
     // Just remove the interactive card — no API call, no issue creation
     setMessages((prev) =>
       prev.map((m) =>
-        m.id === msgId ? { ...m, clarifyQuestions: undefined } : m
-      )
+        m.id === msgId ? { ...m, clarifyQuestions: undefined } : m,
+      ),
     );
   }
 
@@ -530,103 +598,117 @@ export function BugChat({
 
       {/* Input */}
       <div className="shrink-0 rounded-xl border border-border bg-card p-2 sm:p-3">
-          {/* Repo selector row */}
-          <div className="mb-1.5 pb-1.5 border-b border-border flex items-center justify-between">
-            <Popover open={repoPickerOpen} onOpenChange={(open) => { setRepoPickerOpen(open); if (!open) setRepoSearch(""); }}>
-              <PopoverTrigger className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition px-1 py-0.5 rounded">
-                <GitFork className="h-3.5 w-3.5 shrink-0" />
-                <span className="truncate max-w-50">{selectedRepoName || "Select repo"}</span>
-                <ChevronDown className="h-3 w-3 shrink-0" />
-              </PopoverTrigger>
-              <PopoverContent align="start" side="top" className="w-72 p-0">
-                <div className="p-2 border-b border-border">
-                  <input
-                    type="text"
-                    value={repoSearch}
-                    onChange={(e) => setRepoSearch(e.target.value)}
-                    placeholder="Search repos..."
-                    className="w-full bg-transparent text-base outline-none placeholder:text-muted-foreground"
-                  />
-                </div>
-                <div className="max-h-48 overflow-y-auto p-1">
-                  {repos
-                    .filter((r) => r.fullName.toLowerCase().includes(repoSearch.toLowerCase()))
-                    .map((repo) => (
-                      <button
-                        key={repo.id}
-                        type="button"
-                        onClick={() => {
-                          setSelectedRepoName(repo.fullName);
-                          setRepoPickerOpen(false);
-                          setRepoSearch("");
-                        }}
-                        className="flex items-center justify-between w-full rounded-md px-2 py-1.5 text-base hover:bg-muted transition"
-                      >
-                        <span className="truncate">{repo.fullName}</span>
-                        {selectedRepoName === repo.fullName && (
-                          <Check className="h-3.5 w-3.5 text-primary shrink-0" />
-                        )}
-                      </button>
-                    ))}
-                  {repos.filter((r) => r.fullName.toLowerCase().includes(repoSearch.toLowerCase())).length === 0 && (
-                    <p className="text-xs text-muted-foreground text-center py-3">No repos found</p>
-                  )}
-                </div>
-              </PopoverContent>
-            </Popover>
-            {hasConversation && (
-              <button
-                onClick={handleNewChat}
-                className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition px-1.5 py-0.5 rounded hover:bg-muted"
-                title="New chat"
-              >
-                <MessageSquarePlus className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">New chat</span>
-              </button>
+        {/* Repo selector row */}
+        <div className="mb-1.5 pb-1.5 border-b border-border flex items-center justify-between">
+          <Popover
+            open={repoPickerOpen}
+            onOpenChange={(open) => {
+              setRepoPickerOpen(open);
+              if (!open) setRepoSearch("");
+            }}
+          >
+            <PopoverTrigger className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition px-1 py-0.5 rounded">
+              <GitFork className="h-3.5 w-3.5 shrink-0" />
+              <span className="truncate max-w-50">
+                {selectedRepoName || "Select repo"}
+              </span>
+              <ChevronDown className="h-3 w-3 shrink-0" />
+            </PopoverTrigger>
+            <PopoverContent align="start" side="top" className="w-72 p-0">
+              <div className="p-2 border-b border-border">
+                <input
+                  type="text"
+                  value={repoSearch}
+                  onChange={(e) => setRepoSearch(e.target.value)}
+                  placeholder="Search repos..."
+                  className="w-full bg-transparent text-base outline-none placeholder:text-muted-foreground"
+                />
+              </div>
+              <div className="max-h-48 overflow-y-auto p-1">
+                {repos
+                  .filter((r) =>
+                    r.fullName.toLowerCase().includes(repoSearch.toLowerCase()),
+                  )
+                  .map((repo) => (
+                    <button
+                      key={repo.id}
+                      type="button"
+                      onClick={() => {
+                        setSelectedRepoName(repo.fullName);
+                        setRepoPickerOpen(false);
+                        setRepoSearch("");
+                      }}
+                      className="flex items-center justify-between w-full rounded-md px-2 py-1.5 text-base hover:bg-muted transition"
+                    >
+                      <span className="truncate">{repo.fullName}</span>
+                      {selectedRepoName === repo.fullName && (
+                        <Check className="h-3.5 w-3.5 text-primary shrink-0" />
+                      )}
+                    </button>
+                  ))}
+                {repos.filter((r) =>
+                  r.fullName.toLowerCase().includes(repoSearch.toLowerCase()),
+                ).length === 0 && (
+                  <p className="text-xs text-muted-foreground text-center py-3">
+                    No repos found
+                  </p>
+                )}
+              </div>
+            </PopoverContent>
+          </Popover>
+          {hasConversation && (
+            <button
+              onClick={handleNewChat}
+              className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition px-1.5 py-0.5 rounded hover:bg-muted"
+              title="New chat"
+            >
+              <MessageSquarePlus className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">New chat</span>
+            </button>
+          )}
+        </div>
+        {/* Input row */}
+        <div className="flex items-end gap-2">
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={handleFileSelect}
+            className="hidden"
+          />
+          <Button
+            variant="ghost"
+            size="icon"
+            className="shrink-0"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={sending}
+          >
+            <ImagePlus className="h-5 w-5" />
+          </Button>
+          <textarea
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            onPaste={handlePaste}
+            placeholder="Describe a 3 bug..."
+            rows={1}
+            className="flex-1 resize-none bg-transparent border-0 outline-none text-base placeholder:text-muted-foreground min-h-9 max-h-30 py-2"
+            disabled={sending}
+          />
+          <Button
+            size="icon"
+            onClick={handleSend}
+            disabled={sending || (!input.trim() && screenshots.length === 0)}
+            className="shrink-0"
+          >
+            {sending ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Send className="h-4 w-4" />
             )}
-          </div>
-          {/* Input row */}
-          <div className="flex items-end gap-2">
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              multiple
-              onChange={handleFileSelect}
-              className="hidden"
-            />
-            <Button
-              variant="ghost"
-              size="icon"
-              className="shrink-0"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={sending}
-            >
-              <ImagePlus className="h-5 w-5" />
-            </Button>
-            <textarea
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              onPaste={handlePaste}
-              placeholder="Describe a bug..."
-              rows={1}
-              className="flex-1 resize-none bg-transparent border-0 outline-none text-base placeholder:text-muted-foreground min-h-9 max-h-30 py-2"
-              disabled={sending}
-            />
-            <Button
-              size="icon"
-              onClick={handleSend}
-              disabled={sending || (!input.trim() && screenshots.length === 0)}
-              className="shrink-0"
-            >
-              {sending ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Send className="h-4 w-4" />
-              )}
-            </Button>
-          </div>
+          </Button>
+        </div>
       </div>
     </div>
   );
