@@ -88,9 +88,7 @@ export default async function CollaboratorsPage() {
                     )}
                   </p>
                 </div>
-                {collab.status !== "REVOKED" && (
-                  <RevokeButton collaboratorId={collab.id} email={collab.email} />
-                )}
+                <RevokeButton collaboratorId={collab.id} email={collab.email} />
               </CardContent>
             </Card>
           ))}
