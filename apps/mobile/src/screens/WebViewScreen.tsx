@@ -22,6 +22,7 @@ const PRIMARY = "#22d3ee";
 
 interface WebViewScreenProps {
   sessionToken: string;
+  overrideUrl?: string;
   onLogout: () => void;
   sharedImageUri?: string | null;
   onSharedImageHandled?: () => void;
@@ -30,6 +31,7 @@ interface WebViewScreenProps {
 
 export default function WebViewScreen({
   sessionToken,
+  overrideUrl,
   onLogout,
   sharedImageUri,
   onSharedImageHandled,
@@ -145,8 +147,8 @@ export default function WebViewScreen({
         }
       }
 
-      // Mark dashboard as loaded once
-      if (navState.url.includes("/dashboard") && !navState.loading) {
+      // Mark dashboard or collaborate page as loaded once
+      if ((navState.url.includes("/dashboard") || navState.url.includes("/collaborate")) && !navState.loading) {
         hasLoadedOnce.current = true;
         loginRedirectCount.current = 0;
       }
@@ -173,8 +175,9 @@ export default function WebViewScreen({
 
   // Load the session endpoint which sets the cookie via Set-Cookie header
   // and returns HTML that JS-redirects to /dashboard
-  const webViewUrl = `${BASE_URL}/api/auth/mobile/session?token=${encodeURIComponent(sessionToken)}`;
-  console.info("[WebView] loading URL:", BASE_URL + "/api/auth/mobile/session?token=<redacted>");
+  // Or use overrideUrl for collaborator mode
+  const webViewUrl = overrideUrl || `${BASE_URL}/api/auth/mobile/session?token=${encodeURIComponent(sessionToken)}`;
+  console.info("[WebView] loading URL:", overrideUrl ? "<collaborate-url>" : BASE_URL + "/api/auth/mobile/session?token=<redacted>");
 
   // Runs BEFORE page content loads — sets viewport
   const injectedBeforeLoad = `
