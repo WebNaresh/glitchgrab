@@ -2,8 +2,11 @@ import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { BottomNav } from "@/components/dashboard/bottom-nav";
+import { getCollabSession } from "@/lib/collab-auth";
 // TODO: Re-enable PaywallGuard once Razorpay International is activated
 // import { PaywallGuard } from "@/components/dashboard/paywall-guard";
+
+export type UserType = "owner" | "collaborator";
 
 export default async function DashboardLayout({
   children,
@@ -11,24 +14,34 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   const session = await auth();
-  if (!session?.user) redirect("/login");
+  const collabSession = await getCollabSession();
 
-  const user = {
-    name: session.user.name,
-    email: session.user.email,
-    image: session.user.image,
-  };
+  if (!session?.user && !collabSession) redirect("/login");
+
+  const userType: UserType = session?.user ? "owner" : "collaborator";
+
+  const user = session?.user
+    ? {
+        name: session.user.name,
+        email: session.user.email,
+        image: session.user.image,
+      }
+    : {
+        name: collabSession?.email.split("@")[0] ?? null,
+        email: collabSession?.email ?? null,
+        image: null as string | null,
+      };
 
   return (
     <div className="flex h-(--app-height,100vh) bg-background transition-[height] duration-100">
-      <Sidebar user={user} />
+      <Sidebar user={user} userType={userType} />
       <div className="flex flex-1 flex-col overflow-hidden">
         <main className="flex-1 overflow-y-auto p-4 pb-20 md:p-6 md:pb-6">
           {/* TODO: Re-enable once Razorpay International is activated */}
           {/* <PaywallGuard>{children}</PaywallGuard> */}
           {children}
         </main>
-        <BottomNav user={user} />
+        <BottomNav user={user} userType={userType} />
       </div>
     </div>
   );
