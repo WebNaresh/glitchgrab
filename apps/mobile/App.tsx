@@ -146,7 +146,7 @@ export default function App() {
             <ActivityIndicator
               size="small"
               color={PRIMARY}
-              style={{ marginTop: 16 }}
+              style={styles.loadingIndicator}
             />
           </View>
         </SafeAreaView>
@@ -205,5 +205,8 @@ const styles = StyleSheet.create({
     width: 96,
     height: 96,
     borderRadius: 24,
+  },
+  loadingIndicator: {
+    marginTop: 16,
   },
 });
