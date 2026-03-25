@@ -15,6 +15,9 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "dev.glitchgrab.app",
+      "associatedDomains": [
+        "applinks:glitchgrab.dev"
+      ],
       "infoPlist": {
         "NSAppTransportSecurity": {
           "NSAllowsLocalNetworking": true,
@@ -41,6 +44,21 @@
           "data": [
             {
               "mimeType": "image/*"
+            }
+          ]
+        },
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "category": [
+            "DEFAULT",
+            "BROWSABLE"
+          ],
+          "data": [
+            {
+              "scheme": "https",
+              "host": "glitchgrab.dev",
+              "pathPrefix": "/collaborate"
             }
           ]
         }
