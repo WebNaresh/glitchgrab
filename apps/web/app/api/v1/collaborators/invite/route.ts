@@ -50,7 +50,7 @@ export async function POST(request: Request) {
       },
     });
 
-    if (existing && existing.status !== "REVOKED") {
+    if (existing) {
       return NextResponse.json(
         { success: false, error: "This email has already been invited" },
         { status: 409 }
@@ -62,42 +62,18 @@ export async function POST(request: Request) {
     const tokenHash = hashToken(rawToken);
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
 
-    if (existing && existing.status === "REVOKED") {
-      // Re-invite: update existing record
-      await prisma.collaborator.update({
-        where: { id: existing.id },
-        data: {
-          tokenHash,
-          status: "PENDING",
-          expiresAt,
-          lastActiveAt: null,
+    // Create new collaborator
+    await prisma.collaborator.create({
+      data: {
+        email,
+        invitedById: session.user.id,
+        tokenHash,
+        expiresAt,
+        repos: {
+          create: repoIds.map((repoId) => ({ repoId })),
         },
-      });
-
-      // Remove old repo access and add new
-      await prisma.collaboratorRepo.deleteMany({
-        where: { collaboratorId: existing.id },
-      });
-      await prisma.collaboratorRepo.createMany({
-        data: repoIds.map((repoId) => ({
-          collaboratorId: existing.id,
-          repoId,
-        })),
-      });
-    } else {
-      // Create new collaborator
-      await prisma.collaborator.create({
-        data: {
-          email,
-          invitedById: session.user.id,
-          tokenHash,
-          expiresAt,
-          repos: {
-            create: repoIds.map((repoId) => ({ repoId })),
-          },
-        },
-      });
-    }
+      },
+    });
 
     // Build magic link
     const baseUrl = process.env.NEXTAUTH_URL || "https://glitchgrab.dev";
