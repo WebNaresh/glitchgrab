@@ -206,10 +206,11 @@ export async function uploadScreenshotToRepo(
     }
 
     const data = (await response.json()) as {
-      content: { download_url: string };
+      content: { sha: string; path: string };
     };
 
-    return data.content.download_url;
+    // Use the permanent blob URL — download_url has a temp token that expires
+    return `https://github.com/${owner}/${repo}/blob/main/${data.content.path}?raw=true`;
   } catch (error) {
     console.error("Screenshot upload failed:", error);
     return null;
