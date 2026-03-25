@@ -147,7 +147,15 @@ export async function processReport(
           issueBody += `\n\n## Screenshot${refs.length > 1 ? "s" : ""}\n\n${refs.join("\n\n")}`;
         }
       }
-      issueBody += "\n\n---\n*Reported via [Glitchgrab](https://glitchgrab.dev)*";
+      // Add collaborator attribution if applicable
+      const collabEmail = report.metadata && typeof report.metadata === "object"
+        ? (report.metadata as Record<string, unknown>).collaboratorEmail
+        : null;
+      if (collabEmail) {
+        issueBody += `\n\n---\n> Reported by: ${collabEmail}\n\n*Reported via [Glitchgrab](https://glitchgrab.dev)*`;
+      } else {
+        issueBody += "\n\n---\n*Reported via [Glitchgrab](https://glitchgrab.dev)*";
+      }
 
       const createdIssue = await createGitHubIssue(account.access_token, {
         owner: report.repo.owner,

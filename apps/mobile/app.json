@@ -43,6 +43,21 @@
               "mimeType": "image/*"
             }
           ]
+        },
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "category": [
+            "DEFAULT",
+            "BROWSABLE"
+          ],
+          "data": [
+            {
+              "scheme": "https",
+              "host": "glitchgrab.dev",
+              "pathPrefix": "/collaborate"
+            }
+          ]
         }
       ]
     },

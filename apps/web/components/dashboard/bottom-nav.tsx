@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
-import { LayoutDashboard, GitFork, User, Menu, Key, CreditCard, Settings, LogOut } from "lucide-react";
+import { LayoutDashboard, GitFork, User, Menu, Key, CreditCard, Settings, LogOut, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -12,11 +12,12 @@ import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/s
 import { useState } from "react";
 
 const SHEET_NAV_ITEMS = [
-  { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
-  { href: "/dashboard/repos", label: "Repos", icon: GitFork },
-  { href: "/dashboard/tokens", label: "API Tokens", icon: Key },
-  { href: "/dashboard/billing", label: "Billing", icon: CreditCard },
-  { href: "/dashboard/settings", label: "Settings", icon: Settings },
+  { href: "/dashboard", label: "Overview", icon: LayoutDashboard, ownerOnly: false },
+  { href: "/dashboard/repos", label: "Repos", icon: GitFork, ownerOnly: false },
+  { href: "/dashboard/tokens", label: "API Tokens", icon: Key, ownerOnly: true },
+  { href: "/dashboard/collaborators", label: "Collaborators", icon: Users, ownerOnly: true },
+  { href: "/dashboard/billing", label: "Billing", icon: CreditCard, ownerOnly: true },
+  { href: "/dashboard/settings", label: "Settings", icon: Settings, ownerOnly: true },
 ];
 
 interface BottomNavProps {
@@ -25,17 +26,23 @@ interface BottomNavProps {
     email?: string | null;
     image?: string | null;
   };
+  userType?: "owner" | "collaborator";
 }
 
-export function BottomNav({ user }: BottomNavProps) {
+export function BottomNav({ user, userType = "owner" }: BottomNavProps) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
-  const bottomItems = [
-    { href: "/dashboard", label: "Home", icon: LayoutDashboard },
-    { href: "/dashboard/repos", label: "Repos", icon: GitFork },
-    { href: "/dashboard/settings", label: "Profile", icon: User },
-  ];
+  const bottomItems = userType === "owner"
+    ? [
+        { href: "/dashboard", label: "Home", icon: LayoutDashboard },
+        { href: "/dashboard/repos", label: "Repos", icon: GitFork },
+        { href: "/dashboard/settings", label: "Profile", icon: User },
+      ]
+    : [
+        { href: "/dashboard", label: "Home", icon: LayoutDashboard },
+        { href: "/dashboard/repos", label: "Repos", icon: GitFork },
+      ];
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-card md:hidden">
@@ -74,7 +81,7 @@ export function BottomNav({ user }: BottomNavProps) {
             </div>
 
             <nav className="flex-1 px-3 py-4 space-y-1">
-              {SHEET_NAV_ITEMS.map((item) => {
+              {SHEET_NAV_ITEMS.filter((item) => !item.ownerOnly || userType === "owner").map((item) => {
                 const isActive =
                   item.href === "/dashboard"
                     ? pathname === "/dashboard"
