@@ -4,12 +4,15 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { processReport } from "@/lib/pipeline";
+import { getCollabSession } from "@/lib/collab-auth";
 import sharp from "sharp";
 
 export async function POST(request: Request) {
   try {
     const session = await auth();
-    if (!session?.user?.id) {
+    const collabSession = await getCollabSession();
+
+    if (!session?.user?.id && !collabSession) {
       return NextResponse.json(
         { success: false, error: "Unauthorized" },
         { status: 401 }
@@ -36,10 +39,30 @@ export async function POST(request: Request) {
       );
     }
 
-    // Verify repo belongs to user
-    const repo = await prisma.repo.findFirst({
-      where: { id: repoId, userId: session.user.id },
-    });
+    // Verify repo access
+    let repo;
+    let collaboratorEmail: string | null = null;
+
+    if (session?.user?.id) {
+      // Owner: repo must belong to them
+      repo = await prisma.repo.findFirst({
+        where: { id: repoId, userId: session.user.id },
+      });
+    } else if (collabSession) {
+      // Collaborator: repo must be shared with them
+      const collabRepo = await prisma.collaboratorRepo.findFirst({
+        where: {
+          repoId,
+          collaborator: {
+            id: collabSession.collaboratorId,
+            status: "ACCEPTED",
+          },
+        },
+        include: { repo: true },
+      });
+      repo = collabRepo?.repo ?? null;
+      collaboratorEmail = collabSession.email;
+    }
 
     if (!repo) {
       return NextResponse.json(
@@ -65,16 +88,26 @@ export async function POST(request: Request) {
     // Store all as JSON array in report.metadata for multi-screenshot support
     const primaryScreenshot = screenshotDataUrls[0] ?? null;
 
+    // Build metadata
+    const metadata: Record<string, unknown> = {};
+    if (screenshotDataUrls.length > 1) {
+      metadata.extraScreenshots = screenshotDataUrls.slice(1);
+    }
+    if (collaboratorEmail) {
+      metadata.collaboratorEmail = collaboratorEmail;
+    }
+
     // Create the report
     const report = await prisma.report.create({
       data: {
         repoId: repo.id,
-        source: "DASHBOARD_UPLOAD",
+        collaboratorId: collabSession?.collaboratorId ?? null,
+        source: collaboratorEmail ? "COLLABORATOR" : "DASHBOARD_UPLOAD",
         status: "PENDING",
         rawInput: description || null,
         screenshot: primaryScreenshot,
-        metadata: screenshotDataUrls.length > 1
-          ? { extraScreenshots: screenshotDataUrls.slice(1) }
+        metadata: Object.keys(metadata).length > 0
+          ? JSON.parse(JSON.stringify(metadata))
           : undefined,
       },
     });
