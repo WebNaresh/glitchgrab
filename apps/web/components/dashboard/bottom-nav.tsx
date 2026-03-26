@@ -5,6 +5,7 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { LayoutDashboard, GitFork, Menu, Key, CreditCard, Settings, LogOut, Users } from "lucide-react";
+import { ReportButton } from "glitchgrab";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -99,6 +100,9 @@ export function BottomNav({ user, userType = "owner", planBadge = "none", trialD
             <span>Profile</span>
           </Link>
         )}
+
+        {/* Report Bug — renders the SDK floating button */}
+        <ReportButton position="top-right" />
 
         {/* Menu button */}
         <Sheet open={open} onOpenChange={setOpen}>

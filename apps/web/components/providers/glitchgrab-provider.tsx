@@ -1,6 +1,6 @@
 "use client";
 
-import { GlitchgrabProvider, ReportButton } from "glitchgrab";
+import { GlitchgrabProvider } from "glitchgrab";
 
 export function GlitchgrabSDKProvider({
   children,
@@ -10,7 +10,6 @@ export function GlitchgrabSDKProvider({
   return (
     <GlitchgrabProvider token={process.env.NEXT_PUBLIC_GLITCHGRAB_TOKEN ?? ""}>
       {children}
-      <ReportButton />
     </GlitchgrabProvider>
   );
 }
