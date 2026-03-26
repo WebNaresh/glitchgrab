@@ -30,7 +30,5 @@
     "apps/*",
     "packages/*"
   ],
-  "dependencies": {
-    "html2canvas-pro": "^2.0.2"
-  }
+  "dependencies": {}
 }
