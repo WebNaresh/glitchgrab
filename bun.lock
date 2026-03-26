@@ -4,6 +4,9 @@
   "workspaces": {
     "": {
       "name": "glitchgrab",
+      "dependencies": {
+        "html2canvas": "^1.4.1",
+      },
       "devDependencies": {
         "@dotenvx/dotenvx": "^1.57.1",
         "@types/node": "^25.5.0",
