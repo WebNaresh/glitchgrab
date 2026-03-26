@@ -139,6 +139,7 @@ export default function WebViewScreen({
       lastNavKey.current = navKey;
 
       setCanGoBack(navState.canGoBack);
+      console.log("[WebView] nav:", navState.url, navState.loading ? "(loading)" : "(done)");
 
       // Detect if the WebView navigated to the login page (session expired)
       // Skip during initial load to avoid false logout from redirect chains
@@ -329,10 +330,14 @@ export default function WebViewScreen({
           onShouldStartLoadWithRequest={handleShouldStartLoad}
           onLoadEnd={handleLoadEnd}
           onMessage={handleMessage}
-          onError={() => { setLoading(false); setError(true); }}
+          onLoadStart={(e) => console.log("[WebView] loadStart:", e.nativeEvent.url)}
+          onLoadProgress={(e) => console.log("[WebView] progress:", Math.round(e.nativeEvent.progress * 100) + "%")}
+          onError={(e) => { console.error("[WebView] error:", e.nativeEvent.description); setLoading(false); setError(true); }}
           onHttpError={(syntheticEvent) => {
+            console.error("[WebView] httpError:", syntheticEvent.nativeEvent.statusCode, syntheticEvent.nativeEvent.url);
             if (syntheticEvent.nativeEvent.statusCode >= 500) setError(true);
           }}
+          onRenderProcessGone={(e) => console.error("[WebView] renderProcessGone:", e.nativeEvent.didCrash ? "CRASHED" : "killed")}
           androidLayerType="none"
           injectedJavaScriptBeforeContentLoaded={injectedBeforeLoad}
           injectedJavaScript={injectedAfterLoad}
