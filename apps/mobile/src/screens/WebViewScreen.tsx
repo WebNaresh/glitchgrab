@@ -66,7 +66,9 @@ export default function WebViewScreen({
   }, [sharedImageUri, loading]);
 
   // Inject the image after dashboard loads
-  const handleLoadEnd = useCallback(() => {
+  const handleLoadEnd = useCallback((e: { nativeEvent: { url: string } }) => {
+    // Keep loading overlay until the actual page loads (skip the session redirect page)
+    if (e.nativeEvent.url.includes("/api/auth/mobile/session")) return;
     setLoading(false);
 
     if (!pendingImageRef.current || !webViewRef.current) return;
