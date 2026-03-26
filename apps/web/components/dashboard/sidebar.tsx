@@ -5,7 +5,7 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { LayoutDashboard, GitFork, Key, Settings, LogOut, CreditCard, Users } from "lucide-react";
-import { ReportButton } from "glitchgrab";
+import { ReportBugButton } from "@/components/dashboard/report-bug-button";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -67,7 +67,7 @@ export function Sidebar({ user, userType = "owner", planBadge = "none", trialDay
       </nav>
 
       <div className="px-3 pb-2">
-        <ReportButton position="top-right" />
+        <ReportBugButton variant="sidebar" />
       </div>
 
       <div className="border-t border-border px-4 py-4">
