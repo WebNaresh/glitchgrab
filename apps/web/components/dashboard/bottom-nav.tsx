@@ -81,16 +81,16 @@ export function BottomNav({ user, userType = "owner", planBadge = "none", trialD
             )}
           >
             <div className="relative">
-              <Avatar className="h-5 w-5">
+              <Avatar className="h-6 w-6">
                 <AvatarImage src={user.image ?? undefined} alt={user.name ?? "User"} />
                 <AvatarFallback className="text-[8px]">{user.name?.charAt(0) ?? "U"}</AvatarFallback>
               </Avatar>
               {planBadge !== "none" && (
                 <span className={cn(
-                  "absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full border border-card",
-                  planBadge === "premium" && "bg-amber-500",
-                  planBadge === "byok" && "bg-emerald-500",
-                  planBadge === "trial" && "bg-blue-500",
+                  "absolute -top-1.5 -right-1.5 h-3 w-3 rounded-full border-2 border-card",
+                  planBadge === "premium" && "bg-yellow-400",
+                  planBadge === "byok" && "bg-green-400",
+                  planBadge === "trial" && "bg-cyan-400",
                 )} />
               )}
             </div>
