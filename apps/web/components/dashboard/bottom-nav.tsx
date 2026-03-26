@@ -10,6 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { useState } from "react";
+import { PlanBadge, type PlanBadgeType } from "@/components/dashboard/plan-badge";
 
 const SHEET_NAV_ITEMS = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard, ownerOnly: false },
@@ -27,9 +28,11 @@ interface BottomNavProps {
     image?: string | null;
   };
   userType?: "owner" | "collaborator";
+  planBadge?: PlanBadgeType;
+  trialDaysLeft?: number;
 }
 
-export function BottomNav({ user, userType = "owner" }: BottomNavProps) {
+export function BottomNav({ user, userType = "owner", planBadge = "none", trialDaysLeft = 0 }: BottomNavProps) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
@@ -112,7 +115,10 @@ export function BottomNav({ user, userType = "owner" }: BottomNavProps) {
                   <AvatarFallback>{user.name?.charAt(0) ?? "U"}</AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium truncate">{user.name}</p>
+                  <div className="flex items-center gap-1.5">
+                    <p className="text-sm font-medium truncate">{user.name}</p>
+                    <PlanBadge type={planBadge} daysLeft={trialDaysLeft} />
+                  </div>
                   <p className="text-xs text-muted-foreground truncate">{user.email}</p>
                 </div>
               </div>
