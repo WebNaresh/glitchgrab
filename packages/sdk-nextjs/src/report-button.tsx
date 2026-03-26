@@ -57,15 +57,18 @@ export function ReportButton({
     }
   };
 
-  const positionStyles: CSSProperties =
-    position === "bottom-left"
-      ? { left: "16px", bottom: "16px" }
-      : { right: "16px", bottom: "16px" };
+  const isTop = position?.startsWith("top") ?? false;
+  const isLeft = position?.endsWith("left") ?? false;
 
-  const modalPositionStyles: CSSProperties =
-    position === "bottom-left"
-      ? { left: "16px", bottom: "64px" }
-      : { right: "16px", bottom: "64px" };
+  const positionStyles: CSSProperties = {
+    ...(isLeft ? { left: "16px" } : { right: "16px" }),
+    ...(isTop ? { top: "16px" } : { bottom: "16px" }),
+  };
+
+  const modalPositionStyles: CSSProperties = {
+    ...(isLeft ? { left: "16px" } : { right: "16px" }),
+    ...(isTop ? { top: "64px" } : { bottom: "64px" }),
+  };
 
   return (
     <>
