@@ -107,6 +107,9 @@ export async function POST(request: Request) {
         status: "PENDING",
         rawInput: description || null,
         screenshot: primaryScreenshot,
+        reporterPrimaryKey: session?.user?.id ?? collabSession?.collaboratorId ?? "unknown",
+        reporterName: session?.user?.name ?? collaboratorEmail ?? "Unknown",
+        reporterEmail: session?.user?.email ?? collaboratorEmail ?? null,
         metadata: Object.keys(metadata).length > 0
           ? JSON.parse(JSON.stringify(metadata))
           : undefined,

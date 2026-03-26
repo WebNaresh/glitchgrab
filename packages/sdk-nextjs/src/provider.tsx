@@ -54,6 +54,7 @@ export function useGlitchgrab(): UseGlitchgrabReturn {
 
 function GlitchgrabProviderInner({
   token,
+  session,
   baseUrl,
   onError,
   onReportSent,
@@ -117,10 +118,11 @@ function GlitchgrabProviderInner({
     }
   }, []);
 
-  // Unhandled errors and rejections
+  // Unhandled errors and rejections — skip in development
   useEffect(() => {
     try {
       if (typeof window === "undefined") return;
+      if (process.env.NODE_ENV === "development") return;
 
       const handleError = (event: ErrorEvent) => {
         try {
@@ -141,6 +143,9 @@ function GlitchgrabProviderInner({
               filename: event.filename ?? "",
               lineno: String(event.lineno ?? ""),
               colno: String(event.colno ?? ""),
+              ...(session?.userId ? { sessionUserId: session.userId } : {}),
+              ...(session?.name ? { sessionUserName: String(session.name) } : {}),
+              ...(session?.email ? { sessionUserEmail: String(session.email) } : {}),
             },
           };
           sendReport(payload, baseUrl).then((result) => {
@@ -170,6 +175,9 @@ function GlitchgrabProviderInner({
               timestamp: context.timestamp,
               visitedPages: JSON.stringify(context.visitedPages),
               type: "unhandledrejection",
+              ...(session?.userId ? { sessionUserId: session.userId } : {}),
+              ...(session?.name ? { sessionUserName: String(session.name) } : {}),
+              ...(session?.email ? { sessionUserEmail: String(session.email) } : {}),
             },
           };
           sendReport(payload, baseUrl).then((result) => {
@@ -213,6 +221,10 @@ function GlitchgrabProviderInner({
           metadata: {
             timestamp: context.timestamp,
             visitedPages: JSON.stringify(context.visitedPages),
+            ...(session?.userId ? { sessionUserId: session.userId } : {}),
+            ...(session?.name ? { sessionUserName: String(session.name) } : {}),
+            ...(session?.email ? { sessionUserEmail: String(session.email) } : {}),
+            ...(session?.phone ? { sessionUserPhone: String(session.phone) } : {}),
             ...metadata,
           },
         };

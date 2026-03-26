@@ -4,6 +4,9 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { hashToken } from "@/lib/tokens";
 import { processReport } from "@/lib/pipeline";
+import { createGitHubIssue } from "@/lib/github";
+import { uploadScreenshotToS3 } from "@/lib/s3";
+import { dispatchWebhook } from "@/lib/webhooks";
 import { checkRateLimit } from "@/lib/rate-limit";
 
 interface SdkReportBody {
@@ -115,23 +118,145 @@ export async function POST(request: Request) {
         pageUrl: body.pageUrl || null,
         userAgent: body.userAgent || null,
         metadata: JSON.parse(JSON.stringify(enrichedMetadata)),
+        reporterPrimaryKey: body.metadata?.sessionUserId || "unknown",
+        reporterName: body.metadata?.sessionUserName || "Unknown",
+        reporterEmail: body.metadata?.sessionUserEmail || null,
+        reporterPhone: body.metadata?.sessionUserPhone || null,
       },
     });
 
-    // 6. Process with AI pipeline (non-blocking for auto-capture)
+    // 6. SDK_USER_REPORT — create GitHub issue directly (no AI)
     if (body.source === "SDK_USER_REPORT") {
-      // User reports — wait for result
-      const result = await processReport(report.id);
+      const account = await prisma.account.findFirst({
+        where: { userId: apiToken.repo.userId, provider: "github" },
+      });
+
+      if (!account?.access_token) {
+        return NextResponse.json(
+          { success: false, error: "GitHub access token not found" },
+          { status: 500, headers: rateLimitHeaders }
+        );
+      }
+
+      const title = body.description
+        ? body.description.slice(0, 80) + (body.description.length > 80 ? "..." : "")
+        : body.errorMessage
+          ? body.errorMessage.slice(0, 80)
+          : "Bug report via SDK";
+
+      let issueBody = "";
+      if (body.description) issueBody += `## Description\n\n${body.description}\n\n`;
+      if (body.errorMessage) issueBody += `## Error\n\n\`${body.errorMessage}\`\n\n`;
+      if (body.errorStack) issueBody += `## Stack Trace\n\n\`\`\`\n${body.errorStack}\n\`\`\`\n\n`;
+
+      // Environment info
+      const envLines: string[] = [];
+      if (body.pageUrl) envLines.push(`**Page:** ${body.pageUrl}`);
+      if (body.userAgent) envLines.push(`**User Agent:** ${body.userAgent}`);
+      if (body.deviceInfo) {
+        const d = body.deviceInfo;
+        if (d.screenWidth && d.screenHeight) envLines.push(`**Screen:** ${d.screenWidth}x${d.screenHeight}`);
+        if (d.viewportWidth && d.viewportHeight) envLines.push(`**Viewport:** ${d.viewportWidth}x${d.viewportHeight}`);
+        if (d.platform) envLines.push(`**Platform:** ${d.platform}`);
+        if (d.language) envLines.push(`**Language:** ${d.language}`);
+        if (d.colorScheme) envLines.push(`**Color Scheme:** ${d.colorScheme}`);
+      }
+      if (envLines.length > 0) issueBody += `## Environment\n\n${envLines.join("\n")}\n\n`;
+
+      // Page navigation history
+      const visitedPages = body.metadata?.visitedPages;
+      if (visitedPages) {
+        try {
+          const pages: string[] = JSON.parse(visitedPages);
+          if (pages.length > 0) {
+            issueBody += `## Page History\n\n${pages.map((p, i) => `${i + 1}. ${p}`).join("\n")}\n\n`;
+          }
+        } catch {
+          // invalid JSON, skip
+        }
+      }
+
+      // Breadcrumbs (user actions before report)
+      if (body.breadcrumbs && body.breadcrumbs.length > 0) {
+        const crumbs = body.breadcrumbs.slice(-15).map((b) => {
+          const time = new Date(b.timestamp).toLocaleTimeString("en-US", { hour12: false });
+          return `| ${time} | ${b.type} | ${b.message} |`;
+        });
+        issueBody += `## Activity Log\n\n| Time | Type | Event |\n|------|------|-------|\n${crumbs.join("\n")}\n\n`;
+      }
+
+      // Upload screenshot to S3
+      const screenshotData = body.metadata?.screenshot;
+      if (screenshotData && typeof screenshotData === "string" && screenshotData.startsWith("data:image/")) {
+        const screenshotUrl = await uploadScreenshotToS3(screenshotData, report.id);
+        if (screenshotUrl) {
+          issueBody += `\n\n## Screenshot\n\n![Screenshot](${screenshotUrl})`;
+        }
+      }
+
+      // Reported by (session info from host app)
+      const sessionUserId = body.metadata?.sessionUserId;
+      const sessionUserName = body.metadata?.sessionUserName;
+      const sessionUserEmail = body.metadata?.sessionUserEmail;
+      const sessionUserPhone = body.metadata?.sessionUserPhone;
+      const reporterParts: string[] = [];
+      if (sessionUserName) reporterParts.push(sessionUserName);
+      if (sessionUserEmail) reporterParts.push(`(${sessionUserEmail})`);
+      if (sessionUserPhone) reporterParts.push(`📞 ${sessionUserPhone}`);
+      if (sessionUserId) reporterParts.push(`• ID: \`${sessionUserId}\``);
+
+      if (reporterParts.length > 0) {
+        issueBody += `\n\n---\n> **Reported by:** ${reporterParts.join(" ")}`;
+        issueBody += "\n\n*Reported via [Glitchgrab](https://glitchgrab.dev) SDK*";
+      } else {
+        issueBody += "\n\n---\n*Reported via [Glitchgrab](https://glitchgrab.dev) SDK*";
+      }
+
+      const createdIssue = await createGitHubIssue(account.access_token, {
+        owner: apiToken.repo.owner,
+        repo: apiToken.repo.name,
+        title,
+        body: issueBody,
+        labels: ["bug"],
+      });
+
+      // Save Issue record
+      await prisma.issue.create({
+        data: {
+          reportId: report.id,
+          repoId: apiToken.repoId,
+          githubNumber: createdIssue.number,
+          githubUrl: createdIssue.url,
+          title,
+          body: issueBody,
+          labels: ["bug"],
+          severity: "medium",
+        },
+      });
+
+      await prisma.report.update({
+        where: { id: report.id },
+        data: { status: "CREATED" },
+      });
+
+      dispatchWebhook(apiToken.repo.userId, "issue.created", {
+        issueUrl: createdIssue.url,
+        issueNumber: createdIssue.number,
+        title,
+        labels: ["bug"],
+        severity: "medium",
+        repo: apiToken.repo.fullName,
+      });
+
       return NextResponse.json(
         {
-          success: result.success,
+          success: true,
           data: {
             reportId: report.id,
-            intent: result.intent,
-            issueUrl: result.issueUrl,
-            issueNumber: result.issueNumber,
-            title: result.title,
-            message: result.message,
+            intent: "create",
+            issueUrl: createdIssue.url,
+            issueNumber: createdIssue.number,
+            title,
           },
         },
         { headers: rateLimitHeaders }

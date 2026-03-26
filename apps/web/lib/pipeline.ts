@@ -2,7 +2,6 @@ import { prisma } from "@/lib/db";
 import { classifyAndGenerate } from "@/lib/ai";
 import {
   createGitHubIssue,
-  uploadScreenshotToRepo,
   updateIssueBody,
   closeIssue,
   fetchRecentIssues,
@@ -10,6 +9,7 @@ import {
   fetchRepoReadme,
   fetchRepoDescription,
 } from "@/lib/github";
+import { uploadScreenshotToS3 } from "@/lib/s3";
 import { dispatchWebhook } from "@/lib/webhooks";
 
 // ─── Types ──────────────────────────────────────────────
@@ -46,18 +46,15 @@ function getAllScreenshots(report: { screenshot: string | null; metadata: unknow
   return urls;
 }
 
-/** Upload all screenshots and return markdown image references */
+/** Upload all screenshots to S3 and return markdown image references */
 async function uploadAllScreenshots(
-  accessToken: string,
-  owner: string,
-  repoName: string,
   screenshots: string[],
   reportId: string
 ): Promise<string[]> {
   const refs: string[] = [];
   for (let i = 0; i < screenshots.length; i++) {
-    const url = await uploadScreenshotToRepo(
-      accessToken, owner, repoName, screenshots[i],
+    const url = await uploadScreenshotToS3(
+      screenshots[i],
       `${reportId}${i > 0 ? `-${i + 1}` : ""}`
     );
     if (url) {
@@ -140,7 +137,6 @@ export async function processReport(
       const screenshots = getAllScreenshots(report);
       if (screenshots.length > 0) {
         const refs = await uploadAllScreenshots(
-          account.access_token, report.repo.owner, report.repo.name,
           screenshots, report.id
         );
         if (refs.length > 0) {
@@ -208,7 +204,6 @@ export async function processReport(
       const updateScreenshots = getAllScreenshots(report);
       if (updateScreenshots.length > 0) {
         const refs = await uploadAllScreenshots(
-          account.access_token, report.repo.owner, report.repo.name,
           updateScreenshots, report.id
         );
         if (refs.length > 0) {
@@ -253,7 +248,6 @@ export async function processReport(
       const closeScreenshots = getAllScreenshots(report);
       if (closeScreenshots.length > 0) {
         const refs = await uploadAllScreenshots(
-          account.access_token, report.repo.owner, report.repo.name,
           closeScreenshots, report.id
         );
         if (refs.length > 0) {
@@ -321,7 +315,6 @@ export async function processReport(
       const mergeScreenshots = getAllScreenshots(report);
       if (mergeScreenshots.length > 0) {
         const refs = await uploadAllScreenshots(
-          account.access_token, report.repo.owner, report.repo.name,
           mergeScreenshots, report.id
         );
         for (const ref of refs) {
