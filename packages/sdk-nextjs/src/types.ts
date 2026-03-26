@@ -99,7 +99,7 @@ export interface GlitchgrabProviderProps {
 }
 
 export interface ReportButtonProps {
-  position?: "bottom-right" | "bottom-left";
+  position?: "bottom-right" | "bottom-left" | "top-right" | "top-left";
   label?: string;
   className?: string;
   /** Allow reporting feature requests, questions, not just bugs */

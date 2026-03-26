@@ -8,6 +8,11 @@ const nextConfig: NextConfig = {
     ],
   },
   serverExternalPackages: ["@prisma/client", ".prisma/client"],
+  turbopack: {
+    resolveAlias: {
+      glitchgrab: "./../../packages/sdk-nextjs/dist/index.mjs",
+    },
+  },
 };
 
 export default nextConfig;
