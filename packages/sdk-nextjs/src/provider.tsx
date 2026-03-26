@@ -263,8 +263,17 @@ function GlitchgrabProviderInner({
 }
 
 export function GlitchgrabProvider(props: GlitchgrabProviderProps) {
+  // No token = passthrough (SDK disabled)
+  if (!props.token) return <>{props.children}</>;
+
+  // Auto-detect baseUrl from window.location if not provided
+  const resolvedProps = {
+    ...props,
+    baseUrl: props.baseUrl || (typeof window !== "undefined" ? window.location.origin : DEFAULT_BASE_URL),
+  };
+
   try {
-    return <GlitchgrabProviderInner {...props} />;
+    return <GlitchgrabProviderInner {...resolvedProps} />;
   } catch {
     return <>{props.children}</>;
   }
