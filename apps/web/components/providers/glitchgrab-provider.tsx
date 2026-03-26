@@ -1,35 +1,36 @@
 "use client";
 
 import { useState, useEffect, type ReactNode } from "react";
+import type { GlitchgrabProviderProps, ReportButtonProps } from "glitchgrab";
 
 const GLITCHGRAB_TOKEN = process.env.NEXT_PUBLIC_GLITCHGRAB_TOKEN ?? "";
+
+type SDKModule = {
+  GlitchgrabProvider: React.ComponentType<GlitchgrabProviderProps>;
+  ReportButton: React.ComponentType<ReportButtonProps>;
+};
 
 export function GlitchgrabSDKProvider({
   children,
 }: {
   children: ReactNode;
 }) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [SDK, setSDK] = useState<{ Provider: any; Button: any } | null>(null);
+  const [sdk, setSdk] = useState<SDKModule | null>(null);
 
   useEffect(() => {
     if (!GLITCHGRAB_TOKEN) return;
-    import("glitchgrab").then((mod) => {
-      setSDK({ Provider: mod.GlitchgrabProvider, Button: mod.ReportButton });
-    });
+    import("glitchgrab").then(setSdk);
   }, []);
 
-  if (!GLITCHGRAB_TOKEN || !SDK) {
-    return <>{children}</>;
-  }
+  if (!GLITCHGRAB_TOKEN || !sdk) return <>{children}</>;
 
   return (
-    <SDK.Provider
+    <sdk.GlitchgrabProvider
       token={GLITCHGRAB_TOKEN}
       baseUrl={typeof window !== "undefined" ? window.location.origin : ""}
     >
       {children}
-      <SDK.Button position="bottom-right" />
-    </SDK.Provider>
+      <sdk.ReportButton position="bottom-right" />
+    </sdk.GlitchgrabProvider>
   );
 }
