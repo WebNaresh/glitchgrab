@@ -141,7 +141,12 @@ export function BottomNav({ user, userType = "owner", planBadge = "none", trialD
                     key={item.href}
                     onClick={() => {
                       setOpen(false);
-                      setTimeout(() => router.push(item.href), 500);
+                      const isWebView = document.documentElement.classList.contains("webview");
+                      if (isWebView) {
+                        window.location.href = item.href;
+                      } else {
+                        router.push(item.href);
+                      }
                     }}
                     className={cn(
                       "flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm transition text-left",
