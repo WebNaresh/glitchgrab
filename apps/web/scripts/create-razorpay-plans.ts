@@ -7,7 +7,6 @@
  * Reads RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET from .env
  * Works for both test (rzp_test_) and live (rzp_live_) keys.
  *
- * Output: Plan IDs to add to your .env as RAZORPAY_PLAN_BYOK and RAZORPAY_PLAN_PLATFORM
  */
 
 import Razorpay from "razorpay";
