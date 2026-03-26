@@ -42,8 +42,8 @@ export default async function ReposPage() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between gap-2">
-        <div>
+      <div className="flex items-center justify-between gap-4 flex-wrap">
+        <div className="min-w-0">
           <h1 className="text-2xl font-bold">Repos</h1>
           <p className="text-sm text-muted-foreground">
             {isOwner
@@ -74,7 +74,7 @@ export default async function ReposPage() {
           {sharedRepos.map((cr) => (
             <Card key={cr.repo.id}>
               <CardHeader>
-                <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center justify-between gap-2 min-w-0">
                   <CardTitle className="text-base truncate min-w-0">{cr.repo.fullName}</CardTitle>
                   <Badge variant="default" className="shrink-0">Shared</Badge>
                 </div>
@@ -91,7 +91,7 @@ export default async function ReposPage() {
           {ownRepos.map((repo) => (
             <Card key={repo.id}>
               <CardHeader>
-                <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center justify-between gap-2 min-w-0">
                   <CardTitle className="text-base truncate min-w-0">{repo.fullName}</CardTitle>
                   <Badge variant={repo.isPrivate ? "secondary" : "outline"} className="shrink-0">
                     {repo.isPrivate ? "Private" : "Public"}
