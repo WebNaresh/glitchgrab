@@ -138,6 +138,9 @@ export default async function ReportsPage() {
       failReason: r.failReason,
       createdAt: r.createdAt.toISOString(),
       repoFullName: r.repo.fullName,
+      reporterPrimaryKey: r.reporterPrimaryKey,
+      reporterName: r.reporterName,
+      reporterEmail: r.reporterEmail,
       issue: r.issue
         ? {
             githubNumber: r.issue.githubNumber,
