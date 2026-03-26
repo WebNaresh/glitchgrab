@@ -31,4 +31,5 @@ export type {
   BreadcrumbType,
   UseGlitchgrabReturn,
   ReportButtonProps,
+  GlitchgrabSession,
 } from "./types";
