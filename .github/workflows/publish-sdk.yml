@@ -23,16 +23,18 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
+      - uses: oven-sh/setup-bun@v2
+
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
           registry-url: "https://registry.npmjs.org"
 
       - name: Install dependencies
-        run: cd packages/sdk-nextjs && npm install --legacy-peer-deps --install-strategy=nested
+        run: bun install
 
       - name: Build SDK
-        run: npx tsup
+        run: bun run build
         working-directory: packages/sdk-nextjs
 
       - name: Verify build output
