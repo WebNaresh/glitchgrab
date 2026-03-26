@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { LayoutDashboard, GitFork, Menu, Key, CreditCard, Settings, LogOut, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -34,6 +34,7 @@ interface BottomNavProps {
 
 export function BottomNav({ user, userType = "owner", planBadge = "none", trialDaysLeft = 0 }: BottomNavProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
 
   const bottomItems = userType === "owner"
@@ -119,13 +120,14 @@ export function BottomNav({ user, userType = "owner", planBadge = "none", trialD
                     ? pathname === "/dashboard"
                     : pathname.startsWith(item.href);
                 return (
-                  <Link
+                  <button
                     key={item.href}
-                    href={item.href}
-                    prefetch
-                    onClick={() => setOpen(false)}
+                    onClick={() => {
+                      setOpen(false);
+                      setTimeout(() => router.push(item.href), 150);
+                    }}
                     className={cn(
-                      "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition",
+                      "flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm transition text-left",
                       isActive
                         ? "bg-primary/10 text-primary font-medium"
                         : "text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -133,7 +135,7 @@ export function BottomNav({ user, userType = "owner", planBadge = "none", trialD
                   >
                     <item.icon className="h-4 w-4" />
                     {item.label}
-                  </Link>
+                  </button>
                 );
               })}
             </nav>
