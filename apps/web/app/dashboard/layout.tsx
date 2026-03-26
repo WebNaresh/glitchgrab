@@ -43,8 +43,7 @@ export default async function DashboardLayout({
       getTrialStatus(session.user.id),
     ]);
 
-    if (plan.isActive && plan.plan === "PRO_PLATFORM") planBadge = "premium";
-    else if (plan.isActive && plan.plan === "PRO_BYOK") planBadge = "byok";
+    if (plan.isActive) planBadge = "premium";
     else if (trial.inTrial) {
       planBadge = "trial";
       trialDaysLeft = trial.daysLeft;

@@ -89,7 +89,6 @@ export function BottomNav({ user, userType = "owner", planBadge = "none", trialD
                 <span className={cn(
                   "absolute -top-1.5 -right-1.5 h-3 w-3 rounded-full border-2 border-card",
                   planBadge === "premium" && "bg-yellow-400",
-                  planBadge === "byok" && "bg-green-400",
                   planBadge === "trial" && "bg-cyan-400",
                 )} />
               )}

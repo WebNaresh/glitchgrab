@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
-import { Crown, Clock, Key } from "lucide-react";
+import { Crown, Clock } from "lucide-react";
 
-export type PlanBadgeType = "premium" | "trial" | "byok" | "none";
+export type PlanBadgeType = "premium" | "trial" | "none";
 
 interface PlanBadgeProps {
   type: PlanBadgeType;
@@ -11,7 +11,7 @@ interface PlanBadgeProps {
 
 const config = {
   premium: {
-    label: "Premium",
+    label: "Pro",
     icon: Crown,
     className: "bg-yellow-400/20 text-yellow-300 border-yellow-400/40",
   },
@@ -19,11 +19,6 @@ const config = {
     label: "Trial",
     icon: Clock,
     className: "bg-cyan-400/20 text-cyan-300 border-cyan-400/40",
-  },
-  byok: {
-    label: "BYOK",
-    icon: Key,
-    className: "bg-green-400/20 text-green-300 border-green-400/40",
   },
 } as const;
 

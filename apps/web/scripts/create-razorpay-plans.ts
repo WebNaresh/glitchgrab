@@ -28,32 +28,20 @@ console.info(`\nUsing ${isTest ? "TEST" : "LIVE"} Razorpay keys\n`);
 const razorpay = new Razorpay({ key_id: keyId, key_secret: keySecret });
 
 const currency = "INR";
-const byokAmount = 9900;      // ₹99/month
-const platformAmount = 19900;  // ₹199/month
+const amount = 19900; // ₹199/month
 
-console.info(`Currency: ${currency}${isTest ? " (test mode — using INR equivalent)" : ""}\n`);
+console.info(`Currency: ${currency}${isTest ? " (test mode)" : ""}\n`);
 
 const PLANS = [
-  {
-    envKey: "RAZORPAY_PLAN_BYOK",
-    period: "monthly" as const,
-    interval: 1,
-    item: {
-      name: "Glitchgrab Pro (BYOK)",
-      amount: byokAmount,
-      currency,
-      description: "Unlimited repos & issues — bring your own AI key",
-    },
-  },
   {
     envKey: "RAZORPAY_PLAN_PLATFORM",
     period: "monthly" as const,
     interval: 1,
     item: {
-      name: "Glitchgrab Pro (Platform AI)",
-      amount: platformAmount,
+      name: "Glitchgrab Pro",
+      amount,
       currency,
-      description: "Unlimited repos, 100 issues/mo — we provide AI",
+      description: "Unlimited repos, 100 issues/mo — AI-powered bug capture",
     },
   },
 ];

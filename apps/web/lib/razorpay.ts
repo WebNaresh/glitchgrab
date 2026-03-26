@@ -15,18 +15,11 @@ export function getRazorpay() {
 }
 
 export const PLANS = {
-  PRO_BYOK: {
-    name: "Pro (BYOK)",
-    amount: 9900, // ₹99
-    currency: "INR" as const,
-    description: "Unlimited repos & issues — bring your own AI key",
-    razorpayPlanId: process.env.RAZORPAY_PLAN_BYOK ?? "",
-  },
   PRO_PLATFORM: {
-    name: "Pro (Platform AI)",
+    name: "Glitchgrab Pro",
     amount: 19900, // ₹199
     currency: "INR" as const,
-    description: "Unlimited repos, 100 issues/mo — we provide AI",
+    description: "Unlimited repos, 100 issues/mo — AI-powered bug capture",
     razorpayPlanId: process.env.RAZORPAY_PLAN_PLATFORM ?? "",
   },
 };
