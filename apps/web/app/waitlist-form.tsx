@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 
 const PRICE_OPTIONS = [
@@ -30,40 +31,29 @@ const TOOL_OPTIONS = [
 
 export function WaitlistForm() {
   const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<"idle" | "loading" | "success" | "survey" | "done" | "error">("idle");
+  const [status, setStatus] = useState<"idle" | "survey" | "done" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
-  const [surveyLoading, setSurveyLoading] = useState(false);
 
   const [priceFeel, setPriceFeel] = useState("");
   const [topFeature, setTopFeature] = useState("");
   const [currentTool, setCurrentTool] = useState("");
   const [suggestion, setSuggestion] = useState("");
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!email) return;
-
-    setStatus("loading");
-    setErrorMsg("");
-
-    try {
-      const { data } = await axios.post("/api/waitlist", { email });
-
-      if (data.success) {
-        setStatus("survey");
-      } else {
-        setStatus("error");
-        setErrorMsg(data.error || "Something went wrong");
-      }
-    } catch {
+  const joinMutation = useMutation({
+    mutationFn: async (emailInput: string) => {
+      const { data } = await axios.post("/api/waitlist", { email: emailInput });
+      if (!data.success) throw new Error(data.error || "Something went wrong");
+      return data;
+    },
+    onSuccess: () => setStatus("survey"),
+    onError: (err) => {
       setStatus("error");
-      setErrorMsg("Network error. Try again.");
-    }
-  }
+      setErrorMsg(err instanceof Error ? err.message : "Network error. Try again.");
+    },
+  });
 
-  async function handleSurvey() {
-    setSurveyLoading(true);
-    try {
+  const surveyMutation = useMutation({
+    mutationFn: async () => {
       await axios.post("/api/waitlist", {
         email,
         priceFeel: priceFeel || null,
@@ -71,11 +61,15 @@ export function WaitlistForm() {
         currentTool: currentTool || null,
         suggestion: suggestion.trim() || null,
       });
-    } catch {
-      // Survey save failed — not critical
-    }
-    setSurveyLoading(false);
-    setStatus("done");
+    },
+    onSettled: () => setStatus("done"),
+  });
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!email) return;
+    setErrorMsg("");
+    joinMutation.mutate(email);
   }
 
   if (status === "done") {
@@ -177,11 +171,11 @@ export function WaitlistForm() {
         <div className="flex gap-3">
           <button
             type="button"
-            onClick={handleSurvey}
-            disabled={surveyLoading}
+            onClick={() => surveyMutation.mutate()}
+            disabled={surveyMutation.isPending}
             className="flex-1 rounded-xl bg-accent px-6 py-3 text-sm font-semibold text-bg transition hover:bg-accent-hover disabled:opacity-50"
           >
-            {surveyLoading ? "Saving..." : "Submit Feedback"}
+            {surveyMutation.isPending ? "Saving..." : "Submit Feedback"}
           </button>
           <button
             type="button"
@@ -207,10 +201,10 @@ export function WaitlistForm() {
       />
       <button
         type="submit"
-        disabled={status === "loading"}
+        disabled={joinMutation.isPending}
         className="rounded-xl bg-accent px-6 py-3 text-sm font-semibold text-bg transition hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
       >
-        {status === "loading" ? "Joining..." : "Join Waitlist"}
+        {joinMutation.isPending ? "Joining..." : "Join Waitlist"}
       </button>
       {status === "error" && (
         <p className="text-red text-xs sm:absolute sm:mt-14">{errorMsg}</p>
