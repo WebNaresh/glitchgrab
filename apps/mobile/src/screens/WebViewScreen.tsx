@@ -230,7 +230,7 @@ export default function WebViewScreen({
 
       // Force 16px on inputs + fix layout for mobile WebView
       var s = document.createElement('style');
-      s.textContent = 'input,textarea,select{font-size:16px!important} html,body{height:calc(var(--app-height,100vh))!important;overflow:hidden}';
+      s.textContent = 'input,textarea,select{font-size:16px!important} body{height:calc(var(--app-height,100vh))!important;overflow:hidden}';
       document.head.appendChild(s);
 
       document.body.style.overscrollBehavior = 'none';
@@ -243,7 +243,7 @@ export default function WebViewScreen({
         _rafId = requestAnimationFrame(function() {
           _rafId = 0;
           var h = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-          document.documentElement.style.setProperty('--app-height', h + 'px');
+          document.body.style.setProperty('--app-height', h + 'px');
         });
       }
       updateAppHeight();
