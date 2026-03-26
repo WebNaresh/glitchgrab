@@ -143,8 +143,42 @@ export async function POST(request: Request) {
       if (body.description) issueBody += `## Description\n\n${body.description}\n\n`;
       if (body.errorMessage) issueBody += `## Error\n\n\`${body.errorMessage}\`\n\n`;
       if (body.errorStack) issueBody += `## Stack Trace\n\n\`\`\`\n${body.errorStack}\n\`\`\`\n\n`;
-      if (body.pageUrl) issueBody += `**Page:** ${body.pageUrl}\n`;
-      if (body.userAgent) issueBody += `**User Agent:** ${body.userAgent}\n`;
+
+      // Environment info
+      const envLines: string[] = [];
+      if (body.pageUrl) envLines.push(`**Page:** ${body.pageUrl}`);
+      if (body.userAgent) envLines.push(`**User Agent:** ${body.userAgent}`);
+      if (body.deviceInfo) {
+        const d = body.deviceInfo;
+        if (d.screenWidth && d.screenHeight) envLines.push(`**Screen:** ${d.screenWidth}x${d.screenHeight}`);
+        if (d.viewportWidth && d.viewportHeight) envLines.push(`**Viewport:** ${d.viewportWidth}x${d.viewportHeight}`);
+        if (d.platform) envLines.push(`**Platform:** ${d.platform}`);
+        if (d.language) envLines.push(`**Language:** ${d.language}`);
+        if (d.colorScheme) envLines.push(`**Color Scheme:** ${d.colorScheme}`);
+      }
+      if (envLines.length > 0) issueBody += `## Environment\n\n${envLines.join("\n")}\n\n`;
+
+      // Page navigation history
+      const visitedPages = body.metadata?.visitedPages;
+      if (visitedPages) {
+        try {
+          const pages: string[] = JSON.parse(visitedPages);
+          if (pages.length > 0) {
+            issueBody += `## Page History\n\n${pages.map((p, i) => `${i + 1}. ${p}`).join("\n")}\n\n`;
+          }
+        } catch {
+          // invalid JSON, skip
+        }
+      }
+
+      // Breadcrumbs (user actions before report)
+      if (body.breadcrumbs && body.breadcrumbs.length > 0) {
+        const crumbs = body.breadcrumbs.slice(-15).map((b) => {
+          const time = new Date(b.timestamp).toLocaleTimeString("en-US", { hour12: false });
+          return `| ${time} | ${b.type} | ${b.message} |`;
+        });
+        issueBody += `## Activity Log\n\n| Time | Type | Event |\n|------|------|-------|\n${crumbs.join("\n")}\n\n`;
+      }
 
       // Upload screenshot if present
       const screenshotData = body.metadata?.screenshot;
