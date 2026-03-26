@@ -228,22 +228,23 @@ export default function WebViewScreen({
       // Force first viewport to our settings
       if (metas[0]) metas[0].content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover';
 
-      // Force 16px on inputs + fix layout for mobile WebView
+      // Force 16px on inputs + fix layout for mobile WebView (all via <style> to avoid hydration mismatch)
       var s = document.createElement('style');
-      s.textContent = 'input,textarea,select{font-size:16px!important} body{height:calc(var(--app-height,100vh))!important;overflow:hidden}';
+      s.id = 'glitchgrab-webview';
+      s.textContent = 'input,textarea,select{font-size:16px!important} body{height:calc(var(--app-height,100vh))!important;overflow:hidden;overscroll-behavior:none}';
       document.head.appendChild(s);
 
-      document.body.style.overscrollBehavior = 'none';
       document.addEventListener('gesturestart', function(e) { e.preventDefault(); });
 
       // Resize layout when Android keyboard opens/closes (debounced to avoid layout thrashing)
       var _rafId = 0;
+      var _styleTag = s;
       function updateAppHeight() {
         if (_rafId) return;
         _rafId = requestAnimationFrame(function() {
           _rafId = 0;
           var h = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-          document.body.style.setProperty('--app-height', h + 'px');
+          _styleTag.textContent = 'input,textarea,select{font-size:16px!important} body{height:' + h + 'px!important;overflow:hidden;overscroll-behavior:none} :root{--app-height:' + h + 'px}';
         });
       }
       updateAppHeight();
