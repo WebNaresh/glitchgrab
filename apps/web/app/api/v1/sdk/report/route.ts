@@ -117,6 +117,10 @@ export async function POST(request: Request) {
         pageUrl: body.pageUrl || null,
         userAgent: body.userAgent || null,
         metadata: JSON.parse(JSON.stringify(enrichedMetadata)),
+        reporterPrimaryKey: body.metadata?.sessionUserId || null,
+        reporterName: body.metadata?.sessionUserName || null,
+        reporterEmail: body.metadata?.sessionUserEmail || null,
+        reporterPhone: body.metadata?.sessionUserPhone || null,
       },
     });
 
@@ -195,7 +199,23 @@ export async function POST(request: Request) {
         }
       }
 
-      issueBody += "\n\n---\n*Reported via [Glitchgrab](https://glitchgrab.dev) SDK*";
+      // Reported by (session info from host app)
+      const sessionUserId = body.metadata?.sessionUserId;
+      const sessionUserName = body.metadata?.sessionUserName;
+      const sessionUserEmail = body.metadata?.sessionUserEmail;
+      const sessionUserPhone = body.metadata?.sessionUserPhone;
+      const reporterParts: string[] = [];
+      if (sessionUserName) reporterParts.push(sessionUserName);
+      if (sessionUserEmail) reporterParts.push(`(${sessionUserEmail})`);
+      if (sessionUserPhone) reporterParts.push(`📞 ${sessionUserPhone}`);
+      if (sessionUserId) reporterParts.push(`• ID: \`${sessionUserId}\``);
+
+      if (reporterParts.length > 0) {
+        issueBody += `\n\n---\n> **Reported by:** ${reporterParts.join(" ")}`;
+        issueBody += "\n\n*Reported via [Glitchgrab](https://glitchgrab.dev) SDK*";
+      } else {
+        issueBody += "\n\n---\n*Reported via [Glitchgrab](https://glitchgrab.dev) SDK*";
+      }
 
       const createdIssue = await createGitHubIssue(account.access_token, {
         owner: apiToken.repo.owner,
