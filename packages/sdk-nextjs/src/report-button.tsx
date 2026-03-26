@@ -13,8 +13,26 @@ export function ReportButton({
   const [description, setDescription] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [screenshot, setScreenshot] = useState<string | null>(null);
   const modalRef = useRef<HTMLDivElement>(null);
   const { reportBug } = useGlitchgrab();
+
+  // Capture screenshot when modal opens
+  useEffect(() => {
+    if (!isOpen) return;
+    setScreenshot(null);
+    import("html2canvas").then((mod) => {
+      const html2canvas = mod.default;
+      html2canvas(document.body, {
+        scale: 0.5,
+        logging: false,
+        useCORS: true,
+        allowTaint: true,
+      }).then((canvas) => {
+        setScreenshot(canvas.toDataURL("image/jpeg", 0.6));
+      }).catch(() => { /* silently fail */ });
+    }).catch(() => { /* html2canvas not available */ });
+  }, [isOpen]);
 
   // Close modal on outside click
   useEffect(() => {
@@ -42,10 +60,11 @@ export function ReportButton({
       if (!description.trim() || isSubmitting) return;
 
       setIsSubmitting(true);
-      reportBug(description.trim());
+      reportBug(description.trim(), screenshot ? { screenshot } : undefined);
 
       setSubmitted(true);
       setDescription("");
+      setScreenshot(null);
       setIsSubmitting(false);
 
       setTimeout(() => {
@@ -200,6 +219,76 @@ export function ReportButton({
               </div>
             ) : (
               <>
+                {/* Screenshot preview */}
+                {screenshot && (
+                  <div style={{ marginBottom: "10px", position: "relative" }}>
+                    <img
+                      src={screenshot}
+                      alt="Page screenshot"
+                      style={{
+                        width: "100%",
+                        borderRadius: "6px",
+                        border: "1px solid #e4e4e7",
+                        maxHeight: "120px",
+                        objectFit: "cover",
+                        objectPosition: "top",
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setScreenshot(null)}
+                      style={{
+                        position: "absolute",
+                        top: "4px",
+                        right: "4px",
+                        background: "rgba(0,0,0,0.6)",
+                        border: "none",
+                        borderRadius: "50%",
+                        color: "#fff",
+                        width: "20px",
+                        height: "20px",
+                        fontSize: "12px",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        lineHeight: 1,
+                      }}
+                      aria-label="Remove screenshot"
+                    >
+                      &times;
+                    </button>
+                    <span
+                      style={{
+                        position: "absolute",
+                        bottom: "4px",
+                        left: "6px",
+                        background: "rgba(0,0,0,0.6)",
+                        color: "#fff",
+                        fontSize: "10px",
+                        padding: "2px 6px",
+                        borderRadius: "4px",
+                      }}
+                    >
+                      Screenshot attached
+                    </span>
+                  </div>
+                )}
+                {!screenshot && isOpen && (
+                  <div
+                    style={{
+                      marginBottom: "10px",
+                      padding: "8px",
+                      borderRadius: "6px",
+                      border: "1px dashed #d4d4d8",
+                      textAlign: "center",
+                      fontSize: "11px",
+                      color: "#a1a1aa",
+                    }}
+                  >
+                    Capturing screenshot...
+                  </div>
+                )}
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
