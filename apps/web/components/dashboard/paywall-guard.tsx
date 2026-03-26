@@ -1,7 +1,6 @@
 import { auth } from "@/lib/auth";
 import { getTrialStatus } from "@/lib/billing";
 import { PaywallBlock } from "./paywall-block";
-import { TrialBanner } from "./trial-banner";
 import { WelcomeTrialDialog } from "./welcome-trial-dialog";
 
 export async function PaywallGuard({ children }: { children: React.ReactNode }) {
