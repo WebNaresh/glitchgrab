@@ -117,10 +117,11 @@ function GlitchgrabProviderInner({
     }
   }, []);
 
-  // Unhandled errors and rejections
+  // Unhandled errors and rejections — skip in development
   useEffect(() => {
     try {
       if (typeof window === "undefined") return;
+      if (process.env.NODE_ENV === "development") return;
 
       const handleError = (event: ErrorEvent) => {
         try {
