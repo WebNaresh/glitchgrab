@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import axios from "axios";
 
 const PRICE_OPTIONS = [
   { value: "too_low", label: "Too cheap — I'd question quality" },
@@ -46,13 +47,7 @@ export function WaitlistForm() {
     setErrorMsg("");
 
     try {
-      const res = await fetch("/api/waitlist", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
-
-      const data = await res.json();
+      const { data } = await axios.post("/api/waitlist", { email });
 
       if (data.success) {
         setStatus("survey");
@@ -69,16 +64,12 @@ export function WaitlistForm() {
   async function handleSurvey() {
     setSurveyLoading(true);
     try {
-      await fetch("/api/waitlist", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email,
-          priceFeel: priceFeel || null,
-          topFeature: topFeature || null,
-          currentTool: currentTool || null,
-          suggestion: suggestion.trim() || null,
-        }),
+      await axios.post("/api/waitlist", {
+        email,
+        priceFeel: priceFeel || null,
+        topFeature: topFeature || null,
+        currentTool: currentTool || null,
+        suggestion: suggestion.trim() || null,
       });
     } catch {
       // Survey save failed — not critical
