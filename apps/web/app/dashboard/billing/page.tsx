@@ -62,7 +62,7 @@ export default async function BillingPage() {
                 <h3 className="font-semibold">Pro (BYOK)</h3>
               </div>
               <div className="flex items-baseline gap-1 mb-1">
-                <span className="text-3xl font-bold">$5</span>
+                <span className="text-3xl font-bold">₹99</span>
                 <span className="text-muted-foreground">/month</span>
               </div>
               <p className="text-xs text-muted-foreground mb-6">
@@ -85,7 +85,7 @@ export default async function BillingPage() {
               </ul>
               <UpgradeButton
                 plan="PRO_BYOK"
-                label="Get Pro (BYOK) — $5/mo"
+                label="Get Pro (BYOK) — ₹99/mo"
                 email={session?.user?.email ?? ""}
                 name={session?.user?.name ?? ""}
               />
@@ -101,7 +101,7 @@ export default async function BillingPage() {
                 <h3 className="font-semibold">Pro (Platform AI)</h3>
               </div>
               <div className="flex items-baseline gap-1 mb-1">
-                <span className="text-3xl font-bold text-primary">$10</span>
+                <span className="text-3xl font-bold text-primary">₹199</span>
                 <span className="text-muted-foreground">/month</span>
               </div>
               <p className="text-xs text-muted-foreground mb-6">
@@ -124,7 +124,7 @@ export default async function BillingPage() {
               </ul>
               <UpgradeButton
                 plan="PRO_PLATFORM"
-                label="Get Pro (Platform) — $10/mo"
+                label="Get Pro (Platform) — ₹199/mo"
                 email={session?.user?.email ?? ""}
                 name={session?.user?.name ?? ""}
               />
