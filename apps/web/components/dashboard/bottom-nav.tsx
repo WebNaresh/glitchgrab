@@ -39,6 +39,7 @@ export function BottomNav({ user, userType = "owner", planBadge = "none", trialD
   const pathname = usePathname();
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [navigating, setNavigating] = useState(false);
 
   const bottomItems = userType === "owner"
     ? [
@@ -53,6 +54,12 @@ export function BottomNav({ user, userType = "owner", planBadge = "none", trialD
   const profileActive = pathname.startsWith("/dashboard/settings");
 
   return (
+    <>
+    {navigating && (
+      <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-background/80">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    )}
     <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-card md:hidden">
       <div className="flex items-center justify-around py-2">
         {bottomItems.map((item) => {
@@ -143,6 +150,7 @@ export function BottomNav({ user, userType = "owner", planBadge = "none", trialD
                       setOpen(false);
                       const isWebView = document.documentElement.classList.contains("webview");
                       if (isWebView) {
+                        setNavigating(true);
                         window.location.href = item.href;
                       } else {
                         router.push(item.href);
@@ -204,5 +212,6 @@ export function BottomNav({ user, userType = "owner", planBadge = "none", trialD
         </Sheet>
       </div>
     </nav>
+    </>
   );
 }
