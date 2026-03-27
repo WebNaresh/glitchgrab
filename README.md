@@ -60,16 +60,16 @@ export default function RootLayout({ children }) {
 
 ## Competitive Landscape
 
-| Tool                                          | What it does                                                                            | Pricing           | Limitations                                                                 |
-| --------------------------------------------- | --------------------------------------------------------------------------------------- | ----------------- | --------------------------------------------------------------------------- |
-| **[Jam.dev](https://jam.dev)**                | Chrome extension for instant bug reporting with screenshots, console logs, network data | Free + paid tiers | Browser extension only, no SDK, no AI issue generation                      |
-| **[Marker.io](https://marker.io)**            | Website feedback widget with annotations, metadata capture                              | From $39/mo       | Focused on visual feedback/QA, no error auto-capture SDK, no AI generation  |
-| **[BetterBugs](https://betterbugs.io)**       | Chrome extension + Web SDK for screenshot/screen recording with AI debugging assistant  | Free tier + paid  | Has SDK but focused on manual reporting, AI is for debugging not generation |
-| **[Sentry](https://sentry.io)**               | Full observability platform — error tracking, performance, session replay               | Free tier + paid  | Heavyweight, no AI issue creation, doesn't create GitHub issues auto        |
+| Tool                                    | What it does                                                                            | Pricing           | Limitations                                                                 |
+| --------------------------------------- | --------------------------------------------------------------------------------------- | ----------------- | --------------------------------------------------------------------------- |
+| **[Jam.dev](https://jam.dev)**          | Chrome extension for instant bug reporting with screenshots, console logs, network data | Free + paid tiers | Browser extension only, no SDK, no AI issue generation                      |
+| **[Marker.io](https://marker.io)**      | Website feedback widget with annotations, metadata capture                              | From $39/mo       | Focused on visual feedback/QA, no error auto-capture SDK, no AI generation  |
+| **[BetterBugs](https://betterbugs.io)** | Chrome extension + Web SDK for screenshot/screen recording with AI debugging assistant  | Free tier + paid  | Has SDK but focused on manual reporting, AI is for debugging not generation |
+| **[Sentry](https://sentry.io)**         | Full observability platform — error tracking, performance, session replay               | Free tier + paid  | Heavyweight, no AI issue creation, doesn't create GitHub issues auto        |
 
 ### Where Glitchgrab fits
 
-Glitchgrab is **not** trying to be Sentry (full observability) or Marker.io (agency feedback workflows). It's a focused tool that solves one problem: **the gap between noticing a bug and having a well-written GitHub issue**.
+Glitchgrab is **not** trying to be Sentry (full observability) or Marker.io (agency feedback workflows). It's a focused tool that solves one problem: **the gap between noticing a bug and having a well-written GitHub issue what you think**.
 
 ## Tech Stack
 
