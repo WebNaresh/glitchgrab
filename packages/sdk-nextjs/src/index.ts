@@ -7,6 +7,9 @@ export { GlitchgrabProvider, useGlitchgrab } from "./provider";
 export { ReportButton } from "./report-button";
 export { GlitchgrabErrorBoundary } from "./error-boundary";
 
+// ─── Hooks ──────────────────────────────────────────────
+export { useGlitchgrabReports, fetchGlitchgrabReports } from "./use-reports";
+
 // ─── Breadcrumbs ─────────────────────────────────────────
 export {
   addBreadcrumb,
