@@ -13,13 +13,7 @@ const FEATURES = [
   "No API key needed",
 ];
 
-export function PaywallBlock({
-  email,
-  name,
-}: {
-  email: string;
-  name: string;
-}) {
+export function PaywallBlock({ email, name }: { email: string; name: string }) {
   return (
     <div className="flex flex-col items-center justify-center min-h-[calc(100vh-4rem)] px-4 py-8">
       <div className="flex flex-col items-center text-center mb-8 max-w-md">
@@ -28,20 +22,18 @@ export function PaywallBlock({
         </div>
         <h1 className="text-2xl font-bold mb-2">Your free trial has ended</h1>
         <p className="text-muted-foreground text-sm">
-          Subscribe to continue using Glitchgrab. Your data is safe — pick
-          up right where you left off.
+          Subscribe to continue using Glitchgrab. Your data is safe — pick up
+          right where you left off.
         </p>
       </div>
 
       <div className="max-w-md w-full">
-        <Card className="border-2 border-primary overflow-visible relative">
+        <Card className="border-2 border-primary overflow-visible relative pt-0">
           <CardContent className="p-4 pt-8 sm:p-6 sm:pt-8">
-            <div className="flex items-center gap-2 mb-3">
-              <Cpu className="h-5 w-5 text-primary" />
-              <h3 className="font-semibold">Glitchgrab Pro</h3>
-            </div>
             <div className="flex items-baseline gap-1 mb-1">
-              <span className="text-3xl font-bold text-primary">&#8377;199</span>
+              <span className="text-3xl font-bold text-primary">
+                &#8377;199
+              </span>
               <span className="text-muted-foreground">/month</span>
             </div>
             <p className="text-xs text-muted-foreground mb-6">
