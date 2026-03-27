@@ -206,49 +206,6 @@ export function MiniTerminal() {
   );
 }
 
-// ─── Glitch text effect ───────────────────────────────────
-export function GlitchText({ children }: { children: string }) {
-  return (
-    <span className="relative inline-block">
-      <span className="relative z-10">{children}</span>
-      <span
-        className="absolute top-0 left-0 z-0 text-primary/30"
-        style={{
-          animation: "glitch-1 3s infinite",
-          clipPath: "inset(20% 0 40% 0)",
-        }}
-        aria-hidden
-      >
-        {children}
-      </span>
-      <span
-        className="absolute top-0 left-0 z-0 text-red-400/20"
-        style={{
-          animation: "glitch-2 3s infinite",
-          clipPath: "inset(60% 0 5% 0)",
-        }}
-        aria-hidden
-      >
-        {children}
-      </span>
-      <style>{`
-        @keyframes glitch-1 {
-          0%, 90%, 100% { transform: translate(0); }
-          92% { transform: translate(2px, -1px); }
-          94% { transform: translate(-2px, 1px); }
-          96% { transform: translate(1px, 0); }
-        }
-        @keyframes glitch-2 {
-          0%, 88%, 100% { transform: translate(0); }
-          90% { transform: translate(-2px, 1px); }
-          93% { transform: translate(2px, -1px); }
-          95% { transform: translate(-1px, 0); }
-        }
-      `}</style>
-    </span>
-  );
-}
-
 // ─── Capture HUD ring ─────────────────────────────────────
 export function HudRing() {
   return (
