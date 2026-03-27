@@ -188,23 +188,35 @@ You can also manage issues programmatically:
 
 ```bash
 # Close an issue
-POST /api/v1/reports/{reportId}/actions
-Body: {"action": "close"}
+curl -X POST \
+  -H "Authorization: Bearer gg_your_token" \
+  -H "Content-Type: application/json" \
+  -d '{"action": "close"}' \
+  https://glitchgrab.dev/api/v1/reports/REPORT_ID/actions
 
 # Reopen an issue
-POST /api/v1/reports/{reportId}/actions
-Body: {"action": "reopen"}
+curl -X POST \
+  -H "Authorization: Bearer gg_your_token" \
+  -H "Content-Type: application/json" \
+  -d '{"action": "reopen"}' \
+  https://glitchgrab.dev/api/v1/reports/REPORT_ID/actions
 
-# Add a label (approved, rejected, or any custom label)
-POST /api/v1/reports/{reportId}/actions
-Body: {"action": "label", "label": "approved"}
+# Add a label
+curl -X POST \
+  -H "Authorization: Bearer gg_your_token" \
+  -H "Content-Type: application/json" \
+  -d '{"action": "label", "label": "approved"}' \
+  https://glitchgrab.dev/api/v1/reports/REPORT_ID/actions
 
 # Remove a label
-POST /api/v1/reports/{reportId}/actions
-Body: {"action": "unlabel", "label": "rejected"}
+curl -X POST \
+  -H "Authorization: Bearer gg_your_token" \
+  -H "Content-Type: application/json" \
+  -d '{"action": "unlabel", "label": "rejected"}' \
+  https://glitchgrab.dev/api/v1/reports/REPORT_ID/actions
 ```
 
-Requires session authentication (logged-in dashboard user who owns the repo).
+Supports both `Bearer gg_` token auth (SDK) and session auth (dashboard).
 
 ### Workflow
 
