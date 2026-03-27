@@ -1,14 +1,6 @@
 {
   "ignore": {
-    "routes": [
-      "/api/auth/**",
-      "/api/webhooks/**",
-      "/api/v1/sdk/**",
-      "/api/v1/billing/**",
-      "/api/v1/github/**",
-      "/api/v1/collaborators/**",
-      "/api/waitlist"
-    ],
+    "routes": ["/api/auth/**", "/api/webhooks/**", "/api/v1/billing/webhook", "/api/v1/sdk/reports", "/api/v1/collaborators/**/repos"],
     "files": ["**/db-sync.ts", "**/components/ui/**"]
   }
 }
