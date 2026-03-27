@@ -1,3 +1,13 @@
+## [1.2.1](https://github.com/WebNaresh/glitchgrab/compare/v1.2.0...v1.2.1) (2026-03-27)
+
+### Bug Fixes
+
+* **proxy:** add CORS for SDK API routes in proxy.ts, remove incorrect middleware.ts ([b872920](https://github.com/WebNaresh/glitchgrab/commit/b872920609bfa7a012adb4cabff38c25bb65e2ee))
+
+### Reverts
+
+* Revert "chore: remove dead proxy.ts replaced by middleware.ts" ([7187bbe](https://github.com/WebNaresh/glitchgrab/commit/7187bbee68209dfb7a6d6ae750ca978bc8e1c15b))
+
 ## [1.2.0](https://github.com/WebNaresh/glitchgrab/compare/v1.1.1...v1.2.0) (2026-03-27)
 
 ### Features
