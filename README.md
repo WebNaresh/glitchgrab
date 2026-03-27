@@ -2,7 +2,12 @@
 
 **Grab the glitch. Ship the fix.**
 
+[![npm](https://img.shields.io/npm/v/glitchgrab)](https://www.npmjs.com/package/glitchgrab)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/WebNaresh/glitchgrab/blob/main/LICENSE)
+
 Glitchgrab turns messy bug reports — screenshots, production errors, user complaints — into well-structured GitHub issues using AI.
+
+**npm:** [`npm install glitchgrab`](https://www.npmjs.com/package/glitchgrab) | **Website:** [glitchgrab.dev](https://glitchgrab.dev) | **SDK Docs:** [packages/sdk-nextjs/README.md](packages/sdk-nextjs/README.md)
 
 ## What Makes Glitchgrab Different?
 
