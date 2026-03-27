@@ -9,6 +9,6 @@
       "/api/v1/collaborators/**",
       "/api/waitlist"
     ],
-    "files": ["**/db-sync.ts", "**/components/ui/**", "**/proxy.ts"]
+    "files": ["**/db-sync.ts", "**/components/ui/**"]
   }
 }
