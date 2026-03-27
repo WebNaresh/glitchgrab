@@ -168,6 +168,7 @@ export default async function ReportsPage() {
       <ReportsTabs
         myReports={serialized.myReports}
         productIssues={serialized.productIssues}
+        isOwner={!!userId}
       />
     </div>
   );
