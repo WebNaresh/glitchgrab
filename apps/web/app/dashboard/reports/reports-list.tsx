@@ -6,14 +6,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ClipboardList, Loader2 } from "lucide-react";
 import { ReportsTabs } from "./reports-tabs";
 
-interface ReportFromAPI {
+interface ReportItem {
   id: string;
   source: string;
   status: string;
   rawInput: string | null;
   failReason: string | null;
   createdAt: string;
-  repoId: string;
   repoFullName: string;
   reporterPrimaryKey: string;
   reporterName: string;
@@ -27,13 +26,33 @@ interface ReportFromAPI {
 }
 
 export function ReportsList({ isOwner }: { isOwner: boolean }) {
-  const { data, isLoading, isFetching } = useQuery<ReportFromAPI[]>({
+  // Fetch all reports via dashboard API (session auth)
+  const { data: allReports, isLoading: loadingAll, isFetching } = useQuery<ReportItem[]>({
     queryKey: ["reports"],
     queryFn: async () => {
       const { data } = await axios.get("/api/v1/reports");
       return data.data ?? [];
     },
   });
+
+  // Fetch platform reports via SDK API (token auth) — "My Reports" tab
+  const { data: myReports, isLoading: loadingMy } = useQuery<ReportItem[]>({
+    queryKey: ["sdk-reports"],
+    queryFn: async () => {
+      const token = process.env.NEXT_PUBLIC_GLITCHGRAB_TOKEN;
+      if (!token) return [];
+      const { data } = await axios.get("/api/v1/sdk/reports?limit=100", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return (data.data ?? []).map((r: ReportItem) => ({
+        ...r,
+        failReason: null,
+        repoFullName: r.repoFullName || "",
+      }));
+    },
+  });
+
+  const isLoading = loadingAll || loadingMy;
 
   if (isLoading) {
     return (
@@ -43,9 +62,10 @@ export function ReportsList({ isOwner }: { isOwner: boolean }) {
     );
   }
 
-  const reports = data ?? [];
+  const all = allReports ?? [];
+  const my = myReports ?? [];
 
-  if (reports.length === 0) {
+  if (all.length === 0 && my.length === 0) {
     return (
       <Card className="border-dashed">
         <CardContent className="flex flex-col items-center justify-center py-12 text-center">
@@ -59,21 +79,9 @@ export function ReportsList({ isOwner }: { isOwner: boolean }) {
     );
   }
 
-  // TODO: split into myReports vs productIssues using platform token repo detection
-  // For now, show all as product issues
-  const mapped = reports.map((r) => ({
-    id: r.id,
-    source: r.source,
-    status: r.status,
-    rawInput: r.rawInput,
-    failReason: r.failReason,
-    createdAt: r.createdAt,
-    repoFullName: r.repoFullName,
-    reporterPrimaryKey: r.reporterPrimaryKey,
-    reporterName: r.reporterName,
-    reporterEmail: r.reporterEmail,
-    issue: r.issue,
-  }));
+  // Product issues = all reports minus the ones in my reports (by ID)
+  const myIds = new Set(my.map((r) => r.id));
+  const productIssues = all.filter((r) => !myIds.has(r.id));
 
   return (
     <div className="relative">
@@ -83,8 +91,8 @@ export function ReportsList({ isOwner }: { isOwner: boolean }) {
         </div>
       )}
       <ReportsTabs
-        myReports={[]}
-        productIssues={mapped}
+        myReports={my}
+        productIssues={productIssues}
         isOwner={isOwner}
       />
     </div>
