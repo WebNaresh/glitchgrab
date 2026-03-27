@@ -249,7 +249,7 @@ export default function WebViewScreen({
       // Force 16px on inputs + fix layout + disable GPU-heavy CSS for Android WebView
       var s = document.createElement('style');
       s.id = 'glitchgrab-webview';
-      s.textContent = 'input,textarea,select{font-size:16px!important} *{touch-action:manipulation} body{height:calc(var(--app-height,100vh))!important;overflow:hidden;overscroll-behavior:none} .webview *{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;animation-duration:0s!important;transition-duration:0s!important}';
+      s.textContent = 'input,textarea,select{font-size:16px!important} *{touch-action:manipulation} body{height:calc(var(--app-height,100vh))!important;overscroll-behavior:none} .webview *{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;animation-duration:0s!important;transition-duration:0s!important}';
       document.head.appendChild(s);
 
       document.addEventListener('gesturestart', function(e) { e.preventDefault(); });
@@ -384,8 +384,8 @@ export default function WebViewScreen({
           mediaPlaybackRequiresUserAction={false}
           allowsInlineMediaPlayback
           cacheEnabled
-          pullToRefreshEnabled={Platform.OS === "ios"}
-          bounces={Platform.OS === "ios"}
+          pullToRefreshEnabled
+          bounces
           overScrollMode="content"
           decelerationRate={0.998}
           contentMode="mobile"
