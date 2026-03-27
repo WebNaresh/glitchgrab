@@ -1,3 +1,14 @@
+## [1.7.0](https://github.com/WebNaresh/glitchgrab/compare/sdk-v1.6.4...sdk-v1.7.0) (2026-03-27)
+
+### Features
+
+* **middleware:** add CORS for SDK API routes and merge with dashboard auth guard ([ef00849](https://github.com/WebNaresh/glitchgrab/commit/ef008495cb2d508e488dce4305bd317efec0f4ce))
+
+### Bug Fixes
+
+* **proxy:** add CORS for SDK API routes in proxy.ts, remove incorrect middleware.ts ([b872920](https://github.com/WebNaresh/glitchgrab/commit/b872920609bfa7a012adb4cabff38c25bb65e2ee))
+* **sdk:** await reportBug response before showing success message ([d9c01b3](https://github.com/WebNaresh/glitchgrab/commit/d9c01b38ac76560ac4680b7a4440e5682c4341ee))
+
 ## [1.6.4](https://github.com/WebNaresh/glitchgrab/compare/sdk-v1.6.3...sdk-v1.6.4) (2026-03-27)
 
 ### Bug Fixes
