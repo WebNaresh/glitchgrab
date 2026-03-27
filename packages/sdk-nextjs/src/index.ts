@@ -8,7 +8,7 @@ export { ReportButton } from "./report-button";
 export { GlitchgrabErrorBoundary } from "./error-boundary";
 
 // ─── Hooks ──────────────────────────────────────────────
-export { useGlitchgrabReports, fetchGlitchgrabReports } from "./use-reports";
+export { useGlitchgrabReports, fetchGlitchgrabReports, useGlitchgrabActions } from "./use-reports";
 
 // ─── Breadcrumbs ─────────────────────────────────────────
 export {

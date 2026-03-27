@@ -232,7 +232,28 @@ curl -H "Authorization: Bearer gg_your_token" \
 
 ## Managing Issues (Approve / Reject / Close)
 
-Once a report creates a GitHub issue, you can manage it from the dashboard or via API.
+### React hook
+
+```tsx
+import { useGlitchgrabActions } from "glitchgrab";
+
+function ReportActions({ reportId }: { reportId: string }) {
+  const { approve, reject, close, isPending, error } = useGlitchgrabActions({
+    token: process.env.NEXT_PUBLIC_GLITCHGRAB_TOKEN!,
+    onSuccess: () => refetch(),        // refresh your reports list
+    onError: (err) => alert(err.message),
+  });
+
+  return (
+    <div>
+      <button onClick={() => approve(reportId)} disabled={isPending}>Approve</button>
+      <button onClick={() => reject(reportId)} disabled={isPending}>Reject</button>
+      <button onClick={() => close(reportId)} disabled={isPending}>Close</button>
+      {error && <p>{error}</p>}
+    </div>
+  );
+}
+```
 
 ### Dashboard
 

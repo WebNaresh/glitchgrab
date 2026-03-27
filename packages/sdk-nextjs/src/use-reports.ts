@@ -122,3 +122,79 @@ export async function fetchGlitchgrabReports({
   if (!data.success) throw new Error(data.error ?? "Failed to fetch reports");
   return data.data ?? [];
 }
+
+// ─── Report Actions ─────────────────────────────────────
+
+async function reportAction(
+  token: string,
+  reportId: string,
+  body: Record<string, string>
+): Promise<void> {
+  const res = await fetch(`${BASE_URL}/api/v1/reports/${reportId}/actions`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok || !data.success) throw new Error(data.error ?? "Action failed");
+}
+
+/**
+ * Hook to manage report actions with loading/error states.
+ *
+ * ```tsx
+ * const { approve, reject, close, isPending, error } = useGlitchgrabActions({
+ *   token: process.env.NEXT_PUBLIC_GLITCHGRAB_TOKEN!,
+ *   onSuccess: () => refetch(),
+ *   onError: (err) => toast.error(err.message),
+ * });
+ *
+ * <button onClick={() => approve(reportId)} disabled={isPending}>
+ *   {isPending ? "..." : "Approve"}
+ * </button>
+ * ```
+ */
+export function useGlitchgrabActions({
+  token,
+  onSuccess,
+  onError,
+}: {
+  token: string;
+  onSuccess?: () => void;
+  onError?: (error: Error) => void;
+}) {
+  const [isPending, setIsPending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const run = useCallback(
+    async (reportId: string, body: Record<string, string>) => {
+      setIsPending(true);
+      setError(null);
+      try {
+        await reportAction(token, reportId, body);
+        onSuccess?.();
+      } catch (e) {
+        const err = e instanceof Error ? e : new Error("Action failed");
+        setError(err.message);
+        onError?.(err);
+      } finally {
+        setIsPending(false);
+      }
+    },
+    [token, onSuccess, onError]
+  );
+
+  return {
+    approve: (reportId: string) => run(reportId, { action: "label", label: "approved" }),
+    reject: (reportId: string) => run(reportId, { action: "label", label: "rejected" }),
+    close: (reportId: string) => run(reportId, { action: "close" }),
+    reopen: (reportId: string) => run(reportId, { action: "reopen" }),
+    label: (reportId: string, label: string) => run(reportId, { action: "label", label }),
+    unlabel: (reportId: string, label: string) => run(reportId, { action: "unlabel", label }),
+    isPending,
+    error,
+  };
+}
