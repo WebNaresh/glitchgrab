@@ -77,9 +77,6 @@ export default function LandingPage() {
             <span className="font-semibold text-base sm:text-lg tracking-tight">glitchgrab</span>
           </div>
           <div className="flex items-center gap-2 sm:gap-3">
-            <Link href="/login">
-              <Button variant="ghost" size="sm">Login</Button>
-            </Link>
             <a href="#waitlist">
               <Button size="sm">Join Waitlist</Button>
             </a>
