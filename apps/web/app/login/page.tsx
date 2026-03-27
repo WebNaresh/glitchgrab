@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
@@ -48,13 +49,22 @@ export default async function LoginPage() {
         />
 
         {/* Content */}
-        <div className="relative z-10 w-full max-w-md px-8 space-y-8">
-          {/* System Access badge */}
-          <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1">
-            <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse-glow" />
-            <span className="text-[10px] font-mono text-primary uppercase tracking-widest">
-              System Access
-            </span>
+        <div className="relative z-10 w-full max-w-md px-8 space-y-6 text-center">
+          {/* Glitch logo + badge */}
+          <div className="flex flex-col items-center gap-4">
+            <Image
+              src="/original.png"
+              alt="Glitchgrab"
+              width={72}
+              height={72}
+              className="rounded-2xl"
+            />
+            <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1">
+              <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse-glow" />
+              <span className="text-[10px] font-mono text-primary uppercase tracking-widest">
+                System Access
+              </span>
+            </div>
           </div>
 
           {/* Terminal */}
