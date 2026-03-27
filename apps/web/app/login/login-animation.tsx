@@ -190,7 +190,7 @@ export function MiniTerminal() {
       {/* Content */}
       <div
         ref={containerRef}
-        className="p-3 h-[180px] sm:h-[200px] overflow-hidden font-mono text-[10px] sm:text-[11px] leading-[1.6] space-y-0.5"
+        className="p-3 h-45 sm:h-50 overflow-hidden font-mono text-[10px] sm:text-[11px] leading-[1.6] space-y-0.5"
       >
         {TERMINAL_LINES.slice(0, visibleLines).map((line, i) => (
           <div key={i} className={`${colorMap[line.color]} animate-slide-up`}>
@@ -199,7 +199,7 @@ export function MiniTerminal() {
         ))}
         {/* Blinking cursor */}
         {visibleLines < TERMINAL_LINES.length && (
-          <span className="inline-block w-[6px] h-[14px] bg-primary/60 animate-pulse" />
+          <span className="inline-block w-1.5 h-3.5 bg-primary/60 animate-pulse" />
         )}
       </div>
     </div>
