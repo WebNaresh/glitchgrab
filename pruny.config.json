@@ -7,20 +7,18 @@
       "/api/v1/billing/**",
       "/api/v1/github/**",
       "/api/v1/collaborators/**",
-      "/api/waitlist",
-      "/api/contact"
+      "/api/waitlist"
     ],
-    "folders": [".glitchgrab"],
     "files": [
       "**/utils.ts",
       "**/db-sync.ts",
-      "**/components/**",
       "**/proxy.ts",
-      "**/lib/**",
       "**/*actions*",
-      "**/*form*",
-      "**/(legal)/**",
-      "**/original.png"
+      "**/components/ui/**",
+      "**/lib/encryption.ts",
+      "**/lib/github.ts",
+      "**/lib/billing.ts",
+      "**/(legal)/**"
     ]
   }
 }
