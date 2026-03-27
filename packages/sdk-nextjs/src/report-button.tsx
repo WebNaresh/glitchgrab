@@ -13,6 +13,28 @@ function useGlitchgrabSafe(): UseGlitchgrabReturn | null {
   }
 }
 
+/** Detect if the host page uses a dark or light theme */
+function useIsDark(): boolean {
+  if (typeof window === "undefined") return true;
+  try {
+    const bg = getComputedStyle(document.body).backgroundColor;
+    const match = bg.match(/\d+/g);
+    if (match && match.length >= 3) {
+      const [r, g, b] = match.map(Number);
+      return (r * 299 + g * 587 + b * 114) / 1000 < 128;
+    }
+    return window.matchMedia("(prefers-color-scheme: dark)").matches;
+  } catch {
+    return true;
+  }
+}
+
+function getTheme(dark: boolean) {
+  return dark
+    ? { bg: "#1c1c1e", bgSecondary: "#27272a", border: "#2c2c2e", text: "#fafafa", textMuted: "#a1a1aa", accent: "#22d3ee", accentText: "#09090b", inputBg: "#27272a", inputBorder: "#3f3f46" }
+    : { bg: "#ffffff", bgSecondary: "#f4f4f5", border: "#e4e4e7", text: "#18181b", textMuted: "#71717a", accent: "#0891b2", accentText: "#ffffff", inputBg: "#fafafa", inputBorder: "#d4d4d8" };
+}
+
 export function ReportButton({
   position = "bottom-right",
   label = "Report Bug",
@@ -37,6 +59,8 @@ export function ReportButton({
   if (!glitchgrab) return null;
 
   const { reportBug } = glitchgrab;
+  const isDark = useIsDark();
+  const t = getTheme(isDark);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -173,21 +197,21 @@ export function ReportButton({
               zIndex: 100000,
               width: "340px",
               maxWidth: "calc(100% - 32px)",
-              backgroundColor: "#1c1c1e",
+              backgroundColor: t.bg,
               borderRadius: "12px",
               boxShadow:
-                "0 20px 60px rgba(0, 0, 0, 0.4), 0 4px 16px rgba(0, 0, 0, 0.3)",
+                "0 20px 60px rgba(0, 0, 0, 0.2), 0 4px 16px rgba(0, 0, 0, 0.1)",
               fontFamily:
                 '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
               overflow: "hidden",
-              color: "#fafafa",
+              color: t.text,
             }}
           >
             {/* Header */}
             <div
               style={{
                 padding: "16px 16px 12px",
-                borderBottom: "1px solid #2c2c2e",
+                borderBottom: `1px solid ${t.border}`,
               }}
             >
               <div
@@ -201,7 +225,7 @@ export function ReportButton({
                   style={{
                     fontSize: "15px",
                     fontWeight: 600,
-                    color: "#fafafa",
+                    color: t.text,
                   }}
                 >
                   Report a Bug
@@ -214,7 +238,7 @@ export function ReportButton({
                     border: "none",
                     cursor: "pointer",
                     padding: "4px",
-                    color: "#a1a1aa",
+                    color: t.textMuted,
                     fontSize: "18px",
                     lineHeight: 1,
                   }}
@@ -232,7 +256,7 @@ export function ReportButton({
                   style={{
                     textAlign: "center",
                     padding: "20px 0",
-                    color: "#22d3ee",
+                    color: t.accent,
                     fontSize: "14px",
                     fontWeight: 500,
                   }}
@@ -251,7 +275,7 @@ export function ReportButton({
                         style={{
                           width: "100%",
                           borderRadius: "6px",
-                          border: "1px solid #2c2c2e",
+                          border: `1px solid ${t.border}`,
                           maxHeight: "120px",
                           objectFit: "cover",
                           objectPosition: "top",
@@ -310,7 +334,7 @@ export function ReportButton({
                             onClick={() => fileInputRef.current?.click()}
                             style={{
                               background: "rgba(0,0,0,0.6)",
-                              color: "#22d3ee",
+                              color: t.accent,
                               fontSize: "10px",
                               padding: "2px 6px",
                               borderRadius: "4px",
@@ -325,7 +349,7 @@ export function ReportButton({
                             onClick={retakeScreenshot}
                             style={{
                               background: "rgba(0,0,0,0.6)",
-                              color: "#22d3ee",
+                              color: t.accent,
                               fontSize: "10px",
                               padding: "2px 6px",
                               borderRadius: "4px",
@@ -347,10 +371,10 @@ export function ReportButton({
                         marginBottom: "10px",
                         padding: "10px",
                         borderRadius: "6px",
-                        border: "1px dashed #3f3f46",
+                        border: `1px dashed ${t.inputBorder}`,
                         textAlign: "center",
                         fontSize: "11px",
-                        color: "#71717a",
+                        color: t.textMuted,
                         width: "100%",
                         background: "none",
                         cursor: "pointer",
@@ -368,22 +392,20 @@ export function ReportButton({
                       minHeight: "100px",
                       padding: "10px 12px",
                       borderRadius: "8px",
-                      border: "1px solid #3f3f46",
+                      border: `1px solid ${t.inputBorder}`,
                       fontSize: "14px",
                       fontFamily: "inherit",
                       resize: "vertical",
                       outline: "none",
                       boxSizing: "border-box",
-                      color: "#fafafa",
-                      backgroundColor: "#27272a",
+                      color: t.text,
+                      backgroundColor: t.inputBg,
                     }}
                     onFocus={(e) => {
-                      (e.target as HTMLTextAreaElement).style.borderColor =
-                        "#22d3ee";
+                      (e.target as HTMLTextAreaElement).style.borderColor = t.accent;
                     }}
                     onBlur={(e) => {
-                      (e.target as HTMLTextAreaElement).style.borderColor =
-                        "#3f3f46";
+                      (e.target as HTMLTextAreaElement).style.borderColor = t.inputBorder;
                     }}
                     autoFocus
                   />
@@ -399,12 +421,12 @@ export function ReportButton({
                       border: "none",
                       backgroundColor:
                         !description.trim() || isSubmitting
-                          ? "#3f3f46"
-                          : "#22d3ee",
+                          ? t.bgSecondary
+                          : t.accent,
                       color:
                         !description.trim() || isSubmitting
-                          ? "#71717a"
-                          : "#09090b",
+                          ? t.textMuted
+                          : t.accentText,
                       fontSize: "14px",
                       fontWeight: 600,
                       cursor:
@@ -425,11 +447,11 @@ export function ReportButton({
             <div
               style={{
                 padding: "8px 16px 10px",
-                borderTop: "1px solid #2c2c2e",
+                borderTop: `1px solid ${t.border}`,
                 textAlign: "center",
               }}
             >
-              <span style={{ fontSize: "11px", color: "#52525b" }}>
+              <span style={{ fontSize: "11px", color: t.textMuted }}>
                 Powered by Glitchgrab
               </span>
             </div>
@@ -479,7 +501,7 @@ export function ReportButton({
           <span
             style={{
               marginTop: "12px",
-              color: "#a1a1aa",
+              color: t.textMuted,
               fontSize: "12px",
             }}
           >
