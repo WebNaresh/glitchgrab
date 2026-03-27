@@ -42,7 +42,7 @@ const SOURCE_LABELS: Record<string, string> = {
   SDK_AUTO: "Auto Capture",
   SDK_USER_REPORT: "User Report",
   DASHBOARD_UPLOAD: "Dashboard",
-  HANDWRITTEN_NOTE: "Handwritten",
+  HANDWRITTEN_NOTE: "Note",
   MCP: "MCP",
 };
 
