@@ -31,11 +31,6 @@ export function HeroVideo({ src }: { src: string }) {
     <div className="relative mx-auto w-[260px] shrink-0 sm:w-[280px] lg:w-[300px]">
       {/* Phone bezel */}
       <div className="rounded-[2.5rem] border-[1.5px] border-border/40 bg-[#1a1a1a] p-[6px] shadow-2xl shadow-primary/5">
-        {/* Dynamic Island */}
-        <div className="absolute top-[10px] left-1/2 z-20 -translate-x-1/2">
-          <div className="h-[14px] w-[72px] rounded-full bg-black" />
-        </div>
-
         {/* Side button (right) */}
         <div className="absolute -right-[2px] top-[90px] h-[40px] w-[3px] rounded-r-sm bg-border/30" />
         {/* Volume buttons (left) */}
@@ -44,7 +39,40 @@ export function HeroVideo({ src }: { src: string }) {
         <div className="absolute -left-[2px] top-[132px] h-[30px] w-[3px] rounded-l-sm bg-border/30" />
 
         {/* Screen */}
-        <div className="relative overflow-hidden rounded-[2.2rem]">
+        <div className="relative overflow-hidden rounded-[2.2rem] bg-black">
+          {/* Status bar */}
+          <div className="relative z-20 flex items-center justify-between px-6 pt-3 pb-1">
+            {/* Time */}
+            <span className="text-[10px] font-semibold text-white/90">9:41</span>
+            {/* Dynamic Island */}
+            <div className="absolute top-2 left-1/2 -translate-x-1/2">
+              <div className="h-[22px] w-[80px] rounded-full bg-black ring-1 ring-black" />
+            </div>
+            {/* Signal + WiFi + Battery */}
+            <div className="flex items-center gap-1">
+              {/* Signal bars */}
+              <svg width="14" height="10" viewBox="0 0 14 10" fill="none" className="text-white/90">
+                <rect x="0" y="7" width="2.5" height="3" rx="0.5" fill="currentColor" />
+                <rect x="3.5" y="5" width="2.5" height="5" rx="0.5" fill="currentColor" />
+                <rect x="7" y="2.5" width="2.5" height="7.5" rx="0.5" fill="currentColor" />
+                <rect x="10.5" y="0" width="2.5" height="10" rx="0.5" fill="currentColor" />
+              </svg>
+              {/* WiFi */}
+              <svg width="12" height="10" viewBox="0 0 12 10" fill="none" className="text-white/90">
+                <path d="M6 9a0.8 0.8 0 1 1 0-1.6 0.8 0.8 0 0 1 0 1.6Z" fill="currentColor" />
+                <path d="M3.8 6.5a3.2 3.2 0 0 1 4.4 0" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" fill="none" />
+                <path d="M1.6 4.2a6 6 0 0 1 8.8 0" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" fill="none" />
+              </svg>
+              {/* Battery */}
+              <svg width="20" height="10" viewBox="0 0 20 10" fill="none" className="text-white/90">
+                <rect x="0.5" y="1" width="16" height="8" rx="2" stroke="currentColor" strokeWidth="1" fill="none" />
+                <rect x="2" y="2.5" width="12" height="5" rx="1" fill="currentColor" />
+                <rect x="17" y="3.5" width="2" height="3" rx="0.5" fill="currentColor" opacity="0.5" />
+              </svg>
+            </div>
+          </div>
+
+          {/* Video */}
           <video
             ref={ref}
             loop
@@ -55,6 +83,9 @@ export function HeroVideo({ src }: { src: string }) {
           >
             <source src={src} type="video/mp4" />
           </video>
+
+          {/* Home indicator */}
+          <div className="absolute bottom-1.5 left-1/2 z-20 h-[4px] w-[100px] -translate-x-1/2 rounded-full bg-white/30" />
 
           {/* Play overlay — shown when paused */}
           {!playing && (
@@ -70,7 +101,7 @@ export function HeroVideo({ src }: { src: string }) {
 
           {/* Bottom controls — shown when playing */}
           {playing && (
-            <div className="absolute bottom-3 left-3 right-3 z-10 flex items-center justify-between">
+            <div className="absolute bottom-8 left-3 right-3 z-10 flex items-center justify-between">
               <button
                 onClick={togglePlay}
                 className="flex h-8 w-8 items-center justify-center rounded-full bg-black/60 backdrop-blur-sm"
