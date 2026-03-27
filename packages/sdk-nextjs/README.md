@@ -130,15 +130,15 @@ Use the REST API to fetch reports for a specific user by their primary key:
 ```bash
 # Fetch all reports
 curl -H "Authorization: Bearer gg_your_token" \
-  https://glitchgrab.dev/api/v1/sdk/reports
+  https://www.glitchgrab.dev/api/v1/sdk/reports
 
 # Fetch reports by a specific user
 curl -H "Authorization: Bearer gg_your_token" \
-  "https://glitchgrab.dev/api/v1/sdk/reports?reporterPrimaryKey=user_123"
+  "https://www.glitchgrab.dev/api/v1/sdk/reports?reporterPrimaryKey=user_123"
 
 # Filter by status
 curl -H "Authorization: Bearer gg_your_token" \
-  "https://glitchgrab.dev/api/v1/sdk/reports?status=CREATED&limit=20"
+  "https://www.glitchgrab.dev/api/v1/sdk/reports?status=CREATED&limit=20"
 ```
 
 ### Response
@@ -209,7 +209,7 @@ curl -X POST \
   -H "Authorization: Bearer gg_your_token" \
   -H "Content-Type: application/json" \
   -d '{"action": "label", "label": "approved"}' \
-  https://glitchgrab.dev/api/v1/reports/REPORT_ID/actions
+  https://www.glitchgrab.dev/api/v1/reports/REPORT_ID/actions
 ```
 
 #### Reject a report
@@ -219,7 +219,7 @@ curl -X POST \
   -H "Authorization: Bearer gg_your_token" \
   -H "Content-Type: application/json" \
   -d '{"action": "label", "label": "rejected"}' \
-  https://glitchgrab.dev/api/v1/reports/REPORT_ID/actions
+  https://www.glitchgrab.dev/api/v1/reports/REPORT_ID/actions
 ```
 
 #### Close an issue
@@ -229,7 +229,7 @@ curl -X POST \
   -H "Authorization: Bearer gg_your_token" \
   -H "Content-Type: application/json" \
   -d '{"action": "close"}' \
-  https://glitchgrab.dev/api/v1/reports/REPORT_ID/actions
+  https://www.glitchgrab.dev/api/v1/reports/REPORT_ID/actions
 ```
 
 #### Reopen an issue
@@ -239,7 +239,7 @@ curl -X POST \
   -H "Authorization: Bearer gg_your_token" \
   -H "Content-Type: application/json" \
   -d '{"action": "reopen"}' \
-  https://glitchgrab.dev/api/v1/reports/REPORT_ID/actions
+  https://www.glitchgrab.dev/api/v1/reports/REPORT_ID/actions
 ```
 
 #### Remove a label
@@ -249,7 +249,7 @@ curl -X POST \
   -H "Authorization: Bearer gg_your_token" \
   -H "Content-Type: application/json" \
   -d '{"action": "unlabel", "label": "rejected"}' \
-  https://glitchgrab.dev/api/v1/reports/REPORT_ID/actions
+  https://www.glitchgrab.dev/api/v1/reports/REPORT_ID/actions
 ```
 
 #### Add any custom label
@@ -259,7 +259,7 @@ curl -X POST \
   -H "Authorization: Bearer gg_your_token" \
   -H "Content-Type: application/json" \
   -d '{"action": "label", "label": "high-priority"}' \
-  https://glitchgrab.dev/api/v1/reports/REPORT_ID/actions
+  https://www.glitchgrab.dev/api/v1/reports/REPORT_ID/actions
 ```
 
 ### How to get the report ID
@@ -281,7 +281,7 @@ Each report has a conversation thread powered by GitHub issue comments. No extra
 
 ```bash
 curl -H "Authorization: Bearer gg_your_token" \
-  https://glitchgrab.dev/api/v1/sdk/reports/REPORT_ID
+  https://www.glitchgrab.dev/api/v1/sdk/reports/REPORT_ID
 ```
 
 Returns the full issue body + all comments:
@@ -320,7 +320,7 @@ curl -X POST \
   -H "Authorization: Bearer gg_your_token" \
   -H "Content-Type: application/json" \
   -d '{"message": "I can reproduce this, fixing now", "reporterName": "Vivek", "reporterEmail": "vivek@example.com"}' \
-  https://glitchgrab.dev/api/v1/sdk/reports/REPORT_ID/comments
+  https://www.glitchgrab.dev/api/v1/sdk/reports/REPORT_ID/comments
 ```
 
 The comment is posted to the GitHub issue with attribution: "Commented by: **Vivek** (vivek@example.com)".
@@ -347,7 +347,7 @@ import { GlitchgrabErrorBoundary } from "glitchgrab";
 |------|------|---------|-------------|
 | `token` | `string` | required | Your Glitchgrab API token (`gg_...`) |
 | `session` | `GlitchgrabSession \| null` | `null` | Logged-in user info for report attribution |
-| `baseUrl` | `string` | `https://glitchgrab.dev` | API base URL |
+| `baseUrl` | `string` | `https://www.glitchgrab.dev` | API base URL |
 | `breadcrumbs` | `boolean` | `true` | Enable automatic breadcrumb tracking |
 | `maxBreadcrumbs` | `number` | `50` | Max breadcrumbs to keep |
 | `onError` | `(error: Error) => void` | - | Called on unhandled errors |
