@@ -42,17 +42,69 @@ const FLOWS = [
 ] as const;
 
 const STEPS = [
-  { num: "01", title: "Connect GitHub", desc: "OAuth in, pick a repo, get a token." },
-  { num: "02", title: "Drop in the SDK", desc: "One component in your layout. That's it." },
-  { num: "03", title: "Bugs become issues", desc: "AI writes the issue. Dedup prevents spam. GitHub gets a clean issue." },
+  {
+    num: "01",
+    title: "Connect GitHub",
+    desc: "OAuth in, pick a repo, get a token.",
+  },
+  {
+    num: "02",
+    title: "Drop in the SDK",
+    desc: "One component in your layout. That's it.",
+  },
+  {
+    num: "03",
+    title: "Bugs become issues",
+    desc: "AI writes the issue. Dedup prevents spam. GitHub gets a clean issue.",
+  },
 ];
 
 const COMPARISONS = [
-  { name: "Jam.dev", screenshot: true, sdk: false, ai: false, dedup: false, mcp: false, oss: false },
-  { name: "Marker.io", screenshot: true, sdk: false, ai: false, dedup: false, mcp: false, oss: false },
-  { name: "BetterBugs", screenshot: true, sdk: true, ai: "Partial", dedup: false, mcp: false, oss: false },
-  { name: "Sentry", screenshot: false, sdk: true, ai: false, dedup: true, mcp: false, oss: true },
-  { name: "Glitchgrab", screenshot: true, sdk: true, ai: true, dedup: true, mcp: true, oss: true },
+  {
+    name: "Jam.dev",
+    screenshot: true,
+    sdk: false,
+    ai: false,
+    dedup: false,
+    mcp: false,
+    oss: false,
+  },
+  {
+    name: "Marker.io",
+    screenshot: true,
+    sdk: false,
+    ai: false,
+    dedup: false,
+    mcp: false,
+    oss: false,
+  },
+  {
+    name: "BetterBugs",
+    screenshot: true,
+    sdk: true,
+    ai: "Partial",
+    dedup: false,
+    mcp: false,
+    oss: false,
+  },
+  {
+    name: "Sentry",
+    screenshot: false,
+    sdk: true,
+    ai: false,
+    dedup: true,
+    mcp: false,
+    oss: true,
+  },
+  {
+    name: "Glitchgrab",
+    screenshot: true,
+    sdk: true,
+    ai: true,
+    dedup: true,
+    mcp: true,
+    oss: true,
+  },
 ];
 
 function Check() {
@@ -74,8 +126,16 @@ export default function LandingPage() {
       <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border bg-background/80 backdrop-blur-xl">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6 sm:py-4">
           <div className="flex items-center gap-2">
-            <Image src="/logo.png" alt="Glitchgrab" width={28} height={28} className="rounded-full sm:w-8 sm:h-8" />
-            <span className="font-semibold text-base sm:text-lg tracking-tight">glitchgrab</span>
+            <Image
+              src="/logo.png"
+              alt="Glitchgrab"
+              width={28}
+              height={28}
+              className="rounded-full sm:w-8 sm:h-8"
+            />
+            <span className="font-semibold text-base sm:text-lg tracking-tight">
+              glitchgrab
+            </span>
           </div>
           <div className="flex items-center gap-2 sm:gap-3">
             <a href="#waitlist">
@@ -114,28 +174,39 @@ export default function LandingPage() {
               </h1>
 
               <p className="mx-auto mt-4 max-w-xl text-sm text-muted-foreground leading-relaxed sm:mt-6 sm:text-lg lg:mx-0">
-                Turn messy bug reports — screenshots, production errors, user complaints — into
-                well-structured GitHub issues. Powered by AI.
+                Turn messy bug reports — screenshots, production errors, user
+                complaints — into well-structured GitHub issues. Powered by AI.
               </p>
 
               <div className="mt-5 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm sm:mt-8 lg:justify-start">
                 <span className="flex items-center gap-2 text-muted-foreground">
-                  <span className="text-primary">&#9889;</span> Ship fixes faster
+                  <span className="text-primary">&#9889;</span> Ship fixes
+                  faster
                 </span>
                 <span className="flex items-center gap-2 text-muted-foreground">
-                  <span className="text-primary">&#128337;</span> Save hours on triage
+                  <span className="text-primary">&#128337;</span> Save hours on
+                  triage
                 </span>
                 <span className="flex items-center gap-2 text-muted-foreground">
-                  <span className="text-primary">&#9881;&#65039;</span> Zero config SDK
+                  <span className="text-primary">&#9881;&#65039;</span> Zero
+                  config SDK
                 </span>
               </div>
 
               <div className="mt-6 flex flex-col items-center gap-3 sm:mt-8 sm:flex-row sm:justify-center lg:justify-start sm:gap-4">
                 <a href="#waitlist">
-                  <Button size="lg" className="w-full sm:w-auto">Join the Waitlist</Button>
+                  <Button size="lg" className="w-full sm:w-auto">
+                    Join the Waitlist
+                  </Button>
                 </a>
                 <a href="#how-it-works">
-                  <Button variant="outline" size="lg" className="w-full sm:w-auto">See how it works</Button>
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="w-full sm:w-auto"
+                  >
+                    See how it works
+                  </Button>
                 </a>
               </div>
             </div>
@@ -160,8 +231,9 @@ export default function LandingPage() {
             <span className="text-primary">Start shipping fixes.</span>
           </h2>
           <p className="mt-3 text-sm text-muted-foreground max-w-xl mx-auto sm:mt-4 sm:text-base leading-relaxed">
-            Crashes, screenshots, user complaints — doesn&apos;t matter how the bug reaches you.
-            Glitchgrab turns it into a clean GitHub issue. One click. Or zero.
+            Crashes, screenshots, user complaints — doesn&apos;t matter how the
+            bug reaches you. Glitchgrab turns it into a clean GitHub issue. One
+            click. Or zero.
           </p>
         </div>
 
@@ -178,7 +250,10 @@ export default function LandingPage() {
                     <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary/10 text-[10px] font-bold text-primary font-mono">
                       {i + 1}
                     </span>
-                    <Badge variant="secondary" className="text-primary bg-primary/10 text-[10px]">
+                    <Badge
+                      variant="secondary"
+                      className="text-primary bg-primary/10 text-[10px]"
+                    >
                       {flow.tag}
                     </Badge>
                   </div>
@@ -190,8 +265,12 @@ export default function LandingPage() {
                       {flow.anim === "dedup" && <DedupAnim />}
                     </div>
                   </div>
-                  <h3 className="text-sm font-semibold mb-1 sm:text-base">{flow.title}</h3>
-                  <p className="text-xs text-muted-foreground leading-relaxed sm:text-sm">{flow.desc}</p>
+                  <h3 className="text-sm font-semibold mb-1 sm:text-base">
+                    {flow.title}
+                  </h3>
+                  <p className="text-xs text-muted-foreground leading-relaxed sm:text-sm">
+                    {flow.desc}
+                  </p>
                 </CardContent>
               </Card>
             ))}
@@ -205,18 +284,31 @@ export default function LandingPage() {
       </section>
 
       {/* How it Works */}
-      <section id="how-it-works" className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
+      <section
+        id="how-it-works"
+        className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24"
+      >
         <div className="text-center mb-10 sm:mb-16">
-          <h2 className="text-2xl font-bold sm:text-3xl lg:text-4xl">Stupid simple setup</h2>
-          <p className="mt-3 text-sm text-muted-foreground sm:mt-4 sm:text-base">Three steps. Under five minutes.</p>
+          <h2 className="text-2xl font-bold sm:text-3xl lg:text-4xl">
+            Stupid simple setup
+          </h2>
+          <p className="mt-3 text-sm text-muted-foreground sm:mt-4 sm:text-base">
+            Three steps. Under five minutes.
+          </p>
         </div>
 
         <div className="grid gap-6 sm:grid-cols-3 sm:gap-8">
           {STEPS.map((step) => (
             <div key={step.num} className="relative">
-              <span className="text-4xl font-bold text-primary/10 font-mono sm:text-6xl">{step.num}</span>
-              <h3 className="mt-1 text-lg font-semibold sm:mt-2 sm:text-xl">{step.title}</h3>
-              <p className="mt-1 text-sm text-muted-foreground sm:mt-2">{step.desc}</p>
+              <span className="text-4xl font-bold text-primary/10 font-mono sm:text-6xl">
+                {step.num}
+              </span>
+              <h3 className="mt-1 text-lg font-semibold sm:mt-2 sm:text-xl">
+                {step.title}
+              </h3>
+              <p className="mt-1 text-sm text-muted-foreground sm:mt-2">
+                {step.desc}
+              </p>
             </div>
           ))}
         </div>
@@ -225,10 +317,12 @@ export default function LandingPage() {
       {/* AI Pipeline */}
       <section className="mx-auto max-w-4xl px-4 py-16 sm:px-6 sm:py-24">
         <div className="text-center mb-10 sm:mb-16">
-          <h2 className="text-2xl font-bold sm:text-3xl lg:text-4xl">AI does the heavy lifting</h2>
+          <h2 className="text-2xl font-bold sm:text-3xl lg:text-4xl">
+            AI does the heavy lifting
+          </h2>
           <p className="mt-3 text-sm text-muted-foreground max-w-lg mx-auto sm:mt-4 sm:text-base">
-            Not AI-assisted. AI-generated. The full issue — title, description, labels, severity —
-            written from raw input.
+            Not AI-assisted. AI-generated. The full issue — title, description,
+            labels, severity — written from raw input.
           </p>
         </div>
 
@@ -236,19 +330,35 @@ export default function LandingPage() {
           <CardContent className="p-5 sm:p-12">
             <div className="flex flex-col gap-4 sm:gap-6">
               {[
-                { label: "Normalize", desc: "Image, text, or error → standard format" },
-                { label: "Enrich", desc: "Pull repo context — existing issues, labels" },
+                {
+                  label: "Normalize",
+                  desc: "Image, text, or error → standard format",
+                },
+                {
+                  label: "Enrich",
+                  desc: "Pull repo context — existing issues, labels",
+                },
                 { label: "Dedup", desc: "Check if this bug already exists" },
                 { label: "Generate", desc: "AI writes the complete issue" },
-                { label: "Push", desc: "Create GitHub issue + attach screenshots" },
+                {
+                  label: "Push",
+                  desc: "Create GitHub issue + attach screenshots",
+                },
               ].map((step, i) => (
-                <div key={step.label} className="flex items-start gap-3 sm:gap-4">
+                <div
+                  key={step.label}
+                  className="flex items-start gap-3 sm:gap-4"
+                >
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary font-mono text-xs font-bold sm:h-10 sm:w-10 sm:text-sm">
                     {i + 1}
                   </div>
                   <div>
-                    <h4 className="font-semibold text-sm sm:text-base">{step.label}</h4>
-                    <p className="text-xs text-muted-foreground sm:text-sm">{step.desc}</p>
+                    <h4 className="font-semibold text-sm sm:text-base">
+                      {step.label}
+                    </h4>
+                    <p className="text-xs text-muted-foreground sm:text-sm">
+                      {step.desc}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -267,21 +377,40 @@ export default function LandingPage() {
       {/* Comparison */}
       <section className="mx-auto max-w-4xl px-4 py-16 sm:px-6 sm:py-24">
         <div className="text-center mb-10 sm:mb-16">
-          <h2 className="text-2xl font-bold sm:text-3xl lg:text-4xl">How we compare</h2>
-          <p className="mt-3 text-sm text-muted-foreground sm:mt-4 sm:text-base">Not trying to replace Sentry. Just filling the gap between &quot;I found a bug&quot; and &quot;here&apos;s a well-written issue.&quot;</p>
+          <h2 className="text-2xl font-bold sm:text-3xl lg:text-4xl">
+            How we compare
+          </h2>
+          <p className="mt-3 text-sm text-muted-foreground sm:mt-4 sm:text-base">
+            Not trying to replace Sentry. Just filling the gap between &quot;I
+            found a bug&quot; and &quot;here&apos;s a well-written issue.&quot;
+          </p>
         </div>
 
         <div className="overflow-x-auto rounded-2xl border border-border">
           <table className="w-full text-xs sm:text-sm">
             <thead>
               <tr className="border-b border-border bg-card text-left">
-                <th className="px-3 py-3 font-medium text-muted-foreground sm:px-6 sm:py-4">Tool</th>
-                <th className="px-2 py-3 font-medium text-muted-foreground text-center sm:px-4 sm:py-4">Screenshot</th>
-                <th className="px-2 py-3 font-medium text-muted-foreground text-center sm:px-4 sm:py-4">SDK</th>
-                <th className="px-2 py-3 font-medium text-muted-foreground text-center sm:px-4 sm:py-4">AI</th>
-                <th className="px-2 py-3 font-medium text-muted-foreground text-center sm:px-4 sm:py-4">Dedup</th>
-                <th className="px-2 py-3 font-medium text-muted-foreground text-center sm:px-4 sm:py-4">MCP</th>
-                <th className="px-2 py-3 font-medium text-muted-foreground text-center sm:px-4 sm:py-4">OSS</th>
+                <th className="px-3 py-3 font-medium text-muted-foreground sm:px-6 sm:py-4">
+                  Tool
+                </th>
+                <th className="px-2 py-3 font-medium text-muted-foreground text-center sm:px-4 sm:py-4">
+                  Screenshot
+                </th>
+                <th className="px-2 py-3 font-medium text-muted-foreground text-center sm:px-4 sm:py-4">
+                  SDK
+                </th>
+                <th className="px-2 py-3 font-medium text-muted-foreground text-center sm:px-4 sm:py-4">
+                  AI
+                </th>
+                <th className="px-2 py-3 font-medium text-muted-foreground text-center sm:px-4 sm:py-4">
+                  Dedup
+                </th>
+                <th className="px-2 py-3 font-medium text-muted-foreground text-center sm:px-4 sm:py-4">
+                  MCP
+                </th>
+                <th className="px-2 py-3 font-medium text-muted-foreground text-center sm:px-4 sm:py-4">
+                  OSS
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -292,15 +421,29 @@ export default function LandingPage() {
                     row.name === "Glitchgrab" ? "bg-primary/5" : ""
                   }`}
                 >
-                  <td className={`px-3 py-3 font-medium sm:px-6 sm:py-4 ${row.name === "Glitchgrab" ? "text-primary" : ""}`}>
+                  <td
+                    className={`px-3 py-3 font-medium sm:px-6 sm:py-4 ${row.name === "Glitchgrab" ? "text-primary" : ""}`}
+                  >
                     {row.name}
                   </td>
-                  <td className="px-2 py-3 text-center sm:px-4 sm:py-4"><CellValue val={row.screenshot} /></td>
-                  <td className="px-2 py-3 text-center sm:px-4 sm:py-4"><CellValue val={row.sdk} /></td>
-                  <td className="px-2 py-3 text-center sm:px-4 sm:py-4"><CellValue val={row.ai} /></td>
-                  <td className="px-2 py-3 text-center sm:px-4 sm:py-4"><CellValue val={row.dedup} /></td>
-                  <td className="px-2 py-3 text-center sm:px-4 sm:py-4"><CellValue val={row.mcp} /></td>
-                  <td className="px-2 py-3 text-center sm:px-4 sm:py-4"><CellValue val={row.oss} /></td>
+                  <td className="px-2 py-3 text-center sm:px-4 sm:py-4">
+                    <CellValue val={row.screenshot} />
+                  </td>
+                  <td className="px-2 py-3 text-center sm:px-4 sm:py-4">
+                    <CellValue val={row.sdk} />
+                  </td>
+                  <td className="px-2 py-3 text-center sm:px-4 sm:py-4">
+                    <CellValue val={row.ai} />
+                  </td>
+                  <td className="px-2 py-3 text-center sm:px-4 sm:py-4">
+                    <CellValue val={row.dedup} />
+                  </td>
+                  <td className="px-2 py-3 text-center sm:px-4 sm:py-4">
+                    <CellValue val={row.mcp} />
+                  </td>
+                  <td className="px-2 py-3 text-center sm:px-4 sm:py-4">
+                    <CellValue val={row.oss} />
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -311,20 +454,30 @@ export default function LandingPage() {
       {/* Pricing */}
       <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
         <div className="text-center mb-10 sm:mb-16">
-          <h2 className="text-2xl font-bold sm:text-3xl lg:text-4xl">Simple pricing</h2>
-          <p className="mt-3 text-sm text-muted-foreground sm:mt-4 sm:text-base">One plan. No surprises. 7-day free trial. Cancel anytime.</p>
+          <h2 className="text-2xl font-bold sm:text-3xl lg:text-4xl">
+            Simple pricing
+          </h2>
+          <p className="mt-3 text-sm text-muted-foreground sm:mt-4 sm:text-base">
+            One plan. No surprises. 7-day free trial. Cancel anytime.
+          </p>
         </div>
 
         <div className="mx-auto max-w-md">
           <Card className="border-2 border-primary overflow-visible relative">
             <CardContent className="p-5 pt-7 sm:p-8 sm:pt-8">
-              <Badge className="absolute -top-2.5 left-4 sm:left-auto sm:right-6 sm:-top-3 z-10">7-day free trial</Badge>
+              <Badge className="absolute -top-2.5 left-4 sm:left-auto sm:right-6 sm:-top-3 z-10">
+                7-day free trial
+              </Badge>
               <h3 className="text-lg font-semibold">Glitchgrab Pro</h3>
               <div className="mt-3 flex items-baseline gap-1 sm:mt-4">
-                <span className="text-3xl font-bold text-primary sm:text-4xl">&#8377;199</span>
+                <span className="text-3xl font-bold text-primary sm:text-4xl">
+                  &#8377;199
+                </span>
                 <span className="text-muted-foreground">/month</span>
               </div>
-              <p className="mt-1.5 text-xs text-muted-foreground sm:mt-2 sm:text-sm">AI-powered bug capture — zero setup</p>
+              <p className="mt-1.5 text-xs text-muted-foreground sm:mt-2 sm:text-sm">
+                AI-powered bug capture — zero setup
+              </p>
               <ul className="mt-6 space-y-2.5 text-xs sm:mt-8 sm:space-y-3 sm:text-sm">
                 {[
                   "Unlimited repos",
@@ -346,18 +499,25 @@ export default function LandingPage() {
       </section>
 
       {/* Waitlist */}
-      <section id="waitlist" className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24">
+      <section
+        id="waitlist"
+        className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24"
+      >
         <Card className="border-primary/30 bg-primary/5">
           <CardContent className="p-5 text-center sm:p-12">
-            <h2 className="text-2xl font-bold sm:text-3xl lg:text-4xl">Get early access</h2>
+            <h2 className="text-2xl font-bold sm:text-3xl lg:text-4xl">
+              Get early access
+            </h2>
             <p className="mt-3 text-sm text-muted-foreground max-w-md mx-auto sm:mt-4">
-              We&apos;re building Glitchgrab in public. Join the waitlist to get early access, shape
-              the product, and lock in launch pricing.
+              We&apos;re building Glitchgrab in public. Join the waitlist to get
+              early access, shape the product, and lock in launch pricing.
             </p>
 
             <WaitlistForm />
 
-            <p className="mt-3 text-xs text-muted-foreground sm:mt-4">No spam. Just launch updates.</p>
+            <p className="mt-3 text-xs text-muted-foreground sm:mt-4">
+              No spam. Just launch updates.
+            </p>
           </CardContent>
         </Card>
       </section>
@@ -369,7 +529,13 @@ export default function LandingPage() {
             {/* Brand */}
             <div className="col-span-2 sm:col-span-1">
               <div className="flex items-center gap-2 mb-3">
-                <Image src="/logo.png" alt="Glitchgrab" width={24} height={24} className="rounded-full" />
+                <Image
+                  src="/logo.png"
+                  alt="Glitchgrab"
+                  width={24}
+                  height={24}
+                  className="rounded-full"
+                />
                 <span className="text-sm font-semibold">glitchgrab</span>
               </div>
               <p className="text-xs text-muted-foreground leading-relaxed max-w-[200px]">
@@ -379,31 +545,104 @@ export default function LandingPage() {
 
             {/* Product */}
             <div>
-              <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">Product</h4>
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+                Product
+              </h4>
               <ul className="space-y-2 text-sm">
-                <li><a href="#how-it-works" className="text-muted-foreground hover:text-primary transition">How it works</a></li>
-                <li><Link href="/changelog" className="text-muted-foreground hover:text-primary transition">Changelog</Link></li>
-                <li><a href="#waitlist" className="text-muted-foreground hover:text-primary transition">Join Waitlist</a></li>
+                <li>
+                  <a
+                    href="#how-it-works"
+                    className="text-muted-foreground hover:text-primary transition"
+                  >
+                    How it works
+                  </a>
+                </li>
+                <li>
+                  <Link
+                    href="/changelog"
+                    className="text-muted-foreground hover:text-primary transition"
+                  >
+                    Changelog
+                  </Link>
+                </li>
+                <li>
+                  <a
+                    href="#waitlist"
+                    className="text-muted-foreground hover:text-primary transition"
+                  >
+                    Join Waitlist
+                  </a>
+                </li>
               </ul>
             </div>
 
             {/* Resources */}
             <div>
-              <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">Resources</h4>
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+                Resources
+              </h4>
               <ul className="space-y-2 text-sm">
-                <li><a href="https://github.com/webnaresh/glitchgrab" target="_blank" rel="noopener" className="text-muted-foreground hover:text-primary transition">GitHub</a></li>
-                <li><a href="https://www.npmjs.com/package/glitchgrab" target="_blank" rel="noopener" className="text-muted-foreground hover:text-primary transition">npm Package</a></li>
-                <li><Link href="/contact" className="text-muted-foreground hover:text-primary transition">Contact</Link></li>
+                <li>
+                  <a
+                    href="https://github.com/webnaresh/glitchgrab"
+                    target="_blank"
+                    rel="noopener"
+                    className="text-muted-foreground hover:text-primary transition"
+                  >
+                    GitHub
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://www.npmjs.com/package/glitchgrab"
+                    target="_blank"
+                    rel="noopener"
+                    className="text-muted-foreground hover:text-primary transition"
+                  >
+                    npm Package
+                  </a>
+                </li>
+                <li>
+                  <Link
+                    href="/contact"
+                    className="text-muted-foreground hover:text-primary transition"
+                  >
+                    Contact
+                  </Link>
+                </li>
               </ul>
             </div>
 
             {/* Legal */}
             <div>
-              <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">Legal</h4>
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+                Legal
+              </h4>
               <ul className="space-y-2 text-sm">
-                <li><Link href="/privacy" className="text-muted-foreground hover:text-primary transition">Privacy Policy</Link></li>
-                <li><Link href="/terms" className="text-muted-foreground hover:text-primary transition">Terms of Service</Link></li>
-                <li><Link href="/refund" className="text-muted-foreground hover:text-primary transition">Refund Policy</Link></li>
+                <li>
+                  <Link
+                    href="/privacy"
+                    className="text-muted-foreground hover:text-primary transition"
+                  >
+                    Privacy Policy
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/terms"
+                    className="text-muted-foreground hover:text-primary transition"
+                  >
+                    Terms of Service
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/refund"
+                    className="text-muted-foreground hover:text-primary transition"
+                  >
+                    Refund Policy
+                  </Link>
+                </li>
               </ul>
             </div>
           </div>
@@ -411,11 +650,19 @@ export default function LandingPage() {
           {/* Bottom bar */}
           <div className="mt-10 flex flex-col items-center gap-2 border-t border-border pt-6 sm:flex-row sm:justify-between">
             <p className="text-xs text-muted-foreground">
-              &copy; {new Date().getFullYear()} Navibyte Innovation Pvt. Ltd. All rights reserved.
+              &copy; {new Date().getFullYear()} Navibyte Innovation Pvt. Ltd.
+              All rights reserved.
             </p>
             <p className="text-xs text-muted-foreground">
               Open source under{" "}
-              <a href="https://github.com/webnaresh/glitchgrab/blob/main/LICENSE" target="_blank" rel="noopener" className="text-primary hover:underline">MIT License</a>
+              <a
+                href="https://github.com/webnaresh/glitchgrab/blob/main/LICENSE"
+                target="_blank"
+                rel="noopener"
+                className="text-primary hover:underline"
+              >
+                MIT License
+              </a>
             </p>
           </div>
         </div>
