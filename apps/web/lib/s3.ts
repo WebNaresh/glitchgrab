@@ -28,7 +28,10 @@ export async function uploadScreenshotToS3(
   const bucketName = process.env.NEXT_AWS_BUCKET_NAME || process.env.AWS_S3_BUCKET_NAME;
   const region = process.env.NEXT_AWS_S3_REGION || process.env.AWS_S3_REGION;
 
-  if (!bucketName || !region) return null;
+  if (!bucketName || !region) {
+    console.error("[S3] Missing config:", { bucketName: !!bucketName, region: !!region });
+    return null;
+  }
 
   const base64Match = base64DataUrl.match(/^data:image\/(\w+);base64,(.+)$/);
   if (!base64Match) return null;
@@ -56,7 +59,7 @@ export async function uploadScreenshotToS3(
     }
     return `https://${bucketName}.s3.${region}.amazonaws.com/${key}?v=${Date.now()}`;
   } catch (error) {
-    console.error("S3 screenshot upload failed:", error);
+    console.error("[S3] Upload failed:", error instanceof Error ? error.message : error);
     return null;
   }
 }
