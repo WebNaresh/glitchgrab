@@ -84,7 +84,7 @@ export async function POST(
 
     // Get GitHub access token
     const account = await prisma.account.findFirst({
-      where: { userId: repoOwnerId!, provider: "github" },
+      where: { userId: report.repo.userId, provider: "github" },
     });
 
     if (!account?.access_token) {
