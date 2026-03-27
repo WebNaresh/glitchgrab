@@ -235,7 +235,7 @@ function GlitchgrabProviderInner({
         return null;
       }
     },
-    [token, baseUrl, onReportSent]
+    [token, baseUrl, onReportSent, session]
   );
 
   const reportBug = useCallback(
