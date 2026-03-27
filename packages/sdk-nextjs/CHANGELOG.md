@@ -1,3 +1,10 @@
+## [1.8.0](https://github.com/WebNaresh/glitchgrab/compare/sdk-v1.7.2...sdk-v1.8.0) (2026-03-27)
+
+### Features
+
+* **sdk:** add limit option to useGlitchgrabReports and update README with hook + TanStack Query examples ([cad4ebf](https://github.com/WebNaresh/glitchgrab/commit/cad4ebf530def378ae8302c263a751dc2748582d))
+* **sdk:** add useGlitchgrabReports hook and fetchGlitchgrabReports fetcher ([d43822e](https://github.com/WebNaresh/glitchgrab/commit/d43822e7ff9739f6420f0b389e1b43225b28dc4b))
+
 ## [1.7.2](https://github.com/WebNaresh/glitchgrab/compare/sdk-v1.7.1...sdk-v1.7.2) (2026-03-27)
 
 ### Bug Fixes
