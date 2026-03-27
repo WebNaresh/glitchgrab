@@ -1,3 +1,9 @@
+## [1.9.1](https://github.com/WebNaresh/glitchgrab/compare/sdk-v1.9.0...sdk-v1.9.1) (2026-03-27)
+
+### Bug Fixes
+
+* **sdk:** add session to report callback deps so session data is included in reports ([f244e81](https://github.com/WebNaresh/glitchgrab/commit/f244e818313232cd238855b8a14d73e24de26e9c))
+
 ## [1.9.0](https://github.com/WebNaresh/glitchgrab/compare/sdk-v1.8.0...sdk-v1.9.0) (2026-03-27)
 
 ### Features
