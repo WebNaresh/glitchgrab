@@ -53,11 +53,7 @@ export async function uploadScreenshotToS3(
       })
     );
 
-    const cdnDomain = process.env.AWS_S3_CDN_DOMAIN;
-    if (cdnDomain) {
-      return `https://${cdnDomain}/${key}?v=${Date.now()}`;
-    }
-    return `https://${bucketName}.s3.${region}.amazonaws.com/${key}?v=${Date.now()}`;
+    return `https://cdn.glitchgrab.dev/${key}?v=${Date.now()}`;
   } catch (error) {
     console.error("[S3] Upload failed:", error instanceof Error ? error.message : error);
     return null;
