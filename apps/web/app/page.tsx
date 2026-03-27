@@ -6,37 +6,37 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { WaitlistForm } from "./waitlist-form";
 import {
-  HandwrittenNoteAnim,
+  DashboardChatAnim,
   AutoCaptureAnim,
   ReportButtonAnim,
-  ScreenshotUploadAnim,
+  DedupAnim,
 } from "./flow-animations";
 import { HeroVideo } from "./hero-video";
 
 const FLOWS = [
   {
-    anim: "handwritten",
-    title: "Handwritten Notes",
-    desc: "Snap a photo of your notebook scribbles. AI reads your handwriting and creates a structured issue.",
-    tag: "Unique to Glitchgrab",
+    anim: "dashboard",
+    title: "Create Issues from Anywhere",
+    desc: "Describe a bug or paste a screenshot in the dashboard. AI writes the title, body, labels, and severity — pushed to GitHub in seconds.",
+    tag: "AI-powered",
   },
   {
     anim: "autocapture",
-    title: "Auto-Capture SDK",
-    desc: "Drop in our SDK. Production errors get captured with full context — stack trace, visited pages, screenshot.",
+    title: "Catch Crashes While You Sleep",
+    desc: "Wrap your app once. Every unhandled error gets captured with stack trace, breadcrumbs, network logs, and a screenshot — automatically.",
     tag: "Zero config",
   },
   {
     anim: "report",
-    title: "Report Button",
-    desc: "Your users click 'Report Error' — context is captured automatically, issue lands in GitHub.",
-    tag: "End-user friendly",
+    title: "Let Users Report Bugs for You",
+    desc: "Drop a report button in your app. Users click it, a screenshot is captured instantly, and a GitHub issue appears in your repo — no forms, no emails.",
+    tag: "Built into SDK",
   },
   {
-    anim: "screenshot",
-    title: "Screenshot Upload",
-    desc: "Upload a screenshot on the dashboard, add a note. AI does the rest — title, body, labels, severity.",
-    tag: "Dashboard",
+    anim: "dedup",
+    title: "Zero Duplicate Issues",
+    desc: "AI compares every new report against your open issues. Similar bugs get added as comments, not new issues. Merge related issues with one command.",
+    tag: "Smart dedup",
   },
 ] as const;
 
@@ -77,6 +77,9 @@ export default function LandingPage() {
             <span className="font-semibold text-base sm:text-lg tracking-tight">glitchgrab</span>
           </div>
           <div className="flex items-center gap-2 sm:gap-3">
+            <Link href="/login">
+              <Button variant="ghost" size="sm">Login</Button>
+            </Link>
             <a href="#waitlist">
               <Button size="sm">Join Waitlist</Button>
             </a>
@@ -149,11 +152,10 @@ export default function LandingPage() {
       <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
         <div className="text-center mb-10 sm:mb-16">
           <h2 className="text-2xl font-bold sm:text-3xl lg:text-4xl">
-            Four ways in. One clean issue out.
+            Bugs come in. Clean issues go out.
           </h2>
           <p className="mt-3 text-sm text-muted-foreground max-w-lg mx-auto sm:mt-4 sm:text-base">
-            No matter how the bug reaches you — a photo, a crash, a user complaint — Glitchgrab
-            turns it into a structured GitHub issue.
+            Every bug — whether it&apos;s a crash, a screenshot, or a user complaint — becomes a structured GitHub issue. Automatically.
           </p>
         </div>
 
@@ -165,10 +167,10 @@ export default function LandingPage() {
             >
               <CardContent className="p-5 sm:p-8">
                 <div className="mb-3 sm:mb-4">
-                  {flow.anim === "handwritten" && <HandwrittenNoteAnim />}
+                  {flow.anim === "dashboard" && <DashboardChatAnim />}
                   {flow.anim === "autocapture" && <AutoCaptureAnim />}
                   {flow.anim === "report" && <ReportButtonAnim />}
-                  {flow.anim === "screenshot" && <ScreenshotUploadAnim />}
+                  {flow.anim === "dedup" && <DedupAnim />}
                 </div>
                 <Badge variant="secondary" className="mb-2 sm:mb-3 text-primary bg-primary/10">
                   {flow.tag}
@@ -289,58 +291,30 @@ export default function LandingPage() {
       <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
         <div className="text-center mb-10 sm:mb-16">
           <h2 className="text-2xl font-bold sm:text-3xl lg:text-4xl">Simple pricing</h2>
-          <p className="mt-3 text-sm text-muted-foreground sm:mt-4 sm:text-base">Two plans. No surprises. Cancel anytime.</p>
+          <p className="mt-3 text-sm text-muted-foreground sm:mt-4 sm:text-base">One plan. No surprises. 7-day free trial. Cancel anytime.</p>
         </div>
 
-        <div className="mx-auto grid max-w-4xl gap-4 sm:grid-cols-2 sm:gap-6">
-          {/* BYOK */}
-          <Card>
-            <CardContent className="p-5 sm:p-8">
-              <h3 className="text-lg font-semibold">Pro (BYOK)</h3>
-              <div className="mt-3 flex items-baseline gap-1 sm:mt-4">
-                <span className="text-3xl font-bold sm:text-4xl">$5</span>
-                <span className="text-muted-foreground">/month</span>
-              </div>
-              <p className="mt-1.5 text-xs text-muted-foreground sm:mt-2 sm:text-sm">Bring your own OpenAI or Claude key</p>
-              <ul className="mt-6 space-y-2.5 text-xs sm:mt-8 sm:space-y-3 sm:text-sm">
-                {[
-                  "Unlimited repos",
-                  "Unlimited issues",
-                  "SDK auto-capture",
-                  "Smart dedup & updates",
-                  "Screenshot analysis",
-                  "You provide your AI key",
-                ].map((f) => (
-                  <li key={f} className="flex items-center gap-2">
-                    <span className="text-green">✓</span>
-                    <span className="text-muted-foreground">{f}</span>
-                  </li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
-
-          {/* Platform */}
+        <div className="mx-auto max-w-md">
           <Card className="border-2 border-primary overflow-visible relative">
             <CardContent className="p-5 pt-7 sm:p-8 sm:pt-8">
-              <Badge className="absolute -top-2.5 left-4 sm:left-auto sm:right-6 sm:-top-3 z-10">Recommended</Badge>
-              <h3 className="text-lg font-semibold">Pro (Platform AI)</h3>
+              <Badge className="absolute -top-2.5 left-4 sm:left-auto sm:right-6 sm:-top-3 z-10">7-day free trial</Badge>
+              <h3 className="text-lg font-semibold">Glitchgrab Pro</h3>
               <div className="mt-3 flex items-baseline gap-1 sm:mt-4">
-                <span className="text-3xl font-bold text-primary sm:text-4xl">$10</span>
+                <span className="text-3xl font-bold text-primary sm:text-4xl">&#8377;199</span>
                 <span className="text-muted-foreground">/month</span>
               </div>
-              <p className="mt-1.5 text-xs text-muted-foreground sm:mt-2 sm:text-sm">We provide AI — zero setup</p>
+              <p className="mt-1.5 text-xs text-muted-foreground sm:mt-2 sm:text-sm">AI-powered bug capture — zero setup</p>
               <ul className="mt-6 space-y-2.5 text-xs sm:mt-8 sm:space-y-3 sm:text-sm">
                 {[
                   "Unlimited repos",
                   "100 issues created/mo",
-                  "Updates & closes are free",
+                  "Smart dedup & updates (free)",
                   "SDK auto-capture",
                   "Screenshot analysis",
                   "No API key needed",
                 ].map((f) => (
                   <li key={f} className="flex items-center gap-2">
-                    <span className="text-primary">✓</span>
+                    <span className="text-primary">&#10003;</span>
                     <span>{f}</span>
                   </li>
                 ))}
@@ -375,23 +349,17 @@ export default function LandingPage() {
               <Image src="/logo.png" alt="Glitchgrab" width={20} height={20} className="rounded-full sm:w-6 sm:h-6" />
               <span className="text-xs font-medium sm:text-sm">glitchgrab</span>
             </div>
-            <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-muted-foreground sm:text-sm">
-              <Link href="/privacy" className="hover:text-primary transition">Privacy</Link>
-              <Link href="/terms" className="hover:text-primary transition">Terms</Link>
-              <Link href="/refund" className="hover:text-primary transition">Refunds</Link>
-              <Link href="/contact" className="hover:text-primary transition">Contact</Link>
-              <Link href="/changelog" className="hover:text-primary transition">Changelog</Link>
+            <div className="flex flex-wrap items-center justify-center gap-1">
+              <Link href="/privacy"><Button variant="link" size="sm">Privacy</Button></Link>
+              <Link href="/terms"><Button variant="link" size="sm">Terms</Button></Link>
+              <Link href="/refund"><Button variant="link" size="sm">Refunds</Button></Link>
+              <Link href="/contact"><Button variant="link" size="sm">Contact</Button></Link>
             </div>
           </div>
           <p className="text-center text-xs text-muted-foreground mt-4 sm:text-sm">
             Built by{" "}
-            <a
-              href="https://github.com/webnaresh"
-              className="hover:text-primary transition"
-              target="_blank"
-              rel="noopener"
-            >
-              Naresh
+            <a href="https://github.com/webnaresh" target="_blank" rel="noopener">
+              <Button variant="link" size="sm" className="p-0 h-auto text-xs sm:text-sm">Naresh</Button>
             </a>
           </p>
         </div>
