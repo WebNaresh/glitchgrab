@@ -1,3 +1,9 @@
+## [1.1.0](https://github.com/WebNaresh/glitchgrab/compare/v1.0.0...v1.1.0) (2026-03-27)
+
+### Features
+
+* **sdk:** add changelog generation to SDK release workflow ([9e5650b](https://github.com/WebNaresh/glitchgrab/commit/9e5650badf5d48fcb3cb34f370c493cf263e1ed5))
+
 ## 1.0.0 (2026-03-27)
 
 ### Features
