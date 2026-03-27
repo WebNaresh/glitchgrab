@@ -1,3 +1,14 @@
+## [1.4.0](https://github.com/WebNaresh/glitchgrab/compare/v1.3.0...v1.4.0) (2026-03-27)
+
+### Features
+
+* **sdk:** add useGlitchgrabActions hook with isPending, error, onSuccess, onError callbacks ([b6c700c](https://github.com/WebNaresh/glitchgrab/commit/b6c700c8aacf0939bb0dfd2345451d19940df19d))
+
+### Bug Fixes
+
+* **proxy:** add CORS for /api/v1/reports routes used by SDK actions ([2e2ee15](https://github.com/WebNaresh/glitchgrab/commit/2e2ee158d5b23d7613dd20321af61c944f23f2d0))
+* **sdk:** add session to report callback deps so session data is included in reports ([f244e81](https://github.com/WebNaresh/glitchgrab/commit/f244e818313232cd238855b8a14d73e24de26e9c))
+
 ## [1.3.0](https://github.com/WebNaresh/glitchgrab/compare/v1.2.3...v1.3.0) (2026-03-27)
 
 ### Features
