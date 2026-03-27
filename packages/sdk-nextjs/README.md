@@ -273,6 +273,62 @@ Use the [Fetching Reports API](#fetching-reports-by-user) to list reports. Each 
 3. Approve/reject/close via API or dashboard buttons
 4. Labels and state sync directly to GitHub — GitHub is the source of truth
 
+## Conversation Thread (Comments)
+
+Each report has a conversation thread powered by GitHub issue comments. No extra database — comments live on GitHub.
+
+### View a report with comments
+
+```bash
+curl -H "Authorization: Bearer gg_your_token" \
+  https://glitchgrab.dev/api/v1/sdk/reports/REPORT_ID
+```
+
+Returns the full issue body + all comments:
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "cmn7abc123",
+    "issue": {
+      "title": "Button not working",
+      "body": "## Description\n\nThe submit button...",
+      "githubState": "open",
+      "labels": ["bug"]
+    },
+    "comments": [
+      {
+        "author": "WebNaresh",
+        "body": "Can you share your browser version?",
+        "createdAt": "2026-03-27T10:00:00Z"
+      },
+      {
+        "author": "WebNaresh",
+        "body": "It's Chrome 120 on Windows\n\n---\n> Commented by: **Vivek** (vivek@example.com)",
+        "createdAt": "2026-03-27T10:05:00Z"
+      }
+    ]
+  }
+}
+```
+
+### Reply to a report
+
+```bash
+curl -X POST \
+  -H "Authorization: Bearer gg_your_token" \
+  -H "Content-Type: application/json" \
+  -d '{"message": "I can reproduce this, fixing now", "reporterName": "Vivek", "reporterEmail": "vivek@example.com"}' \
+  https://glitchgrab.dev/api/v1/sdk/reports/REPORT_ID/comments
+```
+
+The comment is posted to the GitHub issue with attribution: "Commented by: **Vivek** (vivek@example.com)".
+
+### Dashboard
+
+Click any report on the Reports page to see the full conversation thread. Reply directly from the dashboard — comments sync to GitHub.
+
 ## Error Boundary
 
 Wrap components to auto-capture React errors:

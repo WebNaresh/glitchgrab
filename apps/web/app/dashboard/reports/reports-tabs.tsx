@@ -6,7 +6,8 @@ import axios from "axios";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ClipboardList, ExternalLink, Bug, GitFork, X, CheckCircle, XCircle, Loader2 } from "lucide-react";
+import { ClipboardList, Bug, GitFork, X, CheckCircle, XCircle, Loader2, MessageSquare } from "lucide-react";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -123,15 +124,13 @@ export function ReportsTabs({
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0 flex-1">
                     {report.issue ? (
-                      <a
-                        href={report.issue.githubUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                      <Link
+                        href={`/dashboard/reports/${report.id}`}
                         className="text-sm font-medium hover:underline flex items-center gap-1.5 min-w-0"
                       >
                         <span className="truncate">{report.issue.title}</span>
-                        <ExternalLink className="h-3 w-3 shrink-0 text-muted-foreground" />
-                      </a>
+                        <MessageSquare className="h-3 w-3 shrink-0 text-muted-foreground" />
+                      </Link>
                     ) : (
                       <p className="text-sm font-medium truncate">
                         {report.rawInput?.slice(0, 100) || report.failReason || "No description"}
