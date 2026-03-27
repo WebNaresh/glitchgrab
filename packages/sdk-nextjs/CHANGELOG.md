@@ -1,3 +1,9 @@
+## [1.6.2](https://github.com/WebNaresh/glitchgrab/compare/sdk-v1.6.1...sdk-v1.6.2) (2026-03-27)
+
+### Bug Fixes
+
+* **sdk:** max z-index to cover all host elements, fix button colors for light theme ([2c0765c](https://github.com/WebNaresh/glitchgrab/commit/2c0765c0a421f2ca7ee94f5790cad2bb1f289b45))
+
 ## [1.6.1](https://github.com/WebNaresh/glitchgrab/compare/sdk-v1.6.0...sdk-v1.6.1) (2026-03-27)
 
 ### Bug Fixes
