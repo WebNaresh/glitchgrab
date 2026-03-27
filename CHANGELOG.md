@@ -1,3 +1,11 @@
+## [1.2.2](https://github.com/WebNaresh/glitchgrab/compare/v1.2.1...v1.2.2) (2026-03-27)
+
+### Bug Fixes
+
+* **sdk-report:** add S3 upload debug logging to diagnose screenshot failures ([46fdc1b](https://github.com/WebNaresh/glitchgrab/commit/46fdc1b7f504120746180cdfcb11ae91e1c7d547))
+* **sdk:** await reportBug response before showing success message ([d9c01b3](https://github.com/WebNaresh/glitchgrab/commit/d9c01b38ac76560ac4680b7a4440e5682c4341ee))
+* **sdk:** use www.glitchgrab.dev to avoid naked domain redirect breaking CORS preflight ([bccbbd4](https://github.com/WebNaresh/glitchgrab/commit/bccbbd41d3c762420b468d0aac4ea5f15d591034))
+
 ## [1.2.1](https://github.com/WebNaresh/glitchgrab/compare/v1.2.0...v1.2.1) (2026-03-27)
 
 ### Bug Fixes
