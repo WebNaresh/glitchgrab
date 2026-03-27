@@ -187,10 +187,8 @@ export async function POST(request: Request) {
 
       // Upload screenshot to S3
       const screenshotData = body.metadata?.screenshot;
-      console.log("[SDK Report] Screenshot present:", !!screenshotData, screenshotData ? `${Math.round(screenshotData.length / 1024)}KB` : "none");
       if (screenshotData && typeof screenshotData === "string" && screenshotData.startsWith("data:image/")) {
         const screenshotUrl = await uploadScreenshotToS3(screenshotData, report.id);
-        console.log("[SDK Report] S3 upload result:", screenshotUrl ?? "FAILED");
         if (screenshotUrl) {
           issueBody += `\n\n## Screenshot\n\n![Screenshot](${screenshotUrl})`;
         }
