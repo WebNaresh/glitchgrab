@@ -1,37 +1,44 @@
 import Image from "next/image";
 import Link from "next/link";
-import { auth } from "@/lib/auth";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { WaitlistForm } from "./waitlist-form";
+import {
+  HandwrittenNoteAnim,
+  AutoCaptureAnim,
+  ReportButtonAnim,
+  ScreenshotUploadAnim,
+} from "./flow-animations";
+import { HeroVideo } from "./hero-video";
 
 const FLOWS = [
   {
-    icon: "📝",
+    anim: "handwritten",
     title: "Handwritten Notes",
     desc: "Snap a photo of your notebook scribbles. AI reads your handwriting and creates a structured issue.",
     tag: "Unique to Glitchgrab",
   },
   {
-    icon: "💥",
+    anim: "autocapture",
     title: "Auto-Capture SDK",
     desc: "Drop in our SDK. Production errors get captured with full context — stack trace, visited pages, screenshot.",
     tag: "Zero config",
   },
   {
-    icon: "🐛",
+    anim: "report",
     title: "Report Button",
     desc: "Your users click 'Report Error' — context is captured automatically, issue lands in GitHub.",
     tag: "End-user friendly",
   },
   {
-    icon: "📸",
+    anim: "screenshot",
     title: "Screenshot Upload",
     desc: "Upload a screenshot on the dashboard, add a note. AI does the rest — title, body, labels, severity.",
     tag: "Dashboard",
   },
-];
+] as const;
 
 const STEPS = [
   { num: "01", title: "Connect GitHub", desc: "OAuth in, pick a repo, get a token." },
@@ -59,8 +66,7 @@ function CellValue({ val }: { val: boolean | string }) {
   return <span className="text-yellow text-xs">{val}</span>;
 }
 
-export default async function LandingPage() {
-  const session = await auth();
+export default function LandingPage() {
   return (
     <main className="min-h-screen">
       {/* Nav */}
@@ -71,20 +77,9 @@ export default async function LandingPage() {
             <span className="font-semibold text-base sm:text-lg tracking-tight">glitchgrab</span>
           </div>
           <div className="flex items-center gap-2 sm:gap-3">
-            {session?.user ? (
-              <Link href="/dashboard">
-                <Button size="sm">Dashboard</Button>
-              </Link>
-            ) : (
-              <>
-                <Link href="/login">
-                  <Button variant="ghost" size="sm">Sign In</Button>
-                </Link>
-                <a href="#waitlist">
-                  <Button size="sm">Join Waitlist</Button>
-                </a>
-              </>
-            )}
+            <a href="#waitlist">
+              <Button size="sm">Join Waitlist</Button>
+            </a>
           </div>
         </div>
       </nav>
@@ -122,7 +117,19 @@ export default async function LandingPage() {
                 well-structured GitHub issues. Powered by AI.
               </p>
 
-              <div className="mt-6 flex flex-col items-center gap-3 sm:mt-10 sm:flex-row sm:justify-center lg:justify-start sm:gap-4">
+              <div className="mt-5 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm sm:mt-8 lg:justify-start">
+                <span className="flex items-center gap-2 text-muted-foreground">
+                  <span className="text-primary">&#9889;</span> Ship fixes faster
+                </span>
+                <span className="flex items-center gap-2 text-muted-foreground">
+                  <span className="text-primary">&#128337;</span> Save hours on triage
+                </span>
+                <span className="flex items-center gap-2 text-muted-foreground">
+                  <span className="text-primary">&#9881;&#65039;</span> Zero config SDK
+                </span>
+              </div>
+
+              <div className="mt-6 flex flex-col items-center gap-3 sm:mt-8 sm:flex-row sm:justify-center lg:justify-start sm:gap-4">
                 <a href="#waitlist">
                   <Button size="lg" className="w-full sm:w-auto">Join the Waitlist</Button>
                 </a>
@@ -132,26 +139,8 @@ export default async function LandingPage() {
               </div>
             </div>
 
-            {/* Right — vertical video in phone frame */}
-            <div className="relative mx-auto w-[240px] shrink-0 sm:w-[270px] lg:w-[300px]">
-              {/* Phone bezel */}
-              <div className="rounded-[2.5rem] border-2 border-border/50 bg-background/50 p-2 shadow-2xl shadow-primary/5 backdrop-blur-sm">
-                {/* Notch */}
-                <div className="absolute top-0 left-1/2 z-10 h-6 w-24 -translate-x-1/2 rounded-b-2xl bg-background" />
-                {/* Video */}
-                <video
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  className="aspect-[9/16] w-full rounded-[2rem] bg-black object-cover"
-                >
-                  <source src="https://cdn.glitchgrab.dev/meta/Timeline.mp4" type="video/mp4" />
-                </video>
-              </div>
-              {/* Glow behind phone */}
-              <div className="pointer-events-none absolute -inset-8 -z-10 rounded-full bg-primary/10 blur-3xl" />
-            </div>
+            {/* Right — vertical video in iPhone frame */}
+            <HeroVideo src="https://cdn.glitchgrab.dev/meta/Timeline.mp4" />
           </div>
         </div>
       </section>
@@ -175,7 +164,12 @@ export default async function LandingPage() {
               className="transition hover:border-muted-foreground/30"
             >
               <CardContent className="p-5 sm:p-8">
-                <div className="text-3xl mb-3 sm:text-4xl sm:mb-4">{flow.icon}</div>
+                <div className="mb-3 sm:mb-4">
+                  {flow.anim === "handwritten" && <HandwrittenNoteAnim />}
+                  {flow.anim === "autocapture" && <AutoCaptureAnim />}
+                  {flow.anim === "report" && <ReportButtonAnim />}
+                  {flow.anim === "screenshot" && <ScreenshotUploadAnim />}
+                </div>
                 <Badge variant="secondary" className="mb-2 sm:mb-3 text-primary bg-primary/10">
                   {flow.tag}
                 </Badge>
