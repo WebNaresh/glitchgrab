@@ -247,7 +247,7 @@ export default function WebViewScreen({
       document.documentElement.dataset.webview = '1';
       var s = document.createElement('style');
       s.id = 'glitchgrab-webview';
-      s.textContent = 'input,textarea,select{font-size:16px!important} *{touch-action:manipulation} body{height:calc(var(--app-height,100vh))!important;overscroll-behavior:none} [data-webview] *{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;animation-duration:0s!important;transition-duration:0s!important}';
+      s.textContent = 'input,textarea,select{font-size:16px!important} body{height:calc(var(--app-height,100vh))!important} [data-webview] *{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;animation-duration:0s!important;transition-duration:0s!important}';
       document.head.appendChild(s);
 
       document.addEventListener('gesturestart', function(e) { e.preventDefault(); });
