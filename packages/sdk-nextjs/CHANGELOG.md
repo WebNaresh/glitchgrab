@@ -1,3 +1,9 @@
+## [1.6.1](https://github.com/WebNaresh/glitchgrab/compare/sdk-v1.6.0...sdk-v1.6.1) (2026-03-27)
+
+### Bug Fixes
+
+* **sdk:** replace × characters with SVG icons and add isolation to prevent host CSS bleed ([220447d](https://github.com/WebNaresh/glitchgrab/commit/220447d88ef0fcd6aced368d350bf0456aedd288))
+
 ## [1.6.0](https://github.com/WebNaresh/glitchgrab/compare/sdk-v1.5.1...sdk-v1.6.0) (2026-03-27)
 
 ### Features
