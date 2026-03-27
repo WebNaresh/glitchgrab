@@ -394,6 +394,7 @@ export default function Layout({
               <Link href="/terms" className="hover:text-primary transition">Terms</Link>
               <Link href="/refund" className="hover:text-primary transition">Refunds</Link>
               <Link href="/contact" className="hover:text-primary transition">Contact</Link>
+              <Link href="/changelog" className="hover:text-primary transition">Changelog</Link>
             </div>
           </div>
           <p className="text-center text-xs text-muted-foreground mt-4 sm:text-sm">
