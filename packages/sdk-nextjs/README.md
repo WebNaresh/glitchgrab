@@ -125,7 +125,52 @@ function MyComponent() {
 
 ## Fetching Reports by User
 
-Use the REST API to fetch reports for a specific user by their primary key:
+### React hook (recommended)
+
+```tsx
+import { useGlitchgrabReports } from "glitchgrab";
+
+function MyReports() {
+  const { reports, isLoading, error, refetch } = useGlitchgrabReports({
+    token: process.env.NEXT_PUBLIC_GLITCHGRAB_TOKEN!,
+    userId: session.user.id,        // your DB primary key
+    limit: 20,                       // optional, default 100
+  });
+
+  if (isLoading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
+
+  return (
+    <ul>
+      {reports.map((r) => (
+        <li key={r.id}>
+          {r.issue?.title ?? r.rawInput} — {r.issue?.githubState ?? r.status}
+        </li>
+      ))}
+    </ul>
+  );
+}
+```
+
+### With TanStack Query
+
+```tsx
+import { fetchGlitchgrabReports } from "glitchgrab";
+import { useQuery } from "@tanstack/react-query";
+
+const { data: reports, isLoading } = useQuery({
+  queryKey: ["glitchgrab-reports", session.user.id],
+  queryFn: () => fetchGlitchgrabReports({
+    token: process.env.NEXT_PUBLIC_GLITCHGRAB_TOKEN!,
+    userId: session.user.id,
+    limit: 50,
+  }),
+});
+```
+
+### REST API
+
+Use the REST API directly to fetch reports:
 
 ```bash
 # Fetch all reports

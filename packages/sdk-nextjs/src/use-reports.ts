@@ -38,9 +38,12 @@ const BASE_URL = "https://www.glitchgrab.dev";
 export function useGlitchgrabReports({
   token,
   userId,
+  limit = 100,
 }: {
   token: string;
   userId: string;
+  /** Max results (default 100, max 100) */
+  limit?: number;
 }): {
   reports: GlitchgrabReport[];
   isLoading: boolean;
@@ -64,7 +67,7 @@ export function useGlitchgrabReports({
 
     try {
       const res = await fetch(
-        `${BASE_URL}/api/v1/sdk/reports?reporterPrimaryKey=${encodeURIComponent(userId)}&limit=100`,
+        `${BASE_URL}/api/v1/sdk/reports?reporterPrimaryKey=${encodeURIComponent(userId)}&limit=${limit}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       const data = await res.json();
@@ -80,7 +83,7 @@ export function useGlitchgrabReports({
       setIsLoading(false);
       setIsFetching(false);
     }
-  }, [token, userId]);
+  }, [token, userId, limit]);
 
   useEffect(() => {
     fetchReports();
@@ -105,12 +108,14 @@ export function useGlitchgrabReports({
 export async function fetchGlitchgrabReports({
   token,
   userId,
+  limit = 100,
 }: {
   token: string;
   userId: string;
+  limit?: number;
 }): Promise<GlitchgrabReport[]> {
   const res = await fetch(
-    `${BASE_URL}/api/v1/sdk/reports?reporterPrimaryKey=${encodeURIComponent(userId)}&limit=100`,
+    `${BASE_URL}/api/v1/sdk/reports?reporterPrimaryKey=${encodeURIComponent(userId)}&limit=${limit}`,
     { headers: { Authorization: `Bearer ${token}` } }
   );
   const data = await res.json();
