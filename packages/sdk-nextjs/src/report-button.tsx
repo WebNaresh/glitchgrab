@@ -115,6 +115,13 @@ export function ReportButton({
     setIsOpen(true);
   };
 
+  // Listen for programmatic open via useGlitchgrab().openReportDialog()
+  useEffect(() => {
+    const handler = () => { if (!isOpen) handleOpen(); };
+    window.addEventListener("glitchgrab:open-report", handler);
+    return () => window.removeEventListener("glitchgrab:open-report", handler);
+  }, [isOpen, handleOpen]);
+
   // Close modal on Escape key
   useEffect(() => {
     if (!isOpen) return;

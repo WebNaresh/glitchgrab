@@ -251,6 +251,12 @@ function GlitchgrabProviderInner({
     []
   );
 
+  const openReportDialog = useCallback(() => {
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("glitchgrab:open-report"));
+    }
+  }, []);
+
   return (
     <GlitchgrabContext.Provider
       value={{
@@ -259,6 +265,7 @@ function GlitchgrabProviderInner({
         reportBug,
         report,
         addBreadcrumb,
+        openReportDialog,
       }}
     >
       <GlitchgrabErrorBoundary

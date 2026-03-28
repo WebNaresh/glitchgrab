@@ -110,18 +110,38 @@ Use the `useGlitchgrab` hook to report bugs from code:
 import { useGlitchgrab } from "glitchgrab";
 
 function MyComponent() {
-  const { reportBug, report, addBreadcrumb } = useGlitchgrab();
+  const { reportBug, report, addBreadcrumb, openReportDialog } = useGlitchgrab();
 
-  // Report a bug
+  // Report a bug silently (no UI)
   await reportBug("Button not working on mobile");
 
   // Report with a specific type
   await report("FEATURE_REQUEST", "Add dark mode support");
 
+  // Open the Report Bug modal programmatically (captures screenshot + shows dialog)
+  openReportDialog();
+
   // Add custom breadcrumbs for debugging context
   addBreadcrumb("User clicked checkout", { cartSize: "3" });
 }
 ```
+
+### Open report dialog on bad feedback
+
+```tsx
+function FeedbackWidget() {
+  const { openReportDialog } = useGlitchgrab();
+
+  return (
+    <div>
+      <button onClick={() => alert("Thanks!")}>Good</button>
+      <button onClick={() => openReportDialog()}>Bad — report a bug</button>
+    </div>
+  );
+}
+```
+
+Note: `openReportDialog()` requires a `<ReportButton>` to be mounted somewhere in the component tree. It triggers the same modal with screenshot capture.
 
 ## Fetching Reports by User
 
