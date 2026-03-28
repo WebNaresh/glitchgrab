@@ -1,3 +1,9 @@
+## [1.4.1](https://github.com/WebNaresh/glitchgrab/compare/v1.4.0...v1.4.1) (2026-03-28)
+
+### Bug Fixes
+
+* **sdk-api:** remove status, rawInput, source, pageUrl from SDK reports response ([951095a](https://github.com/WebNaresh/glitchgrab/commit/951095a5e5028a8425e833ec12d95fe6ca388651))
+
 ## [1.4.0](https://github.com/WebNaresh/glitchgrab/compare/v1.3.0...v1.4.0) (2026-03-27)
 
 ### Features
