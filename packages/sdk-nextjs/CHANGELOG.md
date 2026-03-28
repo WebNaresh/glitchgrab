@@ -1,3 +1,11 @@
+## [1.11.0](https://github.com/WebNaresh/glitchgrab/compare/sdk-v1.10.0...sdk-v1.11.0) (2026-03-28)
+
+### Features
+
+* **sdk:** pass description in openReportDialog custom event detail ([1dbabe0](https://github.com/WebNaresh/glitchgrab/commit/1dbabe03d8e38d646edbe974a82cdaa83c50eb4e))
+* **sdk:** pre-fill description textarea from openReportDialog event detail ([c9a047d](https://github.com/WebNaresh/glitchgrab/commit/c9a047d69d0a2b9dc09f21b9d38d4f206eaf1280))
+* **sdk:** update openReportDialog type to accept optional description ([826920c](https://github.com/WebNaresh/glitchgrab/commit/826920c02f6b30fe31454b9b9a4f256003f9e32c))
+
 ## [1.10.0](https://github.com/WebNaresh/glitchgrab/compare/sdk-v1.9.1...sdk-v1.10.0) (2026-03-28)
 
 ### Features
