@@ -1,3 +1,11 @@
+## [1.6.0](https://github.com/WebNaresh/glitchgrab/compare/v1.5.1...v1.6.0) (2026-04-04)
+
+### Features
+
+* **api:** add commentCount to reports list endpoint ([f8a78b1](https://github.com/WebNaresh/glitchgrab/commit/f8a78b1127aae7c61333ad0c4448965cd8b4ffb5))
+* **sdk:** add commentCount field to GlitchgrabReport type ([459b6db](https://github.com/WebNaresh/glitchgrab/commit/459b6dbcab26f39a4540dfcc281937311bd23464))
+* **sdk:** export GlitchgrabReport type from barrel ([0446f19](https://github.com/WebNaresh/glitchgrab/commit/0446f1989dc80b77325c8bb873e5af4516ba4486))
+
 ## [1.5.1](https://github.com/WebNaresh/glitchgrab/compare/v1.5.0...v1.5.1) (2026-04-04)
 
 ### Bug Fixes
