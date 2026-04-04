@@ -1,3 +1,26 @@
+## [1.5.0](https://github.com/WebNaresh/glitchgrab/compare/v1.4.1...v1.5.0) (2026-04-04)
+
+### Features
+
+* **billing:** show cancelled status message from live Razorpay state ([6d7eee0](https://github.com/WebNaresh/glitchgrab/commit/6d7eee0f7d53671ec4886c2b997b6cdb27b394a4))
+* **docs:** implement Markdown to JSX renderer for documentation page ([c4ba583](https://github.com/WebNaresh/glitchgrab/commit/c4ba5832386b0e837770a2bd91e4712138efae90))
+* **landing:** add docs link to navbar/footer and remove pricing section ([4e2bf93](https://github.com/WebNaresh/glitchgrab/commit/4e2bf93d4ed54a4cd1d5efef65f85404509bf72f))
+* **sdk:** add documentation links to the landing page ([ca96328](https://github.com/WebNaresh/glitchgrab/commit/ca963288083f8b83706e372ebe18416bd2cce469))
+* **sdk:** add openReportDialog() to programmatically trigger ReportButton modal ([280658d](https://github.com/WebNaresh/glitchgrab/commit/280658d8e42cb7786dfee583a29b96153371c4b6))
+* **sdk:** pass description in openReportDialog custom event detail ([1dbabe0](https://github.com/WebNaresh/glitchgrab/commit/1dbabe03d8e38d646edbe974a82cdaa83c50eb4e))
+* **sdk:** pre-fill description textarea from openReportDialog event detail ([c9a047d](https://github.com/WebNaresh/glitchgrab/commit/c9a047d69d0a2b9dc09f21b9d38d4f206eaf1280))
+* **sdk:** update openReportDialog type to accept optional description ([826920c](https://github.com/WebNaresh/glitchgrab/commit/826920c02f6b30fe31454b9b9a4f256003f9e32c))
+
+### Bug Fixes
+
+* **billing:** check live Razorpay status before creating new subscription ([4ee70ad](https://github.com/WebNaresh/glitchgrab/commit/4ee70ad922edfeeebc29c2be4ad14bc17311e405))
+* **billing:** fetch subscription status live from Razorpay API instead of stale DB ([3b6a495](https://github.com/WebNaresh/glitchgrab/commit/3b6a495713c3d1208d501f99105e293e7fde1ce3))
+* **billing:** only store razorpay subscription ID on verify, no status ([bd64bf7](https://github.com/WebNaresh/glitchgrab/commit/bd64bf77e2cd9ff35902f310a4c2915974ebbd1b))
+
+### Performance Improvements
+
+* **billing:** pass pre-fetched plan to getTrialStatus to avoid redundant API call ([2b2cc09](https://github.com/WebNaresh/glitchgrab/commit/2b2cc09fa59d059f845f92ebb903481cfb86e433))
+
 ## [1.4.1](https://github.com/WebNaresh/glitchgrab/compare/v1.4.0...v1.4.1) (2026-03-28)
 
 ### Bug Fixes
