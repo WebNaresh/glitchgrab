@@ -81,6 +81,12 @@ export default function LandingPage() {
             </span>
           </div>
           <div className="flex items-center gap-2 sm:gap-3">
+            <Link
+              href="/docs"
+              className="text-sm text-muted-foreground hover:text-primary transition hidden sm:inline"
+            >
+              Docs
+            </Link>
             <a href="#waitlist">
               <Button size="sm">Join Waitlist</Button>
             </a>
@@ -418,6 +424,14 @@ export default function LandingPage() {
                 Product
               </h4>
               <ul className="space-y-2 text-sm">
+                <li>
+                  <Link
+                    href="/docs"
+                    className="text-muted-foreground hover:text-primary transition"
+                  >
+                    Docs
+                  </Link>
+                </li>
                 <li>
                   <a
                     href="#how-it-works"
