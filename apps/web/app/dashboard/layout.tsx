@@ -38,10 +38,8 @@ export default async function DashboardLayout({
   let trialDaysLeft = 0;
 
   if (session?.user?.id) {
-    const [plan, trial] = await Promise.all([
-      getUserPlan(session.user.id),
-      getTrialStatus(session.user.id),
-    ]);
+    const plan = await getUserPlan(session.user.id);
+    const trial = await getTrialStatus(session.user.id, plan);
 
     if (plan.isActive) planBadge = "premium";
     else if (trial.inTrial) {
