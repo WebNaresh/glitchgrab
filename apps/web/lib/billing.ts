@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db";
+import { getRazorpay } from "@/lib/razorpay";
 
 export interface UserPlan {
   plan: "NONE" | "PRO_PLATFORM";
@@ -7,15 +8,19 @@ export interface UserPlan {
   maxIssuesPerMonth: number;
   requiresOwnKey: boolean;
   expiresAt: Date | null;
+  razorpayStatus: string | null;
 }
 
-const NO_PLAN = {
+const NO_PLAN: Omit<UserPlan, "razorpayStatus"> = {
+  plan: "NONE",
+  isActive: false,
   maxRepos: 0,
   maxIssuesPerMonth: 0,
   requiresOwnKey: true,
+  expiresAt: null,
 };
 
-const PRO_PLATFORM = {
+const PRO_LIMITS = {
   maxRepos: Infinity,
   maxIssuesPerMonth: 100,
   requiresOwnKey: false,
@@ -26,36 +31,41 @@ export async function getUserPlan(userId: string): Promise<UserPlan> {
     where: { userId },
   });
 
-  // No subscription — no access
-  if (!subscription || subscription.plan === "FREE") {
-    return {
-      plan: "NONE",
-      isActive: false,
-      ...NO_PLAN,
-      expiresAt: null,
-    };
+  if (!subscription) {
+    return { ...NO_PLAN, razorpayStatus: null };
   }
 
-  // Check if expired
-  const isExpired =
-    subscription.currentPeriodEnd &&
-    subscription.currentPeriodEnd < new Date();
+  // Fetch live status from Razorpay — single source of truth
+  try {
+    const razorpay = getRazorpay();
+    const rzpSub = await razorpay.subscriptions.fetch(
+      subscription.razorpaySubscriptionId
+    );
 
-  if (isExpired || subscription.status !== "ACTIVE") {
+    // Razorpay statuses: created, authenticated, active, pending, halted, cancelled, completed, expired, paused
+    const status = rzpSub.status as string;
+    const isActive = status === "active" || status === "authenticated";
+
+    const expiresAt =
+      rzpSub.current_end && typeof rzpSub.current_end === "number"
+        ? new Date(rzpSub.current_end * 1000)
+        : null;
+
+    if (!isActive) {
+      return { ...NO_PLAN, expiresAt, razorpayStatus: status };
+    }
+
     return {
-      plan: "NONE",
-      isActive: false,
-      ...NO_PLAN,
-      expiresAt: subscription.currentPeriodEnd,
+      plan: "PRO_PLATFORM",
+      isActive: true,
+      ...PRO_LIMITS,
+      expiresAt,
+      razorpayStatus: status,
     };
+  } catch (error) {
+    console.error("Failed to fetch Razorpay subscription:", error);
+    return { ...NO_PLAN, razorpayStatus: "error" };
   }
-
-  return {
-    plan: "PRO_PLATFORM",
-    isActive: true,
-    ...PRO_PLATFORM,
-    expiresAt: subscription.currentPeriodEnd,
-  };
 }
 
 // ─── Trial ────────────────────────────────────────────
@@ -71,7 +81,11 @@ export interface TrialStatus {
   needsPaywall: boolean;
 }
 
-export async function getTrialStatus(userId: string): Promise<TrialStatus> {
+export async function getTrialStatus(
+  userId: string,
+  /** Pass a pre-fetched plan to avoid a second Razorpay API call */
+  prefetchedPlan?: UserPlan
+): Promise<TrialStatus> {
   const user = await prisma.user.findUnique({
     where: { id: userId },
     select: { createdAt: true },
@@ -97,7 +111,7 @@ export async function getTrialStatus(userId: string): Promise<TrialStatus> {
   const hoursLeft = Math.max(0, Math.ceil(msLeft / (1000 * 60 * 60)));
   const inTrial = msLeft > 0;
 
-  const plan = await getUserPlan(userId);
+  const plan = prefetchedPlan ?? await getUserPlan(userId);
   const hasActiveSubscription = plan.isActive;
 
   return {
