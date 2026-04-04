@@ -2,9 +2,8 @@ export const dynamic = "force-dynamic";
 
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/db";
 import { getRazorpay, PLANS, type PlanKey } from "@/lib/razorpay";
-import { getTrialStatus } from "@/lib/billing";
+import { getUserPlan, getTrialStatus } from "@/lib/billing";
 
 export async function POST(request: Request) {
   try {
@@ -26,12 +25,9 @@ export async function POST(request: Request) {
       );
     }
 
-    // Check if already subscribed
-    const existing = await prisma.subscription.findUnique({
-      where: { userId: session.user.id },
-    });
-
-    if (existing?.status === "ACTIVE" && existing.plan !== "FREE") {
+    // Check live Razorpay status — not stale DB status
+    const currentPlan = await getUserPlan(session.user.id);
+    if (currentPlan.isActive) {
       return NextResponse.json(
         { success: false, error: "Already on a paid plan" },
         { status: 400 }

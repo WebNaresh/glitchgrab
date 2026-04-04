@@ -43,9 +43,15 @@ export default async function BillingPage() {
                     Renews {plan.expiresAt.toLocaleDateString()}
                   </p>
                 )}
-                <div className="mt-3">
-                  <CancelButton expiresAt={plan.expiresAt} />
-                </div>
+                {plan.razorpayStatus === "cancelled" ? (
+                  <p className="text-xs text-destructive mt-2">
+                    Cancelled — access until billing period ends
+                  </p>
+                ) : (
+                  <div className="mt-3">
+                    <CancelButton expiresAt={plan.expiresAt} />
+                  </div>
+                )}
               </div>
               <CheckCircle className="h-6 w-6 sm:h-8 sm:w-8 text-primary shrink-0" />
             </div>

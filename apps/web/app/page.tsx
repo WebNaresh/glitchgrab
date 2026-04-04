@@ -81,6 +81,12 @@ export default function LandingPage() {
             </span>
           </div>
           <div className="flex items-center gap-2 sm:gap-3">
+            <Link
+              href="/docs"
+              className="text-sm text-muted-foreground hover:text-primary transition hidden sm:inline"
+            >
+              Docs
+            </Link>
             <a href="#waitlist">
               <Button size="sm">Join Waitlist</Button>
             </a>
@@ -320,53 +326,6 @@ export default function LandingPage() {
         </Card>
       </section>
 
-      {/* Pricing */}
-      <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
-        <div className="text-center mb-10 sm:mb-16">
-          <h2 className="text-2xl font-bold sm:text-3xl lg:text-4xl">
-            Simple pricing
-          </h2>
-          <p className="mt-3 text-sm text-muted-foreground sm:mt-4 sm:text-base">
-            One plan. No surprises. 7-day free trial. Cancel anytime.
-          </p>
-        </div>
-
-        <div className="mx-auto max-w-md">
-          <Card className="border-2 border-primary overflow-visible relative">
-            <CardContent className="p-5 pt-7 sm:p-8 sm:pt-8">
-              <Badge className="absolute -top-2.5 left-4 sm:left-auto sm:right-6 sm:-top-3 z-10">
-                7-day free trial
-              </Badge>
-              <h3 className="text-lg font-semibold">Glitchgrab Pro</h3>
-              <div className="mt-3 flex items-baseline gap-1 sm:mt-4">
-                <span className="text-3xl font-bold text-primary sm:text-4xl">
-                  &#8377;199
-                </span>
-                <span className="text-muted-foreground">/month</span>
-              </div>
-              <p className="mt-1.5 text-xs text-muted-foreground sm:mt-2 sm:text-sm">
-                AI-powered bug capture — zero setup
-              </p>
-              <ul className="mt-6 space-y-2.5 text-xs sm:mt-8 sm:space-y-3 sm:text-sm">
-                {[
-                  "Unlimited repos",
-                  "100 issues created/mo",
-                  "Smart dedup & updates (free)",
-                  "SDK auto-capture",
-                  "Screenshot analysis",
-                  "AI built in — zero setup",
-                ].map((f) => (
-                  <li key={f} className="flex items-center gap-2">
-                    <span className="text-primary">&#10003;</span>
-                    <span>{f}</span>
-                  </li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
-
       {/* Waitlist */}
       <section
         id="waitlist"
@@ -418,6 +377,14 @@ export default function LandingPage() {
                 Product
               </h4>
               <ul className="space-y-2 text-sm">
+                <li>
+                  <Link
+                    href="/docs"
+                    className="text-muted-foreground hover:text-primary transition"
+                  >
+                    Docs
+                  </Link>
+                </li>
                 <li>
                   <a
                     href="#how-it-works"
