@@ -1,3 +1,10 @@
+## [1.5.1](https://github.com/WebNaresh/glitchgrab/compare/v1.5.0...v1.5.1) (2026-04-04)
+
+### Bug Fixes
+
+* **billing:** revalidate dashboard layout after payment verification ([ed62da2](https://github.com/WebNaresh/glitchgrab/commit/ed62da2b9a47df2d6f4a71c393cef93cc397f856))
+* **billing:** revalidate dashboard layout after subscription cancellation ([5b36d54](https://github.com/WebNaresh/glitchgrab/commit/5b36d545abbbfc2dfda16e82031c5c6a367bde9e))
+
 ## [1.5.0](https://github.com/WebNaresh/glitchgrab/compare/v1.4.1...v1.5.0) (2026-04-04)
 
 ### Features
