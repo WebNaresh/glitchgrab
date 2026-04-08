@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, type CSSProperties, type ReactNode } from "react";
+import { useState, useRef, useEffect, useSyncExternalStore, type CSSProperties, type ReactNode } from "react";
 // @ts-expect-error react-dom types handled by host app
 import { createPortal } from "react-dom";
 import type { ReportType, ReportSeverity, UseGlitchgrabReturn } from "./types";
@@ -42,6 +42,9 @@ export function ReportDialog({
   types,
   showSeverity = true,
 }: ReportDialogProps) {
+  // Prevent hydration mismatch — render nothing on server
+  const mounted = useSyncExternalStore(() => () => {}, () => true, () => false);
+
   const [isOpen, setIsOpen] = useState(false);
   const [description, setDescription] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -178,7 +181,7 @@ export function ReportDialog({
     }
   };
 
-  if (typeof document === "undefined") return null;
+  if (!mounted) return null;
 
   return (
     <>
