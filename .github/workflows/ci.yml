@@ -47,6 +47,9 @@ jobs:
       - name: Typecheck
         run: cd apps/web && bun run validate
 
+      - name: Test SDK
+        run: cd packages/sdk-nextjs && bun run test
+
       - name: Check unused code (knip)
         run: bunx knip
 
