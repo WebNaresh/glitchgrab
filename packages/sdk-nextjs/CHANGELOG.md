@@ -1,3 +1,32 @@
+## [1.12.0](https://github.com/WebNaresh/glitchgrab/compare/sdk-v1.11.0...sdk-v1.12.0) (2026-04-08)
+
+### Features
+
+* **api:** add commentCount to reports list endpoint ([f8a78b1](https://github.com/WebNaresh/glitchgrab/commit/f8a78b1127aae7c61333ad0c4448965cd8b4ffb5))
+* **api:** map report type and severity to dynamic GitHub labels and title prefixes ([1b286d2](https://github.com/WebNaresh/glitchgrab/commit/1b286d20cff0418afd720504223ceb27862dad00))
+* **billing:** show cancelled status message from live Razorpay state ([6d7eee0](https://github.com/WebNaresh/glitchgrab/commit/6d7eee0f7d53671ec4886c2b997b6cdb27b394a4))
+* **docs:** implement Markdown to JSX renderer for documentation page ([c4ba583](https://github.com/WebNaresh/glitchgrab/commit/c4ba5832386b0e837770a2bd91e4712138efae90))
+* **landing:** add docs link to navbar/footer and remove pricing section ([4e2bf93](https://github.com/WebNaresh/glitchgrab/commit/4e2bf93d4ed54a4cd1d5efef65f85404509bf72f))
+* **sdk:** accept type option in openReportDialog for pre-selecting category ([077901c](https://github.com/WebNaresh/glitchgrab/commit/077901c07697c8c463e91364899c8c125bd9888a))
+* **sdk:** add commentCount field to GlitchgrabReport type ([459b6db](https://github.com/WebNaresh/glitchgrab/commit/459b6dbcab26f39a4540dfcc281937311bd23464))
+* **sdk:** add documentation links to the landing page ([ca96328](https://github.com/WebNaresh/glitchgrab/commit/ca963288083f8b83706e372ebe18416bd2cce469))
+* **sdk:** add multi-step stepper variant for report dialog with category, details, and review steps ([b6d2af0](https://github.com/WebNaresh/glitchgrab/commit/b6d2af0f8c4fc6089a4434fa56c0c74396ffd6cf))
+* **sdk:** add ReportSeverity type, variant and showSeverity props to ReportButtonProps ([2e2c31e](https://github.com/WebNaresh/glitchgrab/commit/2e2c31e4b1ac7a64e6ad225767e254bba9afded7))
+* **sdk:** export GlitchgrabReport type from barrel ([0446f19](https://github.com/WebNaresh/glitchgrab/commit/0446f1989dc80b77325c8bb873e5af4516ba4486))
+* **sdk:** export ReportSeverity type from barrel ([3769c8d](https://github.com/WebNaresh/glitchgrab/commit/3769c8dd24b333baea449485c4abdf30b33f54c1))
+
+### Bug Fixes
+
+* **billing:** check live Razorpay status before creating new subscription ([4ee70ad](https://github.com/WebNaresh/glitchgrab/commit/4ee70ad922edfeeebc29c2be4ad14bc17311e405))
+* **billing:** fetch subscription status live from Razorpay API instead of stale DB ([3b6a495](https://github.com/WebNaresh/glitchgrab/commit/3b6a495713c3d1208d501f99105e293e7fde1ce3))
+* **billing:** only store razorpay subscription ID on verify, no status ([bd64bf7](https://github.com/WebNaresh/glitchgrab/commit/bd64bf77e2cd9ff35902f310a4c2915974ebbd1b))
+* **billing:** revalidate dashboard layout after payment verification ([ed62da2](https://github.com/WebNaresh/glitchgrab/commit/ed62da2b9a47df2d6f4a71c393cef93cc397f856))
+* **billing:** revalidate dashboard layout after subscription cancellation ([5b36d54](https://github.com/WebNaresh/glitchgrab/commit/5b36d545abbbfc2dfda16e82031c5c6a367bde9e))
+
+### Performance Improvements
+
+* **billing:** pass pre-fetched plan to getTrialStatus to avoid redundant API call ([2b2cc09](https://github.com/WebNaresh/glitchgrab/commit/2b2cc09fa59d059f845f92ebb903481cfb86e433))
+
 ## [1.11.0](https://github.com/WebNaresh/glitchgrab/compare/sdk-v1.10.0...sdk-v1.11.0) (2026-03-28)
 
 ### Features
