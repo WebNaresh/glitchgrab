@@ -1,3 +1,10 @@
+## [1.13.1](https://github.com/WebNaresh/glitchgrab/compare/sdk-v1.13.0...sdk-v1.13.1) (2026-04-09)
+
+### Bug Fixes
+
+* **sdk:** prevent hydration mismatch with useSyncExternalStore mounted guard ([f09d5a1](https://github.com/WebNaresh/glitchgrab/commit/f09d5a156377e3657dc160ee0085d83ada9929a6))
+* **sdk:** replace useSyncExternalStore with useState+useEffect to prevent hydration mismatch ([fe8ec33](https://github.com/WebNaresh/glitchgrab/commit/fe8ec339b201e9e37b8b0e1d38bfb0f90935acf4))
+
 ## [1.13.0](https://github.com/WebNaresh/glitchgrab/compare/sdk-v1.12.0...sdk-v1.13.0) (2026-04-08)
 
 ### Features
