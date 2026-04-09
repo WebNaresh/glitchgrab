@@ -1,3 +1,10 @@
+## [1.8.1](https://github.com/WebNaresh/glitchgrab/compare/v1.8.0...v1.8.1) (2026-04-09)
+
+### Bug Fixes
+
+* **api:** add CORS headers and localhost dev-mode response to SDK report endpoint ([bec7f0f](https://github.com/WebNaresh/glitchgrab/commit/bec7f0f3246982b0ec8361a30c9172588d8c7c3c))
+* **sdk:** replace useSyncExternalStore with useState+useEffect to prevent hydration mismatch ([fe8ec33](https://github.com/WebNaresh/glitchgrab/commit/fe8ec339b201e9e37b8b0e1d38bfb0f90935acf4))
+
 ## [1.8.0](https://github.com/WebNaresh/glitchgrab/compare/v1.7.0...v1.8.0) (2026-04-08)
 
 ### Features
