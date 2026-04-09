@@ -9,6 +9,24 @@ import { uploadScreenshotToS3 } from "@/lib/s3";
 import { dispatchWebhook } from "@/lib/webhooks";
 import { checkRateLimit } from "@/lib/rate-limit";
 
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+  "Access-Control-Max-Age": "86400",
+};
+
+function isLocalhostOrigin(request: Request): boolean {
+  const origin = request.headers.get("origin") ?? "";
+  const referer = request.headers.get("referer") ?? "";
+  return /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?/.test(origin) ||
+    /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?/.test(referer);
+}
+
+export async function OPTIONS() {
+  return new NextResponse(null, { status: 204, headers: CORS_HEADERS });
+}
+
 interface SdkReportBody {
   source: "SDK_AUTO" | "SDK_USER_REPORT";
   type?: "BUG" | "FEATURE_REQUEST" | "QUESTION" | "OTHER";
@@ -25,12 +43,26 @@ interface SdkReportBody {
 
 export async function POST(request: Request) {
   try {
+    // Development mode: if the request comes from localhost, return a friendly
+    // response without creating an issue. This prevents hanging requests during local testing.
+    if (isLocalhostOrigin(request)) {
+      return NextResponse.json(
+        {
+          success: true,
+          data: {
+            message: "Development mode — report received but GitHub issue not created. Deploy to production for full functionality.",
+          },
+        },
+        { headers: CORS_HEADERS }
+      );
+    }
+
     // 1. Validate token from Authorization header
     const authHeader = request.headers.get("authorization");
     if (!authHeader?.startsWith("Bearer gg_")) {
       return NextResponse.json(
         { success: false, error: "Invalid or missing API token" },
-        { status: 401 }
+        { status: 401, headers: CORS_HEADERS }
       );
     }
 
@@ -45,7 +77,7 @@ export async function POST(request: Request) {
     if (!apiToken) {
       return NextResponse.json(
         { success: false, error: "Invalid API token" },
-        { status: 401 }
+        { status: 401, headers: CORS_HEADERS }
       );
     }
 
@@ -64,6 +96,7 @@ export async function POST(request: Request) {
         {
           status: 429,
           headers: {
+            ...CORS_HEADERS,
             "X-RateLimit-Remaining": "0",
             "X-RateLimit-Reset": rateLimit.resetAt.toISOString(),
             "Retry-After": String(retryAfter),
@@ -79,6 +112,7 @@ export async function POST(request: Request) {
     });
 
     const rateLimitHeaders = {
+      ...CORS_HEADERS,
       "X-RateLimit-Remaining": String(rateLimit.remaining),
       "X-RateLimit-Reset": rateLimit.resetAt.toISOString(),
     };
@@ -297,7 +331,7 @@ export async function POST(request: Request) {
     console.error("SDK report error:", error);
     return NextResponse.json(
       { success: false, error: "Internal server error" },
-      { status: 500 }
+      { status: 500, headers: CORS_HEADERS }
     );
   }
 }
