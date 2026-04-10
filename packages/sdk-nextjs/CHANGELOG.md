@@ -1,3 +1,9 @@
+## [1.13.4](https://github.com/WebNaresh/glitchgrab/compare/sdk-v1.13.3...sdk-v1.13.4) (2026-04-10)
+
+### Bug Fixes
+
+* **sdk:** improve gibberish detection with consonant-cluster and char-reuse checks ([2cd7db1](https://github.com/WebNaresh/glitchgrab/commit/2cd7db133a90ebb9e2ce32a8c846d526ba5d194b))
+
 ## [1.13.3](https://github.com/WebNaresh/glitchgrab/compare/sdk-v1.13.2...sdk-v1.13.3) (2026-04-10)
 
 ### Bug Fixes
