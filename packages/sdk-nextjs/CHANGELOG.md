@@ -1,3 +1,9 @@
+## [1.13.3](https://github.com/WebNaresh/glitchgrab/compare/sdk-v1.13.2...sdk-v1.13.3) (2026-04-10)
+
+### Bug Fixes
+
+* **sdk:** ensure client-side text quality validation is included in build ([b9a6836](https://github.com/WebNaresh/glitchgrab/commit/b9a683674a5a500c2c99746cd7e6858b0967a7be))
+
 ## [1.13.2](https://github.com/WebNaresh/glitchgrab/compare/sdk-v1.13.1...sdk-v1.13.2) (2026-04-10)
 
 ### Bug Fixes
