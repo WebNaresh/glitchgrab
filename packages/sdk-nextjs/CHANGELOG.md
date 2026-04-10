@@ -1,3 +1,9 @@
+## [1.14.0](https://github.com/WebNaresh/glitchgrab/compare/sdk-v1.13.4...sdk-v1.14.0) (2026-04-10)
+
+### Features
+
+* **sdk:** auto-detect host app theme color for report dialog ([28ac18c](https://github.com/WebNaresh/glitchgrab/commit/28ac18c3960fe9a623cbedf7d2d0f623734ee8bb))
+
 ## [1.13.4](https://github.com/WebNaresh/glitchgrab/compare/sdk-v1.13.3...sdk-v1.13.4) (2026-04-10)
 
 ### Bug Fixes
