@@ -86,13 +86,16 @@ export async function sendReport(
       Authorization: `Bearer ${payload.token}`,
     };
 
+    // keepalive has a 64KB body limit in browsers — skip it for large payloads (e.g., screenshots)
+    const useKeepalive = body.length < 60_000;
+
     for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
       try {
         const response = await fetch(url, {
           method: "POST",
           headers,
           body,
-          keepalive: true,
+          ...(useKeepalive ? { keepalive: true } : {}),
         });
 
         if (response.ok) {
