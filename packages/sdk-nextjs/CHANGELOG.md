@@ -1,3 +1,13 @@
+## [1.13.2](https://github.com/WebNaresh/glitchgrab/compare/sdk-v1.13.1...sdk-v1.13.2) (2026-04-10)
+
+### Bug Fixes
+
+* **api:** add CORS headers and localhost dev-mode response to SDK report endpoint ([bec7f0f](https://github.com/WebNaresh/glitchgrab/commit/bec7f0f3246982b0ec8361a30c9172588d8c7c3c))
+* **api:** detect localhost via body pageUrl instead of unreliable Origin/Referer headers ([95a7cba](https://github.com/WebNaresh/glitchgrab/commit/95a7cba5024875b9c3126595c28ba374e242cc73))
+* **dashboard:** validate report text quality before submitting to AI pipeline ([c638011](https://github.com/WebNaresh/glitchgrab/commit/c6380111a7d3ea7fb857dc858348d1daf56bd3ec))
+* **sdk:** add client-side validation to reject gibberish and throwaway text in report dialog ([177bcb5](https://github.com/WebNaresh/glitchgrab/commit/177bcb51b186e822d0406f826aada59a8a8cfa50))
+* **sdk:** skip keepalive for large payloads to avoid 64KB browser limit ([00f53cb](https://github.com/WebNaresh/glitchgrab/commit/00f53cba7c865aa63672071471760b5ad02debcb))
+
 ## [1.13.1](https://github.com/WebNaresh/glitchgrab/compare/sdk-v1.13.0...sdk-v1.13.1) (2026-04-09)
 
 ### Bug Fixes
