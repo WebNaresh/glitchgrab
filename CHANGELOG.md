@@ -1,3 +1,9 @@
+## [1.9.1](https://github.com/WebNaresh/glitchgrab/compare/v1.9.0...v1.9.1) (2026-04-13)
+
+### Bug Fixes
+
+* **dashboard:** remove toast notifications on screenshot upload ([5e67523](https://github.com/WebNaresh/glitchgrab/commit/5e6752352723ea5e4a5baa16502f2a939ca332e2))
+
 ## [1.9.0](https://github.com/WebNaresh/glitchgrab/compare/v1.8.3...v1.9.0) (2026-04-13)
 
 ### Features
