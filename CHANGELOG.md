@@ -1,3 +1,15 @@
+## [1.9.0](https://github.com/WebNaresh/glitchgrab/compare/v1.8.3...v1.9.0) (2026-04-13)
+
+### Features
+
+* **sdk:** auto-detect host app theme color for report dialog ([28ac18c](https://github.com/WebNaresh/glitchgrab/commit/28ac18c3960fe9a623cbedf7d2d0f623734ee8bb))
+
+### Bug Fixes
+
+* **sdk:** ensure client-side text quality validation is included in build ([b9a6836](https://github.com/WebNaresh/glitchgrab/commit/b9a683674a5a500c2c99746cd7e6858b0967a7be))
+* **sdk:** improve gibberish detection with consonant-cluster and char-reuse checks ([2cd7db1](https://github.com/WebNaresh/glitchgrab/commit/2cd7db133a90ebb9e2ce32a8c846d526ba5d194b))
+* **sdk:** preserve envelope success flag in sendReport result ([0c3cded](https://github.com/WebNaresh/glitchgrab/commit/0c3cded2dca21ee82d555e07247e1d694f3a6316))
+
 ## [1.8.3](https://github.com/WebNaresh/glitchgrab/compare/v1.8.2...v1.8.3) (2026-04-10)
 
 ### Bug Fixes
