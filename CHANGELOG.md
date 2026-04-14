@@ -1,3 +1,9 @@
+## [1.17.3](https://github.com/WebNaresh/glitchgrab/compare/v1.17.2...v1.17.3) (2026-04-14)
+
+### Bug Fixes
+
+* **chat:** disable input and upload until a repo is selected ([a6c88ba](https://github.com/WebNaresh/glitchgrab/commit/a6c88baae2b1843c96703ccb00f956dcad0f9a47))
+
 ## [1.17.2](https://github.com/WebNaresh/glitchgrab/compare/v1.17.1...v1.17.2) (2026-04-14)
 
 ### Bug Fixes
