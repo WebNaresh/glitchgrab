@@ -1,8 +1,5 @@
 import { execSync } from 'child_process';
 
-/**
- * Database connection parts
- */
 interface DbConnectionParts {
     host: string;
     port: string;
@@ -25,28 +22,28 @@ const colors = {
 };
 
 const validateEnv = (): { localDbUrl: string; prodDbUrl: string } => {
-    const localDbUrl = process.env.DATABASE_URL;
-    const prodDbUrl = process.env.PROD_DATABASE_URL;
+    const localDbUrl = process.env.NEXT_DIRECT_URL;
+    const prodDbUrl = process.env.PROD_NEXT_POSTGRES_URL;
 
     if (!localDbUrl) {
         console.error(
-            `${colors.red}${colors.bold}Error: DATABASE_URL is not defined in your environment.${colors.reset}`
+            `${colors.red}${colors.bold}Error: NEXT_DIRECT_URL is not defined in your environment.${colors.reset}`
         );
         process.exit(1);
     }
 
     if (!prodDbUrl) {
         console.error(
-            `${colors.red}${colors.bold}Error: PROD_DATABASE_URL is not defined in your environment.${colors.reset}`
+            `${colors.red}${colors.bold}Error: PROD_NEXT_POSTGRES_URL is not defined in your environment.${colors.reset}`
         );
         console.warn(
-            `${colors.yellow}Please add PROD_DATABASE_URL to your .env file.${colors.reset}`
+            `${colors.yellow}Please add PROD_NEXT_POSTGRES_URL to your .env file.${colors.reset}`
         );
         process.exit(1);
     }
 
     // Hard stop: destination must never be a cloud/remote database
-    const isRemoteDb = (url: string): boolean =>
+    const isRemoteDb = (url: string) =>
         url.includes('neon.tech') ||
         url.includes('.aws.') ||
         url.includes('supabase') ||
@@ -55,8 +52,9 @@ const validateEnv = (): { localDbUrl: string; prodDbUrl: string } => {
         url.includes('render.com');
 
     if (isRemoteDb(localDbUrl)) {
-        console.error(`${colors.red}${colors.bold}ABORTED: DATABASE_URL points to a remote database.${colors.reset}`);
+        console.error(`${colors.red}${colors.bold}ABORTED: NEXT_DIRECT_URL points to a remote database.${colors.reset}`);
         console.error(`${colors.red}db-sync will DROP the destination schema. Refusing to run against a cloud DB.${colors.reset}`);
+        console.error(`${colors.yellow}NEXT_DIRECT_URL = ${localDbUrl}${colors.reset}`);
         process.exit(1);
     }
 
@@ -65,12 +63,12 @@ const validateEnv = (): { localDbUrl: string; prodDbUrl: string } => {
         const localHost = new URL(localDbUrl).hostname;
         const prodHost = new URL(prodDbUrl).hostname;
         if (localHost === prodHost) {
-            console.error(`${colors.red}${colors.bold}ABORTED: DATABASE_URL and PROD_DATABASE_URL point to the same host.${colors.reset}`);
+            console.error(`${colors.red}${colors.bold}ABORTED: NEXT_DIRECT_URL and PROD_NEXT_POSTGRES_URL point to the same host.${colors.reset}`);
             console.error(`${colors.red}You are about to overwrite your production database. Refusing to run.${colors.reset}`);
             process.exit(1);
         }
     } catch {
-        // URL parse failed — already caught earlier
+        // URL parse failed — already caught earlier, safe to ignore here
     }
 
     return { localDbUrl, prodDbUrl };
@@ -135,28 +133,27 @@ const syncDatabase = (): void => {
 
         // 2. Clear Local Database (Fresh Start)
         console.warn(`${colors.yellow}Cleaning local database (dropping public schema)...${colors.reset}`);
+        const clearCommand = `psql -h ${local.host} -p ${local.port} -U ${local.user} -d ${local.database} -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"`;
         try {
-            execSync(
-                `psql -h ${local.host} -p ${local.port} -U ${local.user} -d ${local.database} -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"`,
-                { stdio: 'inherit', env: { ...process.env, PGPASSWORD: local.password } }
-            );
+            execSync(clearCommand, {
+                stdio: 'inherit',
+                env: { ...process.env, PGPASSWORD: local.password }
+            });
         } catch {
             console.warn(`${colors.yellow}Warning: Could not clear database. This might be fine if the database is already empty.${colors.reset}`);
         }
 
-        // 3. Dump and Restore (using PGPASSWORD env var — safer than shell interpolation)
+        // 3. Dump and Restore
         console.warn(`${colors.yellow}Copying data... This might take a while depending on DB size.${colors.reset}`);
 
-        const dumpCmd = `pg_dump -h ${prod.host} -p ${prod.port} -U ${prod.user} -d ${prod.database} --no-owner --no-acl`;
-        const restoreCmd = `psql -h ${local.host} -p ${local.port} -U ${local.user} -d ${local.database}`;
+        const dumpCmd = `PGPASSWORD='${prod.password.replace(/'/g, "'\\''")}' pg_dump -h ${prod.host} -p ${prod.port} -U ${prod.user} -d ${prod.database} --no-owner --no-acl`;
+        const restoreCmd = `PGPASSWORD='${local.password.replace(/'/g, "'\\''")}' psql -h ${local.host} -p ${local.port} -U ${local.user} -d ${local.database}`;
 
-        execSync(`${dumpCmd} | ${restoreCmd}`, {
+        const fullCommand = `${dumpCmd} | ${restoreCmd}`;
+
+        execSync(fullCommand, {
             stdio: 'inherit',
-            shell: '/bin/bash',
-            env: {
-                ...process.env,
-                PGPASSWORD: prod.password,
-            },
+            shell: '/bin/bash'
         });
 
         console.warn(`\n${colors.green}${colors.bold}✔ Database sync completed successfully!${colors.reset}`);

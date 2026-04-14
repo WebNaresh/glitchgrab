@@ -205,6 +205,104 @@ export async function fetchRepoReadme(
   }
 }
 
+// ─── Fetch Workflow Runs ─────────────────────────────
+
+export type WorkflowRunStatus =
+  | "queued"
+  | "in_progress"
+  | "completed"
+  | "waiting"
+  | "requested"
+  | "pending"
+  | "unknown";
+
+export type WorkflowRunConclusion =
+  | "success"
+  | "failure"
+  | "cancelled"
+  | "skipped"
+  | "timed_out"
+  | "action_required"
+  | "neutral"
+  | "stale"
+  | "startup_failure"
+  | null;
+
+export interface WorkflowRun {
+  id: number;
+  name: string;
+  status: WorkflowRunStatus;
+  conclusion: WorkflowRunConclusion;
+  branch: string;
+  event: string;
+  htmlUrl: string;
+  runStartedAt: string;
+  updatedAt: string;
+  durationMs: number | null;
+  commitMessage: string;
+  commitSha: string;
+  actorLogin: string | null;
+  actorAvatar: string | null;
+}
+
+interface GithubWorkflowRun {
+  id: number;
+  name: string | null;
+  head_branch: string | null;
+  head_sha: string;
+  event: string;
+  status: string | null;
+  conclusion: string | null;
+  html_url: string;
+  run_started_at: string | null;
+  created_at: string;
+  updated_at: string;
+  head_commit: { message: string } | null;
+  actor: { login: string; avatar_url: string } | null;
+}
+
+export async function listWorkflowRuns(
+  accessToken: string,
+  owner: string,
+  repo: string,
+  perPage = 5
+): Promise<WorkflowRun[]> {
+  const url = `${GITHUB_API}/repos/${owner}/${repo}/actions/runs?per_page=${perPage}`;
+  const response = await fetch(url, { method: "GET", headers: headers(accessToken) });
+  if (!response.ok) {
+    throw new Error(`GitHub workflow runs error (${response.status})`);
+  }
+
+  const data = (await response.json()) as { workflow_runs?: GithubWorkflowRun[] };
+  const runs = data.workflow_runs ?? [];
+
+  return runs.map((r) => {
+    const startedAt = r.run_started_at ?? r.created_at;
+    const updatedAt = r.updated_at;
+    const durationMs =
+      r.status === "completed" && startedAt
+        ? Math.max(0, new Date(updatedAt).getTime() - new Date(startedAt).getTime())
+        : null;
+
+    return {
+      id: r.id,
+      name: r.name ?? "Workflow",
+      status: (r.status ?? "unknown") as WorkflowRunStatus,
+      conclusion: (r.conclusion ?? null) as WorkflowRunConclusion,
+      branch: r.head_branch ?? "—",
+      event: r.event,
+      htmlUrl: r.html_url,
+      runStartedAt: startedAt,
+      updatedAt,
+      durationMs,
+      commitMessage: (r.head_commit?.message ?? "").split("\n")[0] ?? "",
+      commitSha: r.head_sha.slice(0, 7),
+      actorLogin: r.actor?.login ?? null,
+      actorAvatar: r.actor?.avatar_url ?? null,
+    };
+  });
+}
+
 // ─── Fetch Repo Description ──────────────────────────
 
 export async function fetchRepoDescription(
