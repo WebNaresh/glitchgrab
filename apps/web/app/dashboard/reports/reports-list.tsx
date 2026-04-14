@@ -13,6 +13,7 @@ interface ReportItem {
   failReason: string | null;
   createdAt: string;
   repoFullName: string;
+  dismissed?: boolean;
   reporterPrimaryKey: string;
   reporterName: string;
   reporterEmail: string | null;
@@ -94,7 +95,6 @@ export function ReportsList({ isOwner }: { isOwner: boolean }) {
       <ReportsTabs
         myReports={my}
         productIssues={productIssues}
-        isOwner={isOwner}
       />
     </div>
   );
