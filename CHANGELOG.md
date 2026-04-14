@@ -1,3 +1,9 @@
+## [1.15.0](https://github.com/WebNaresh/glitchgrab/compare/v1.14.0...v1.15.0) (2026-04-14)
+
+### Features
+
+* **dashboard:** add compact active workflows widget ([2a7a538](https://github.com/WebNaresh/glitchgrab/commit/2a7a53801823c4a819e3dca2b96658c32c1e8073))
+
 ## [1.14.0](https://github.com/WebNaresh/glitchgrab/compare/v1.13.0...v1.14.0) (2026-04-14)
 
 ### Features
