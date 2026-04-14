@@ -55,3 +55,5 @@ jobs:
             7. NEVER run `gh pr merge` — the repo owner handles merging.
 
             If the task is on an existing PR (review/comment), push commits to that PR's branch directly; do not open a new PR.
+
+            If you cannot solve the task (ambiguous, out of scope, requires human judgment, or you hit a blocker): post ONE comment on the issue/PR explaining why, and — only if the trigger is an issue — assign it to the repo owner with `gh issue edit ${{ github.event.issue.number }} --add-assignee ${{ github.repository_owner }}`. Do NOT open a PR.
