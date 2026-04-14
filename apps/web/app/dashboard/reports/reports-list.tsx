@@ -25,7 +25,7 @@ interface ReportItem {
   } | null;
 }
 
-export function ReportsList({ isOwner }: { isOwner: boolean }) {
+export function ReportsList() {
   // Fetch all reports via dashboard API (session auth)
   const { data: allReports, isLoading: loadingAll, isFetching } = useQuery<ReportItem[]>({
     queryKey: ["reports"],

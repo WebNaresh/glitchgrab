@@ -20,7 +20,7 @@ export default async function ReportsPage() {
         }
         meta={isOwner ? "owner view · product issues + my reports" : "collaborator view"}
       />
-      <ReportsList isOwner={isOwner} />
+      <ReportsList />
     </div>
   );
 }
