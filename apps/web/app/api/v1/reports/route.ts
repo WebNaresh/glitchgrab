@@ -91,6 +91,7 @@ export async function GET() {
       createdAt: r.createdAt,
       repoId: r.repoId,
       repoFullName: r.repo.fullName,
+      dismissed: (r.metadata as Record<string, unknown>)?.dismissed === true,
       reporterPrimaryKey: r.reporterPrimaryKey,
       reporterName: r.reporterName,
       reporterEmail: r.reporterEmail,
