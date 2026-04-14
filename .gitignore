@@ -30,3 +30,7 @@ apps/web/public/robots.txt
 
 # Test
 coverage/
+
+# AIDesigner artifacts (keep folder structure, ignore generated runs)
+.aidesigner/*
+!.aidesigner/.gitkeep

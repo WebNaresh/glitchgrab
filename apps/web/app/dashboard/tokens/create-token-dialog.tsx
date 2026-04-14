@@ -17,7 +17,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus, Copy, Check, Loader2 } from "lucide-react";
+import {
+  Check,
+  Copy,
+  GitFork,
+  KeyRound,
+  Loader2,
+  Plus,
+  Shield,
+} from "lucide-react";
 import { toast } from "sonner";
 import { createToken } from "./actions";
 import { copyToClipboard } from "@/lib/clipboard";
@@ -73,59 +81,90 @@ export function CreateTokenDialog({ repos }: { repos: Repo[] }) {
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogTrigger>
-        <span className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition">
-          <Plus className="h-4 w-4" />
-          Create Token
+      <DialogTrigger
+        render={
+          <Button
+            variant="default"
+            className="gap-2 font-mono text-xs uppercase tracking-wider shrink-0"
+          />
+        }
+      >
+        <Plus className="h-3.5 w-3.5" />
+        <span>Generate Token</span>
+        <span className="hidden sm:inline-flex items-center gap-1 bg-background/40 rounded-xs px-1.5 py-0.5 text-[9px] border border-border/60 text-foreground/70 normal-case tracking-normal">
+          <span className="font-mono">⌘N</span>
         </span>
       </DialogTrigger>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-[calc(100vw-2rem)] sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>
-            {generatedToken ? "Token Created" : "Create API Token"}
+          <DialogTitle className="font-mono text-sm text-foreground uppercase tracking-widest flex items-center gap-2">
+            <KeyRound className="h-4 w-4 text-primary" />
+            {generatedToken ? "token_generated" : "generate_api_token"}
           </DialogTitle>
+          <p className="font-mono text-[11px] text-muted-foreground mt-1">
+            {generatedToken
+              ? "copy now — this is shown exactly once"
+              : "scope a new key to a single repository"}
+          </p>
         </DialogHeader>
 
         {generatedToken ? (
           <div className="space-y-4">
-            <p className="text-sm text-muted-foreground">
-              Copy this token now — you won&apos;t be able to see it again.
-            </p>
             <div className="flex items-center gap-2">
-              <code className="flex-1 rounded-lg bg-muted px-3 py-2 text-xs font-mono break-all">
+              <code className="flex-1 rounded border border-border bg-card px-3 py-2 text-xs font-mono break-all text-foreground">
                 {generatedToken}
               </code>
-              <Button variant="outline" size="icon" onClick={handleCopy}>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={handleCopy}
+                aria-label="Copy token"
+              >
                 {copied ? (
-                  <Check className="h-4 w-4 text-green" />
+                  <Check className="h-4 w-4 text-primary" />
                 ) : (
                   <Copy className="h-4 w-4" />
                 )}
               </Button>
             </div>
-            <div className="rounded-lg bg-primary/5 border border-primary/20 p-3">
-              <p className="text-xs text-muted-foreground">
-                <strong>Usage:</strong> Add this to your Next.js app:
+            <div className="rounded border border-primary/30 bg-primary/5 p-3">
+              <p className="font-mono text-[10px] uppercase tracking-widest text-primary/80 mb-2">
+                usage · next.js
               </p>
-              <code className="text-xs font-mono text-primary mt-1 block">
+              <code className="text-[11px] font-mono text-foreground block break-all">
                 {`<GlitchgrabProvider token="${generatedToken}">`}
               </code>
             </div>
-            <Button onClick={() => handleClose(false)} className="w-full">
+            <Button
+              onClick={() => handleClose(false)}
+              className="w-full font-mono text-xs uppercase tracking-wider"
+            >
               Done
             </Button>
           </div>
         ) : (
           <div className="space-y-4">
             <div>
-              <label className="text-sm font-medium mb-1.5 block">Repo</label>
-              <Select value={repoName} onValueChange={(val) => { if (val) setRepoName(val); }}>
-                <SelectTrigger>
+              <label className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-1.5 flex items-center gap-1.5">
+                <GitFork className="h-3 w-3" />
+                repository
+              </label>
+              <Select
+                value={repoName}
+                onValueChange={(val) => {
+                  if (val) setRepoName(val);
+                }}
+              >
+                <SelectTrigger className="font-mono text-sm">
                   <SelectValue placeholder="Select a repo" />
                 </SelectTrigger>
                 <SelectContent>
                   {repos.map((repo) => (
-                    <SelectItem key={repo.id} value={repo.fullName}>
+                    <SelectItem
+                      key={repo.id}
+                      value={repo.fullName}
+                      className="font-mono text-sm"
+                    >
                       {repo.fullName}
                     </SelectItem>
                   ))}
@@ -133,27 +172,35 @@ export function CreateTokenDialog({ repos }: { repos: Repo[] }) {
               </Select>
             </div>
             <div>
-              <label className="text-sm font-medium mb-1.5 block">
-                Token Name <span className="text-muted-foreground">(optional)</span>
+              <label className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground mb-1.5 flex items-center gap-1.5">
+                <Shield className="h-3 w-3" />
+                token name{" "}
+                <span className="normal-case tracking-normal text-muted-foreground/60">
+                  (optional)
+                </span>
               </label>
               <Input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Production, Staging"
+                className="font-mono text-sm"
               />
             </div>
             <Button
               onClick={handleCreate}
               disabled={pending || !selectedRepoId}
-              className="w-full"
+              className="w-full font-mono text-xs uppercase tracking-wider"
             >
               {pending ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                  Creating...
+                  Generating...
                 </>
               ) : (
-                "Generate Token"
+                <>
+                  <Plus className="h-3.5 w-3.5 mr-1.5" />
+                  Generate Token
+                </>
               )}
             </Button>
           </div>

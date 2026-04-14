@@ -15,7 +15,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Loader2, UserX } from "lucide-react";
+import { Loader2, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 interface RevokeButtonProps {
@@ -50,36 +50,46 @@ export function RevokeButton({ collaboratorId, email }: RevokeButtonProps) {
           <Button
             variant="ghost"
             size="sm"
-            className="text-destructive hover:text-destructive shrink-0"
+            className="h-7 px-2 gap-1 font-mono text-[10px] uppercase tracking-widest text-muted-foreground hover:text-red-400 hover:bg-red-500/10"
           />
         }
       >
-        <UserX className="h-4 w-4 mr-1" />
-        Remove
+        <Trash2 className="h-3.5 w-3.5" />
+        revoke
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Remove collaborator?</AlertDialogTitle>
+          <AlertDialogTitle className="font-mono text-sm uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+            <Trash2 className="h-4 w-4 text-red-400" />
+            revoke_collaborator
+          </AlertDialogTitle>
           <AlertDialogDescription>
-            This will revoke <strong>{email}</strong>&apos;s access to your
-            repositories. They won&apos;t be able to report bugs anymore. You can
-            always invite them again later.
+            This will revoke{" "}
+            <strong className="font-mono text-foreground">{email}</strong>
+            &apos;s access to your repositories. They won&apos;t be able to
+            report bugs anymore. You can always invite them again later.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
+          <AlertDialogCancel
+            disabled={isPending}
+            className="font-mono text-[11px] uppercase tracking-widest"
+          >
+            cancel
+          </AlertDialogCancel>
           <AlertDialogAction
             variant="destructive"
             disabled={isPending}
             onClick={() => mutate()}
+            className="font-mono text-[11px] uppercase tracking-widest"
           >
             {isPending ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin mr-1.5" />
-                Removing...
+                removing...
               </>
             ) : (
-              "Remove"
+              "revoke access"
             )}
           </AlertDialogAction>
         </AlertDialogFooter>

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { Loader2, Zap } from "lucide-react";
 import { toast } from "sonner";
 
 declare global {
@@ -112,7 +112,7 @@ export function UpgradeButton({
         variant="link"
         onClick={handleUpgrade}
         disabled={loading}
-        className="shrink-0 text-xs font-medium h-auto p-0"
+        className="shrink-0 text-xs font-medium h-auto p-0 font-mono"
       >
         {loading ? "Processing..." : label}
       </Button>
@@ -120,9 +120,26 @@ export function UpgradeButton({
   }
 
   return (
-    <Button onClick={handleUpgrade} disabled={loading} className="w-full gap-2">
-      {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-      {loading ? "Processing..." : label}
-    </Button>
+    <button
+      type="button"
+      onClick={handleUpgrade}
+      disabled={loading}
+      className="group w-full flex items-center justify-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-60 disabled:cursor-not-allowed transition-colors px-4 py-2.5 rounded font-mono text-[12px] uppercase tracking-widest"
+    >
+      {loading ? (
+        <>
+          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+          <span>Processing</span>
+        </>
+      ) : (
+        <>
+          <span className="font-mono text-[10px] px-1.5 py-0.5 rounded border border-primary-foreground/30 bg-primary-foreground/10 leading-none">
+            &#8984;U
+          </span>
+          <Zap className="h-3.5 w-3.5" />
+          <span>{label}</span>
+        </>
+      )}
+    </button>
   );
 }

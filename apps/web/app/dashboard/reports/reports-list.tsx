@@ -2,7 +2,6 @@
 
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { Card, CardContent } from "@/components/ui/card";
 import { ClipboardList, Loader2 } from "lucide-react";
 import { ReportsTabs } from "./reports-tabs";
 
@@ -56,8 +55,8 @@ export function ReportsList({ isOwner }: { isOwner: boolean }) {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      <div className="flex items-center justify-center py-20">
+        <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
       </div>
     );
   }
@@ -67,15 +66,17 @@ export function ReportsList({ isOwner }: { isOwner: boolean }) {
 
   if (all.length === 0 && my.length === 0) {
     return (
-      <Card className="border-dashed">
-        <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-          <ClipboardList className="h-12 w-12 text-muted-foreground mb-4" />
-          <h3 className="text-lg font-semibold mb-2">No reports yet</h3>
-          <p className="text-sm text-muted-foreground max-w-sm">
-            Reports will appear here when bugs are captured via the SDK or dashboard.
-          </p>
-        </CardContent>
-      </Card>
+      <div className="border border-dashed border-border rounded p-10 flex flex-col items-center text-center">
+        <div className="w-12 h-12 rounded-full bg-card border border-border flex items-center justify-center mb-4">
+          <ClipboardList className="h-5 w-5 text-muted-foreground" />
+        </div>
+        <h3 className="font-mono text-sm text-foreground mb-2">
+          no reports yet
+        </h3>
+        <p className="text-xs text-muted-foreground max-w-sm">
+          Reports will appear here when bugs are captured via the SDK or dashboard.
+        </p>
+      </div>
     );
   }
 
@@ -87,7 +88,7 @@ export function ReportsList({ isOwner }: { isOwner: boolean }) {
     <div className="relative">
       {isFetching && !isLoading && (
         <div className="absolute top-0 right-0">
-          <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+          <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />
         </div>
       )}
       <ReportsTabs
