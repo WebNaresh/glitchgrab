@@ -149,4 +149,23 @@ html {
   height: 1px;
 }
 
+/* Terminal-style thin scrollbar for horizontal overflow sections */
+.pipeline-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+.pipeline-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.pipeline-scroll::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 0;
+}
+.pipeline-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--muted-foreground);
+}
+.pipeline-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
 /* WebView GPU fixes and pull-to-refresh are handled by injected style tag (#glitchgrab-webview) from the mobile app */
