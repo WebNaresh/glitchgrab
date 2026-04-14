@@ -26,7 +26,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      DATABASE_URL: "postgresql://fake:fake@localhost:5432/fake"
+      NEXT_POSTGRES_URL: "postgresql://fake:fake@localhost:5432/fake"
       NEXTAUTH_SECRET: "ci-secret-not-real"
       AUTH_SECRET: "ci-secret-not-real"
       GITHUB_CLIENT_ID: "fake"
