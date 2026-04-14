@@ -1,3 +1,15 @@
+## [1.11.0](https://github.com/WebNaresh/glitchgrab/compare/v1.10.0...v1.11.0) (2026-04-14)
+
+### Features
+
+* **claude:** add agentic enricher loop with 6-turn cap, 15s timeout, and fallback ([21945d9](https://github.com/WebNaresh/glitchgrab/commit/21945d9634cb36617bc2ba5109655830748260e3))
+* **claude:** add Anthropic SDK client factory ([670a9cc](https://github.com/WebNaresh/glitchgrab/commit/670a9cc3e9ca77bbc5bd6910b831c5b343e9f77d))
+* **claude:** add in-memory TTL cache for tree/file/search lookups ([ec806fa](https://github.com/WebNaresh/glitchgrab/commit/ec806fa511126e1dfce5ce21f67c3573cb423aa8))
+* **claude:** add list_repo_tree/read_file/search_code tools scoped to one repo ([82b3893](https://github.com/WebNaresh/glitchgrab/commit/82b389308d0715692e513c47f999dc7aef317970))
+* **claude:** add system prompt encoding the 6-action decision ([0656067](https://github.com/WebNaresh/glitchgrab/commit/065606712bda8e9014311d720c4d8944e5c44b10))
+* **claude:** add ToolContext and EnrichmentMetrics types ([0818bb7](https://github.com/WebNaresh/glitchgrab/commit/0818bb787d30729f46def670e0965c25719363b5))
+* **web:** thread repo context into classifyAndGenerate so claude can read it ([de871d4](https://github.com/WebNaresh/glitchgrab/commit/de871d41cdb9c551e2df2d1f558a4f9d168ed41c))
+
 ## [1.10.0](https://github.com/WebNaresh/glitchgrab/compare/v1.9.1...v1.10.0) (2026-04-14)
 
 ### Features
