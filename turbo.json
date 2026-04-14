@@ -6,7 +6,7 @@
       "dependsOn": ["^build"],
       "outputs": [".next/**", "dist/**"],
       "env": [
-        "DATABASE_URL",
+        "NEXT_POSTGRES_URL",
         "NEXTAUTH_URL",
         "NEXTAUTH_SECRET",
         "AUTH_SECRET",
