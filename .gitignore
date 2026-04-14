@@ -30,3 +30,6 @@ apps/web/public/robots.txt
 
 # Test
 coverage/
+
+# AIDesigner artifacts
+.aidesigner/
