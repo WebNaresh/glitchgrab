@@ -8,7 +8,7 @@ import type { EnrichmentMetrics, ToolContext } from "./types";
 const MODEL = "claude-haiku-4-5";
 const MAX_TURNS = 6;
 const HARD_TIMEOUT_MS = 15_000;
-const MAX_OUTPUT_TOKENS = 2048;
+const MAX_OUTPUT_TOKENS = 4096;
 
 export interface EnrichInput extends AiInput {
   accessToken: string;
@@ -56,17 +56,28 @@ export async function enrich(input: EnrichInput): Promise<EnrichResult> {
 
       if (Date.now() > deadline) throw new EnrichTimeoutError();
 
+      // On the last turn, withhold tools so the model is forced to output JSON
+      // instead of making more tool calls and exhausting the turn budget.
+      const isLastTurn = turn >= MAX_TURNS - 1;
+      const systemBlocks: Anthropic.TextBlockParam[] = [
+        {
+          type: "text",
+          text: SYSTEM_PROMPT,
+          cache_control: { type: "ephemeral" },
+        },
+      ];
+      if (isLastTurn) {
+        systemBlocks.push({
+          type: "text",
+          text: "FINAL TURN: No more tool calls are available. Output your JSON action now — no tools, just the JSON object.",
+        });
+      }
+
       const response = await client.messages.create({
         model: MODEL,
         max_tokens: MAX_OUTPUT_TOKENS,
-        system: [
-          {
-            type: "text",
-            text: SYSTEM_PROMPT,
-            cache_control: { type: "ephemeral" },
-          },
-        ],
-        tools: TOOL_SCHEMAS,
+        system: systemBlocks,
+        ...(isLastTurn ? {} : { tools: TOOL_SCHEMAS }),
         messages,
       });
 
