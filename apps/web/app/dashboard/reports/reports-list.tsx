@@ -13,6 +13,7 @@ interface ReportItem {
   failReason: string | null;
   createdAt: string;
   repoFullName: string;
+  dismissed?: boolean;
   reporterPrimaryKey: string;
   reporterName: string;
   reporterEmail: string | null;
@@ -24,7 +25,7 @@ interface ReportItem {
   } | null;
 }
 
-export function ReportsList({ isOwner }: { isOwner: boolean }) {
+export function ReportsList() {
   // Fetch all reports via dashboard API (session auth)
   const { data: allReports, isLoading: loadingAll, isFetching } = useQuery<ReportItem[]>({
     queryKey: ["reports"],
@@ -94,7 +95,6 @@ export function ReportsList({ isOwner }: { isOwner: boolean }) {
       <ReportsTabs
         myReports={my}
         productIssues={productIssues}
-        isOwner={isOwner}
       />
     </div>
   );
