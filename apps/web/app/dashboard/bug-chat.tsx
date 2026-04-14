@@ -191,7 +191,7 @@ function FileToken({
       <div className="flex flex-col min-w-0">
         <span className="font-mono text-[11px] text-foreground truncate max-w-55">{name}</span>
         <span className="font-mono text-[10px] text-muted-foreground">
-          {size != null ? formatBytes(size) : ""} · image
+          {size !== undefined ? formatBytes(size) : ""} · image
         </span>
       </div>
       {onRemove ? (
@@ -331,10 +331,10 @@ const MessageBlock = memo(function MessageBlock({
       )}
 
       {/* Clarifying questions */}
-      {hasClarify && (
+      {hasClarify && msg.clarifyQuestions && (
         <div className="mt-2">
           <InteractiveQuestions
-            questions={msg.clarifyQuestions!}
+            questions={msg.clarifyQuestions}
             onComplete={(answers) => onClarifyComplete(msg.id, answers)}
             onDismiss={() => onClarifyDismiss(msg.id)}
           />
