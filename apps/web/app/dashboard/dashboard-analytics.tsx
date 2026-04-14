@@ -17,7 +17,7 @@ import {
 import { OpenPullRequests } from "./open-pull-requests";
 import { OpenIssues } from "./open-issues";
 import { GithubContributions } from "./github-contributions";
-import { WorkflowRunsSection } from "./workflow-runs";
+import { ActiveWorkflowsWidget } from "./active-workflows-widget";
 
 interface AnalyticsData {
   daily: { date: string; count: number }[];
@@ -123,42 +123,45 @@ export function DashboardAnalytics({ userName }: { userName: string }) {
         </p>
       </div>
 
-      {/* Stat grid */}
-      <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatCard
-          label="PRs to review"
-          value={openPrs}
-          icon={<GitPullRequest className="h-4 w-4" />}
-          pill={openPrs > 0 ? { text: "Action req", tone: "warn" } : { text: "Clear", tone: "muted" }}
-        />
-        <StatCard
-          label="Open issues"
-          value={openIssues}
-          icon={<AlertCircle className="h-4 w-4" />}
-          pill={openIssues > 0 ? { text: "Triage", tone: "primary" } : { text: "Clear", tone: "muted" }}
-        />
-        <StatCard
-          label="New reports"
-          value={analytics.today}
-          icon={<Bug className="h-4 w-4" />}
-          pill={{ text: `avg ${analytics.avgPerDay}/day`, tone: "muted" }}
-        />
-        <StatCard
-          label="Failed retries"
-          value={analytics.failed}
-          icon={<AlertTriangle className="h-4 w-4" />}
-          critical={analytics.failed > 0}
-          pill={
-            analytics.failed > 0
-              ? { text: "Manual override", tone: "danger" }
-              : { text: "None", tone: "muted" }
-          }
-          href={analytics.failed > 0 ? "/dashboard/reports" : undefined}
-        />
-      </section>
+      {/* Stat grid + active workflows widget */}
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-6">
+        <section className="grid grid-cols-2 gap-3 lg:col-span-2">
+          <StatCard
+            label="PRs to review"
+            value={openPrs}
+            icon={<GitPullRequest className="h-4 w-4" />}
+            pill={openPrs > 0 ? { text: "Action req", tone: "warn" } : { text: "Clear", tone: "muted" }}
+          />
+          <StatCard
+            label="Open issues"
+            value={openIssues}
+            icon={<AlertCircle className="h-4 w-4" />}
+            pill={openIssues > 0 ? { text: "Triage", tone: "primary" } : { text: "Clear", tone: "muted" }}
+          />
+          <StatCard
+            label="New reports"
+            value={analytics.today}
+            icon={<Bug className="h-4 w-4" />}
+            pill={{ text: `avg ${analytics.avgPerDay}/day`, tone: "muted" }}
+          />
+          <StatCard
+            label="Failed retries"
+            value={analytics.failed}
+            icon={<AlertTriangle className="h-4 w-4" />}
+            critical={analytics.failed > 0}
+            pill={
+              analytics.failed > 0
+                ? { text: "Manual override", tone: "danger" }
+                : { text: "None", tone: "muted" }
+            }
+            href={analytics.failed > 0 ? "/dashboard/reports" : undefined}
+          />
+        </section>
 
-      {/* GitHub Actions workflow runs */}
-      <WorkflowRunsSection />
+        <div className="lg:col-span-1">
+          <ActiveWorkflowsWidget />
+        </div>
+      </div>
 
       {/* Two-column action lists */}
       <div className="grid grid-cols-1 gap-4 md:gap-6 lg:grid-cols-2">
