@@ -2,8 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ExternalLink, GitPullRequest, Loader2 } from "lucide-react";
+import { ArrowRight, Clock, GitPullRequest, Loader2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface PullRequest {
@@ -26,6 +25,14 @@ function timeAgo(iso: string) {
   return new Date(iso).toLocaleDateString();
 }
 
+function severity(iso: string, draft: boolean): "stale" | "normal" | "fresh" | "draft" {
+  if (draft) return "draft";
+  const ageHrs = (Date.now() - new Date(iso).getTime()) / (60 * 60 * 1000);
+  if (ageHrs > 72) return "stale";
+  if (ageHrs > 24) return "normal";
+  return "fresh";
+}
+
 export function OpenPullRequests() {
   const { data, isLoading } = useQuery<PullRequest[]>({
     queryKey: ["open-pull-requests"],
@@ -36,65 +43,94 @@ export function OpenPullRequests() {
     staleTime: 60_000,
   });
 
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-10">
+        <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (!data || data.length === 0) {
+    return (
+      <div className="flex items-center gap-3 border border-dashed border-border rounded-md px-4 py-4">
+        <GitPullRequest className="h-4 w-4 text-muted-foreground shrink-0" />
+        <p className="text-xs font-mono text-muted-foreground">
+          No open pull requests — all caught up.
+        </p>
+      </div>
+    );
+  }
+
   return (
-    <Card className="flex flex-col">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0">
-        <CardTitle className="text-base flex items-center gap-2">
-          <GitPullRequest className="h-4 w-4" />
-          Open PRs
-        </CardTitle>
-        {data && data.length > 0 && (
-          <span className="text-xs text-muted-foreground">{data.length}</span>
-        )}
-      </CardHeader>
-      <CardContent className="flex-1">
-        {isLoading ? (
-          <div className="flex items-center justify-center py-8">
-            <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
-          </div>
-        ) : !data || data.length === 0 ? (
-          <div className="flex flex-col items-center justify-center gap-2 py-8 text-center">
-            <GitPullRequest className="h-8 w-8 text-muted-foreground" />
-            <p className="text-xs text-muted-foreground">No open pull requests</p>
-          </div>
-        ) : (
-          <ul className="flex flex-col divide-y divide-border">
-            {data.map((pr) => (
-              <li key={`${pr.repoFullName}-${pr.number}`}>
-                <a
-                  href={pr.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-start gap-3 py-3 group hover:bg-muted/50 -mx-2 px-2 rounded-md transition"
-                >
-                  <Avatar className="h-6 w-6 mt-0.5 shrink-0">
-                    <AvatarImage src={pr.authorAvatar ?? undefined} alt={pr.author} />
-                    <AvatarFallback className="text-[10px]">
-                      {pr.author.charAt(0).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-1.5">
-                      <p className="text-sm font-medium truncate group-hover:text-primary transition">
-                        {pr.title}
-                      </p>
-                      {pr.draft && (
-                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground shrink-0">
+    <ul className="flex flex-col gap-2">
+      {data.slice(0, 5).map((pr) => {
+        const sev = severity(pr.createdAt, pr.draft);
+        const stripColor =
+          sev === "stale"
+            ? "bg-yellow-500/80"
+            : sev === "draft"
+            ? "bg-muted"
+            : sev === "fresh"
+            ? "bg-primary/80"
+            : "bg-border";
+
+        return (
+          <li key={`${pr.repoFullName}-${pr.number}`}>
+            <a
+              href={pr.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group relative block bg-card/40 hover:bg-card border border-border hover:border-primary/50 rounded-md p-3 pl-4 transition-colors"
+            >
+              <span
+                aria-hidden
+                className={`absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-l-md ${stripColor}`}
+              />
+              <div className="flex items-start gap-3">
+                <Avatar className="h-7 w-7 mt-0.5 shrink-0 border border-border">
+                  <AvatarImage src={pr.authorAvatar ?? undefined} alt={pr.author} />
+                  <AvatarFallback className="text-[10px] font-mono">
+                    {pr.author.charAt(0).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-start justify-between gap-2">
+                    <h3 className="text-sm font-medium text-foreground truncate group-hover:text-primary transition-colors">
+                      {pr.title}
+                    </h3>
+                    <ArrowRight className="h-3.5 w-3.5 text-muted-foreground/60 shrink-0 mt-0.5 opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:text-primary transition-all" />
+                  </div>
+                  <div className="mt-1 flex items-center gap-2 text-[11px] font-mono text-muted-foreground flex-wrap">
+                    <span className="text-primary/70">
+                      {pr.repoFullName} #{pr.number}
+                    </span>
+                    <span className="opacity-40">·</span>
+                    <span className="flex items-center gap-1">
+                      <Clock className="h-3 w-3" />
+                      {timeAgo(pr.createdAt)}
+                    </span>
+                    {pr.draft && (
+                      <>
+                        <span className="opacity-40">·</span>
+                        <span className="text-muted-foreground/80 border border-border px-1 rounded text-[10px]">
                           draft
                         </span>
-                      )}
-                    </div>
-                    <p className="text-xs text-muted-foreground truncate">
-                      {pr.repoFullName} #{pr.number} · {pr.author} · {timeAgo(pr.createdAt)}
-                    </p>
+                      </>
+                    )}
+                    {sev === "stale" && !pr.draft && (
+                      <>
+                        <span className="opacity-40">·</span>
+                        <span className="text-yellow-400/90">stale</span>
+                      </>
+                    )}
                   </div>
-                  <ExternalLink className="h-3.5 w-3.5 text-muted-foreground mt-1 shrink-0 group-hover:text-primary transition" />
-                </a>
-              </li>
-            ))}
-          </ul>
-        )}
-      </CardContent>
-    </Card>
+                </div>
+              </div>
+            </a>
+          </li>
+        );
+      })}
+    </ul>
   );
 }
