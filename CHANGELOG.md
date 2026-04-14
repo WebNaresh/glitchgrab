@@ -1,3 +1,18 @@
+## [1.16.0](https://github.com/WebNaresh/glitchgrab/compare/v1.15.1...v1.16.0) (2026-04-14)
+
+### Features
+
+* **seo:** add canonical URLs to docs, legal, and contact pages ([c0720f3](https://github.com/WebNaresh/glitchgrab/commit/c0720f3ec2b47c6e149798bd0ac2a743e22ac0bf))
+* **seo:** add explicit Next.js sitemap route covering all public pages ([c10ef0c](https://github.com/WebNaresh/glitchgrab/commit/c10ef0cf0bb8b81b5eae37049cc6f3465bd631bc))
+* **seo:** add JSON-LD schema utility for Organization, SoftwareApplication, and BreadcrumbList ([743d8f5](https://github.com/WebNaresh/glitchgrab/commit/743d8f57c3637e83eff5cbac80400650b0e0e6a4))
+* **seo:** add SoftwareApplication and BreadcrumbList JSON-LD to homepage ([d3b0cb5](https://github.com/WebNaresh/glitchgrab/commit/d3b0cb5e27c722debe4630d830dd531a520aad0d))
+* **seo:** inject Organization JSON-LD and add canonical URL to root layout ([d6954ec](https://github.com/WebNaresh/glitchgrab/commit/d6954ec2891dc1aac3a0a9f4567f3a6aa57dd417))
+
+### Bug Fixes
+
+* **enricher:** force JSON output on last turn to prevent exhausted-turns fallback ([e316aa8](https://github.com/WebNaresh/glitchgrab/commit/e316aa8d3e73cc8250262782571c24193c138944))
+* **seo:** add explicit sitemap.xml reference to robots.txt via next-sitemap config ([4ad7683](https://github.com/WebNaresh/glitchgrab/commit/4ad768364a82368b7b63e13a932c487554b3acbb))
+
 ## [1.15.1](https://github.com/WebNaresh/glitchgrab/compare/v1.15.0...v1.15.1) (2026-04-14)
 
 ### Bug Fixes
