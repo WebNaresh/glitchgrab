@@ -1,3 +1,32 @@
+## [1.10.0](https://github.com/WebNaresh/glitchgrab/compare/v1.9.1...v1.10.0) (2026-04-14)
+
+### Features
+
+* **analytics:** add reports analytics endpoint for dashboard stats ([50c8134](https://github.com/WebNaresh/glitchgrab/commit/50c8134bc555bea37b34ce68513fa982d65c99e3))
+* **bottom-nav:** replace Repos with Chat tab and add Chat to menu sheet ([41a969f](https://github.com/WebNaresh/glitchgrab/commit/41a969f52c7f251ddf18ca516914c97fd90d13f8))
+* **chat:** add dedicated chat route separated from main dashboard ([a383fa5](https://github.com/WebNaresh/glitchgrab/commit/a383fa5aa81759445abe06820b212017bdc3154c))
+* **dashboard:** add analytics view with action cards, PR/issue lists, and heatmap ([8c44ef8](https://github.com/WebNaresh/glitchgrab/commit/8c44ef84100a42e8345df67fedd0841c1e8fb122))
+* **dashboard:** add GitHub contributions heatmap with tooltip on hover ([5b2191d](https://github.com/WebNaresh/glitchgrab/commit/5b2191d391e055d24279369f073d3ba00d4adaac))
+* **dashboard:** add GitHub-style yearly reports contribution heatmap ([bafdb24](https://github.com/WebNaresh/glitchgrab/commit/bafdb24ab956db7f9ba9f0d00e3eddd032ef20fc))
+* **dashboard:** add open GitHub issues card with labels and direct links ([05c9700](https://github.com/WebNaresh/glitchgrab/commit/05c9700c419650d7e4a35628ab913580ca346465))
+* **dashboard:** add open pull-requests card with direct GitHub links ([b80319b](https://github.com/WebNaresh/glitchgrab/commit/b80319b59d4252e7f6b6c846739f663e9f92df93))
+* **dashboard:** add shared InnerPageHeader primitive for terminal-dev inner pages ([eee136e](https://github.com/WebNaresh/glitchgrab/commit/eee136ee78f804fcd7c69405ebb45b3cacecb4c2))
+* **dashboard:** extract reusable no-repos empty state ([33a84bb](https://github.com/WebNaresh/glitchgrab/commit/33a84bbf7eefb9b2e841a484749eeb2d7af94783))
+* **dashboard:** extract shared repo-context loader for reuse across pages ([5b14538](https://github.com/WebNaresh/glitchgrab/commit/5b1453846d4d4b65b444ce4708312b05ee15bd93))
+* **github:** add GitHub contributions GraphQL endpoint ([e34212d](https://github.com/WebNaresh/glitchgrab/commit/e34212d796ba3b297df1d53c61b01141ce566ab1))
+* **landing:** terminal-dev redesign — hero with live terminal, log-entry feature cards, CLI install transcript + demo video split, pipeline with icons, subscribe.sh waitlist, mono footer ([c8903cf](https://github.com/WebNaresh/glitchgrab/commit/c8903cf8f7e5cb8d6316cbf36a639b05ffa408e3))
+* **repos:** add open issues endpoint for dev triage ([1e7cde3](https://github.com/WebNaresh/glitchgrab/commit/1e7cde329630e56b5a40eaf0f895f0c8bb61dbef))
+* **repos:** add open pull-requests endpoint via GitHub API ([93892cd](https://github.com/WebNaresh/glitchgrab/commit/93892cd7bc94fbd35156673982f11eb57b0ddc4f))
+* **sidebar:** add Chat nav entry for dedicated chat route ([7e733dd](https://github.com/WebNaresh/glitchgrab/commit/7e733ddbe476be0a592d38d8fbc40ef0740d4f56))
+* **sidebar:** redesign with nav groups, kbd hints, status dot, live count badges, keyboard-styled report button ([d388a57](https://github.com/WebNaresh/glitchgrab/commit/d388a57e8624836817a3f6ed371dfc55e99156d6))
+
+### Bug Fixes
+
+* **chat:** replace non-null assertion and '!=' with strict equality and guard check ([8f63ae0](https://github.com/WebNaresh/glitchgrab/commit/8f63ae001a83f672e35351794f92fc01ad7f691a))
+* **landing:** use real logo image in footer brand instead of generic terminal icon ([8a6117b](https://github.com/WebNaresh/glitchgrab/commit/8a6117bf826381545ebf565eb8aed5505f97acde))
+* **reports:** inline source-icon rendering to satisfy react-hooks/static-components rule ([32b626c](https://github.com/WebNaresh/glitchgrab/commit/32b626c1b5a342cb7d078e655b5856181f5a4372))
+* **web:** add data-scroll-behavior=smooth to html for proper nextjs route transitions ([d3d6fd0](https://github.com/WebNaresh/glitchgrab/commit/d3d6fd0e28806bb588ea408f2c078a94ad61602f))
+
 ## [1.9.1](https://github.com/WebNaresh/glitchgrab/compare/v1.9.0...v1.9.1) (2026-04-13)
 
 ### Bug Fixes
