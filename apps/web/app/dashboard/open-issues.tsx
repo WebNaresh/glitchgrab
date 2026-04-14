@@ -2,9 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { AlertCircle, ExternalLink, Loader2, MessageCircle } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { AlertCircle, ArrowRight, Circle, Loader2, MessageCircle } from "lucide-react";
 
 interface IssueItem {
   number: number;
@@ -27,6 +25,10 @@ function timeAgo(iso: string) {
   return new Date(iso).toLocaleDateString();
 }
 
+function isHighPriority(labels: { name: string }[]) {
+  return labels.some((l) => /p0|p1|critical|urgent|security|bug/i.test(l.name));
+}
+
 export function OpenIssues() {
   const { data, isLoading } = useQuery<IssueItem[]>({
     queryKey: ["open-issues"],
@@ -37,78 +39,99 @@ export function OpenIssues() {
     staleTime: 60_000,
   });
 
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-10">
+        <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (!data || data.length === 0) {
+    return (
+      <div className="flex items-center gap-3 border border-dashed border-border rounded-md px-4 py-4">
+        <AlertCircle className="h-4 w-4 text-muted-foreground shrink-0" />
+        <p className="text-xs font-mono text-muted-foreground">
+          No open issues — nice work.
+        </p>
+      </div>
+    );
+  }
+
   return (
-    <Card className="flex flex-col">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0">
-        <CardTitle className="text-base flex items-center gap-2">
-          <AlertCircle className="h-4 w-4" />
-          Open issues
-        </CardTitle>
-        {data && data.length > 0 && (
-          <span className="text-xs text-muted-foreground">{data.length}</span>
-        )}
-      </CardHeader>
-      <CardContent className="flex-1">
-        {isLoading ? (
-          <div className="flex items-center justify-center py-8">
-            <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
-          </div>
-        ) : !data || data.length === 0 ? (
-          <div className="flex flex-col items-center justify-center gap-2 py-8 text-center">
-            <AlertCircle className="h-8 w-8 text-muted-foreground" />
-            <p className="text-xs text-muted-foreground">No open issues — nice!</p>
-          </div>
-        ) : (
-          <ul className="flex flex-col divide-y divide-border">
-            {data.map((issue) => (
-              <li key={`${issue.repoFullName}-${issue.number}`}>
-                <a
-                  href={issue.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-start gap-3 py-3 group hover:bg-muted/50 -mx-2 px-2 rounded-md transition"
-                >
-                  <Avatar className="h-6 w-6 mt-0.5 shrink-0">
-                    <AvatarImage src={issue.authorAvatar ?? undefined} alt={issue.author} />
-                    <AvatarFallback className="text-[10px]">
-                      {issue.author.charAt(0).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate group-hover:text-primary transition">
+    <ul className="flex flex-col gap-2">
+      {data.slice(0, 5).map((issue) => {
+        const critical = isHighPriority(issue.labels);
+        return (
+          <li key={`${issue.repoFullName}-${issue.number}`}>
+            <a
+              href={issue.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`group relative block rounded-md p-3 pl-4 transition-colors border ${
+                critical
+                  ? "bg-red-500/5 border-red-500/20 hover:border-red-500/50"
+                  : "bg-card/40 border-border hover:bg-card hover:border-primary/50"
+              }`}
+            >
+              <span
+                aria-hidden
+                className={`absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-l-md ${
+                  critical ? "bg-red-500/80" : "bg-border"
+                }`}
+              />
+              <div className="flex items-start gap-3">
+                <div className="pt-0.5 shrink-0">
+                  {critical ? (
+                    <AlertCircle className="h-4 w-4 text-red-400 fill-red-500/30" />
+                  ) : (
+                    <Circle className="h-4 w-4 text-primary/70" />
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-start justify-between gap-2">
+                    <h3 className="text-sm font-medium text-foreground truncate group-hover:text-primary transition-colors">
                       {issue.title}
-                    </p>
-                    <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-                      <p className="text-xs text-muted-foreground">
-                        {issue.repoFullName} #{issue.number} · {timeAgo(issue.createdAt)}
-                      </p>
-                      {issue.comments > 0 && (
-                        <span className="flex items-center gap-0.5 text-xs text-muted-foreground">
+                    </h3>
+                    <ArrowRight className="h-3.5 w-3.5 text-muted-foreground/60 shrink-0 mt-0.5 opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:text-primary transition-all" />
+                  </div>
+                  <div className="mt-1 flex items-center gap-2 text-[11px] font-mono text-muted-foreground flex-wrap">
+                    <span className="text-primary/70">
+                      {issue.repoFullName} #{issue.number}
+                    </span>
+                    <span className="opacity-40">·</span>
+                    <span>{timeAgo(issue.createdAt)}</span>
+                    {issue.comments > 0 && (
+                      <>
+                        <span className="opacity-40">·</span>
+                        <span className="flex items-center gap-0.5">
                           <MessageCircle className="h-3 w-3" />
                           {issue.comments}
                         </span>
-                      )}
-                      {issue.labels.slice(0, 2).map((label) => (
+                      </>
+                    )}
+                    {issue.labels.slice(0, 2).map((label) => {
+                      const isBug = /bug|critical|p0/i.test(label.name);
+                      return (
                         <span
                           key={label.name}
-                          className="text-[10px] px-1.5 py-0.5 rounded"
-                          style={{
-                            backgroundColor: `#${label.color}22`,
-                            color: `#${label.color}`,
-                          }}
+                          className={`text-[10px] font-mono px-1.5 py-0.5 rounded border ${
+                            isBug
+                              ? "text-red-400 bg-red-400/10 border-red-400/20"
+                              : "text-muted-foreground bg-muted border-border"
+                          }`}
                         >
                           {label.name}
                         </span>
-                      ))}
-                    </div>
+                      );
+                    })}
                   </div>
-                  <ExternalLink className="h-3.5 w-3.5 text-muted-foreground mt-1 shrink-0 group-hover:text-primary transition" />
-                </a>
-              </li>
-            ))}
-          </ul>
-        )}
-      </CardContent>
-    </Card>
+                </div>
+              </div>
+            </a>
+          </li>
+        );
+      })}
+    </ul>
   );
 }
