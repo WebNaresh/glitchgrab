@@ -1,3 +1,14 @@
+## [1.13.0](https://github.com/WebNaresh/glitchgrab/compare/v1.12.0...v1.13.0) (2026-04-14)
+
+### Features
+
+* **reports:** add GET /api/v1/reports/[id] with session auth ([ead5e56](https://github.com/WebNaresh/glitchgrab/commit/ead5e5679110b0cb6694ee43f74d6f1179f1c08c))
+* **reports:** add POST /api/v1/reports/[id]/comments with session auth ([aff3fb8](https://github.com/WebNaresh/glitchgrab/commit/aff3fb8de28811fcc1e6ed8869cd7bcea64e4ef2))
+
+### Bug Fixes
+
+* **web:** use session-auth endpoints in report detail page ([5547fbe](https://github.com/WebNaresh/glitchgrab/commit/5547fbe7eedb42f1e875ccb6dfaf1c1a52ce6223))
+
 ## [1.12.0](https://github.com/WebNaresh/glitchgrab/compare/v1.11.1...v1.12.0) (2026-04-14)
 
 ### Features
