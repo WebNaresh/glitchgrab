@@ -14,7 +14,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Loader2 } from "lucide-react";
+import { Loader2, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 
 export function CancelButton({ expiresAt }: { expiresAt: Date | null }) {
@@ -41,30 +41,40 @@ export function CancelButton({ expiresAt }: { expiresAt: Date | null }) {
     <AlertDialog>
       <AlertDialogTrigger
         render={
-          <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-destructive" />
+          <Button
+            variant="ghost"
+            size="sm"
+            className="bg-red-500/10 border border-red-500/30 text-red-400 hover:bg-red-500/20 hover:text-red-300 font-mono text-[11px] uppercase tracking-widest gap-2 rounded"
+          />
         }
       >
+        <AlertTriangle className="h-3.5 w-3.5" />
         Cancel subscription
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Cancel subscription?</AlertDialogTitle>
+          <AlertDialogTitle className="font-mono uppercase tracking-widest text-sm flex items-center gap-2">
+            <AlertTriangle className="h-4 w-4 text-red-400" />
+            Cancel subscription?
+          </AlertDialogTitle>
           <AlertDialogDescription>
             Your Pro access will continue until{" "}
-            <strong>
+            <strong className="font-mono text-foreground">
               {expiresAt ? expiresAt.toLocaleDateString() : "the end of your billing period"}
             </strong>
             . After that, you won&apos;t be able to create new issues or use AI features.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Keep subscription</AlertDialogCancel>
+          <AlertDialogCancel className="font-mono text-[11px] uppercase tracking-widest">
+            Keep subscription
+          </AlertDialogCancel>
           <AlertDialogAction
             onClick={handleCancel}
             disabled={loading}
-            className="bg-destructive text-destructive-foreground hover:bg-destructive/90 gap-2"
+            className="bg-red-500/10 border border-red-500/30 text-red-400 hover:bg-red-500/20 hover:text-red-300 font-mono text-[11px] uppercase tracking-widest gap-2"
           >
-            {loading && <Loader2 className="h-4 w-4 animate-spin" />}
+            {loading && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
             {loading ? "Cancelling..." : "Yes, cancel"}
           </AlertDialogAction>
         </AlertDialogFooter>
