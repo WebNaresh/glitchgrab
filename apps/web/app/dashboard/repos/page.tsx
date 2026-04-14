@@ -1,4 +1,6 @@
+import { LayoutGrid } from "lucide-react";
 import { auth } from "@/lib/auth";
+import { InnerPageHeader } from "@/components/dashboard/inner-page-header";
 import { ConnectRepoDialog } from "./connect-repo-dialog";
 import { ReposList } from "./repos-list";
 
@@ -7,18 +9,19 @@ export default async function ReposPage() {
   const isOwner = !!session?.user?.id;
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between gap-4 flex-wrap">
-        <div className="min-w-0">
-          <h1 className="text-2xl font-bold">Repos</h1>
-          <p className="text-sm text-muted-foreground">
-            {isOwner
-              ? "Manage your connected GitHub repositories"
-              : "Repositories shared with you"}
-          </p>
-        </div>
-        {isOwner && <ConnectRepoDialog />}
-      </div>
+    <div className="space-y-6">
+      <InnerPageHeader
+        segment="repos"
+        icon={LayoutGrid}
+        title="repositories"
+        subtitle={
+          isOwner
+            ? "Connected GitHub repos · source of truth for tokens & reports"
+            : "Repositories shared with you"
+        }
+        meta={isOwner ? "owner view · manage connections" : "collaborator view"}
+        action={isOwner ? <ConnectRepoDialog /> : null}
+      />
       <ReposList isOwner={isOwner} />
     </div>
   );
