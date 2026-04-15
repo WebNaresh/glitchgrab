@@ -1,3 +1,11 @@
+## [1.20.3](https://github.com/Navibyte-Innovations-Pvt-Ltd/glitchgrab/compare/v1.20.2...v1.20.3) (2026-04-15)
+
+### Bug Fixes
+
+* **claude:** simplify enricher to single-turn API call ([3500632](https://github.com/Navibyte-Innovations-Pvt-Ltd/glitchgrab/commit/3500632d1c2e5a06a5904dfd178a3a3c3a4076b6))
+* **claude:** trim enricher context to prevent turn exhaustion on large issue lists ([9f51536](https://github.com/Navibyte-Innovations-Pvt-Ltd/glitchgrab/commit/9f5153644dc9d1405c1773b94f559f300f7d5fb8)), closes [#142](https://github.com/Navibyte-Innovations-Pvt-Ltd/glitchgrab/issues/142)
+* **claude:** use instanceof directly in ternary to fix TS2749 type error ([205b952](https://github.com/Navibyte-Innovations-Pvt-Ltd/glitchgrab/commit/205b952d568fd8817df1a30f8722da9993d01fa8))
+
 ## [1.20.2](https://github.com/Navibyte-Innovations-Pvt-Ltd/glitchgrab/compare/v1.20.1...v1.20.2) (2026-04-15)
 
 ### Bug Fixes
