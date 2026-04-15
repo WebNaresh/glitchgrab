@@ -1,3 +1,16 @@
+## [1.20.0](https://github.com/Navibyte-Innovations-Pvt-Ltd/glitchgrab/compare/v1.19.3...v1.20.0) (2026-04-15)
+
+### Features
+
+* **repos:** add org filter chips, reconnect github, and grant-access CTA ([6b6f70b](https://github.com/Navibyte-Innovations-Pvt-Ltd/glitchgrab/commit/6b6f70be264da46a1cfdf3c11f6f78e0253e7e5f))
+* **repos:** add resyncRepo server action for detecting transfers and renames ([2dafd0a](https://github.com/Navibyte-Innovations-Pvt-Ltd/glitchgrab/commit/2dafd0aa2e1a09bc7751634c0bd013b57ff4c45a))
+* **repos:** add sync button on repo rows to resync transferred or renamed repos ([4812162](https://github.com/Navibyte-Innovations-Pvt-Ltd/glitchgrab/commit/481216273178e84e19c3bef35a185db38a1ddfb4))
+* **repos:** paginate GitHub repos and expose accounts + reconnect url ([a810367](https://github.com/Navibyte-Innovations-Pvt-Ltd/glitchgrab/commit/a810367c7f5434251bf12997e4de838ec7fa6306))
+
+### Bug Fixes
+
+* **auth:** refresh stored GitHub access_token on every sign-in ([be027e6](https://github.com/Navibyte-Innovations-Pvt-Ltd/glitchgrab/commit/be027e637671e71e2e25513a1d1a727ac5eeee28))
+
 ## [1.19.3](https://github.com/Navibyte-Innovations-Pvt-Ltd/glitchgrab/compare/v1.19.2...v1.19.3) (2026-04-15)
 
 ### Bug Fixes
