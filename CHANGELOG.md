@@ -1,3 +1,9 @@
+## [1.20.2](https://github.com/Navibyte-Innovations-Pvt-Ltd/glitchgrab/compare/v1.20.1...v1.20.2) (2026-04-15)
+
+### Bug Fixes
+
+* **chat:** add lightbox for staged screenshot preview ([6561880](https://github.com/Navibyte-Innovations-Pvt-Ltd/glitchgrab/commit/65618802b394f8012d28c99d5e54e5bac84d32d9))
+
 ## [1.20.1](https://github.com/Navibyte-Innovations-Pvt-Ltd/glitchgrab/compare/v1.20.0...v1.20.1) (2026-04-15)
 
 ### Bug Fixes
