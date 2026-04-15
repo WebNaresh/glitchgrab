@@ -1,3 +1,9 @@
+## [1.19.3](https://github.com/Navibyte-Innovations-Pvt-Ltd/glitchgrab/compare/v1.19.2...v1.19.3) (2026-04-15)
+
+### Bug Fixes
+
+* **ci:** fail deploy-web step when Vercel hook returns error ([db1706d](https://github.com/Navibyte-Innovations-Pvt-Ltd/glitchgrab/commit/db1706d2dd430ed4f375a9abfc4ba67febf1b172))
+
 ## [1.19.2](https://github.com/Navibyte-Innovations-Pvt-Ltd/glitchgrab/compare/v1.19.1...v1.19.2) (2026-04-15)
 
 ## [1.19.1](https://github.com/Navibyte-Innovations-Pvt-Ltd/glitchgrab/compare/v1.19.0...v1.19.1) (2026-04-15)
