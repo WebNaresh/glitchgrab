@@ -79,11 +79,10 @@ export async function enrich(input: EnrichInput): Promise<EnrichResult> {
   } catch (err) {
     metrics.fellBack = true;
     metrics.latencyMs = Date.now() - started;
-    const isApiError = err instanceof Anthropic.APIError;
     console.error("[claude-enricher] error — falling back", {
       owner: input.owner,
       repo: input.repo,
-      kind: isApiError ? `api:${(err as Anthropic.APIError).status}` : "unknown",
+      kind: err instanceof Anthropic.APIError ? `api:${err.status}` : "unknown",
       message: err instanceof Error ? err.message : String(err),
     });
     return { action: fallbackCreate(input), metrics };
