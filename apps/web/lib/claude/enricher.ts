@@ -57,6 +57,7 @@ export async function enrich(input: EnrichInput): Promise<EnrichResult> {
 
   try {
     const deadline = started + HARD_TIMEOUT_MS;
+    let fallbackReason = "exhausted_turns";
     for (let turn = 0; turn < MAX_TURNS; turn++) {
       metrics.turns = turn + 1;
 
@@ -117,6 +118,8 @@ export async function enrich(input: EnrichInput): Promise<EnrichResult> {
           metrics.latencyMs = Date.now() - started;
           return { action, metrics };
         }
+        fallbackReason =
+          response.stop_reason === "max_tokens" ? "max_tokens_no_emit" : "end_turn_no_emit";
         break;
       }
 
@@ -148,9 +151,10 @@ export async function enrich(input: EnrichInput): Promise<EnrichResult> {
     // Exhausted turns or unparseable output — fall back.
     metrics.fellBack = true;
     metrics.latencyMs = Date.now() - started;
-    console.warn("[claude-enricher] exhausted turns or unparseable output, using fallback", {
+    console.warn("[claude-enricher] falling back to fallback_create", {
       owner: input.owner,
       repo: input.repo,
+      reason: fallbackReason,
       metrics,
     });
     return { action: fallbackCreate(input), metrics };
@@ -179,16 +183,22 @@ function buildInitialMessages(input: EnrichInput): Anthropic.MessageParam[] {
     parts.push(`\nRepo description:\n${input.repoDescription}`);
   }
   if (input.repoReadme) {
-    parts.push(`\nRepo README (truncated):\n${input.repoReadme}`);
+    const readmePreview = input.repoReadme.slice(0, 1000);
+    parts.push(`\nRepo README (first 1000 chars):\n${readmePreview}`);
   }
 
   if (input.openIssues && input.openIssues.length > 0) {
+    const recentIssues = input.openIssues.slice(-5);
     parts.push(
       "\nRecent issues in this repo (consider updating these instead of creating new ones):",
     );
-    for (const issue of input.openIssues) {
+    for (const issue of recentIssues) {
       parts.push(`- #${issue.number} [${issue.state}]: ${issue.title}`);
-      if (issue.body) parts.push(`  Body: ${issue.body}`);
+    }
+    if (input.openIssues.length > 5) {
+      parts.push(
+        `  (${input.openIssues.length - 5} older issues omitted — use search_code to find them)`,
+      );
     }
   } else {
     parts.push("\nNo issues in this repo yet.");
