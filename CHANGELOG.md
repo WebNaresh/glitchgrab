@@ -1,3 +1,12 @@
+## [1.20.4](https://github.com/Navibyte-Innovations-Pvt-Ltd/glitchgrab/compare/v1.20.3...v1.20.4) (2026-04-17)
+
+### Bug Fixes
+
+* **chat:** increase repo name max-width to prevent premature truncation ([f79aefd](https://github.com/Navibyte-Innovations-Pvt-Ltd/glitchgrab/commit/f79aefdbc393f7d3ae16463dd181ba6d5b20fbed))
+* **select:** allow popup to grow wider than trigger for long repo names ([ebde8e6](https://github.com/Navibyte-Innovations-Pvt-Ltd/glitchgrab/commit/ebde8e6aaae1f15ca79a0da36c798845d2feb889))
+* **tokens:** make repo select trigger full-width to show complete names ([282e7a3](https://github.com/Navibyte-Innovations-Pvt-Ltd/glitchgrab/commit/282e7a3795bdefc2a88008045fc33a452e280e64))
+* **tokens:** remove max-w-40 cap on repo column to show full repo names ([6265933](https://github.com/Navibyte-Innovations-Pvt-Ltd/glitchgrab/commit/6265933a18b1cb7c3d16505eb6aa8142569a8583))
+
 ## [1.20.3](https://github.com/Navibyte-Innovations-Pvt-Ltd/glitchgrab/compare/v1.20.2...v1.20.3) (2026-04-15)
 
 ### Bug Fixes
