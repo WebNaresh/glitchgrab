@@ -6,7 +6,7 @@ import {
   useRef,
   useEffect,
   useCallback,
-  useState,
+  useMemo,
 } from "react";
 import type {
   GlitchgrabProviderProps,
@@ -23,34 +23,71 @@ import {
   addBreadcrumb as addBreadcrumbInternal,
   getBreadcrumbs,
 } from "./breadcrumbs";
+import { warnMisconfigured } from "./warn-toast";
 
 const DEFAULT_BASE_URL = "https://www.glitchgrab.dev";
 
-const GlitchgrabContext = createContext<UseGlitchgrabReturn | null>(null);
+const MISCONFIG_MESSAGE =
+  "Bug reporting isn't configured — GlitchgrabProvider is missing a token.";
+
+interface InternalContextValue extends UseGlitchgrabReturn {
+  /** Internal flag — true when provider has a token and is fully wired. */
+  ready: boolean;
+}
+
+const DISABLED_CONTEXT: InternalContextValue = {
+  ready: false,
+  token: "",
+  baseUrl: DEFAULT_BASE_URL,
+  reportBug: async () => {
+    warnMisconfigured("reportBug", MISCONFIG_MESSAGE);
+    return null;
+  },
+  report: async () => {
+    warnMisconfigured("report", MISCONFIG_MESSAGE);
+    return null;
+  },
+  addBreadcrumb: () => {
+    // breadcrumbs without a token are a no-op, but safe — no warn needed
+  },
+  openReportDialog: () => {
+    warnMisconfigured("openReportDialog", MISCONFIG_MESSAGE);
+  },
+};
+
+const GlitchgrabContext = createContext<InternalContextValue | null>(null);
 
 /**
  * Hook to access Glitchgrab in your components.
  *
+ * Safe to call anywhere — does not throw. If the provider is missing or
+ * misconfigured (no token), the hook returns stub methods that log a
+ * visible warning when called.
+ *
  * @example
  * ```tsx
  * const { reportBug, report, addBreadcrumb } = useGlitchgrab();
- *
- * // Report a bug
  * reportBug("Login button crashes on mobile");
- *
- * // Report a feature request
- * report("FEATURE_REQUEST", "Add dark mode");
- *
- * // Add a custom breadcrumb
- * addBreadcrumb("User clicked checkout", { cartItems: "3" });
  * ```
  */
 export function useGlitchgrab(): UseGlitchgrabReturn {
   const ctx = useContext(GlitchgrabContext);
-  if (!ctx) {
-    throw new Error("useGlitchgrab must be used within a GlitchgrabProvider");
-  }
-  return ctx;
+  return ctx ?? DISABLED_CONTEXT;
+}
+
+/**
+ * Returns true if the Glitchgrab SDK is configured and ready to use.
+ * Useful for conditionally rendering a report button only when the SDK works.
+ *
+ * @example
+ * ```tsx
+ * const ready = isGlitchgrabReady();
+ * return ready ? <button onClick={openReportDialog}>Report</button> : null;
+ * ```
+ */
+export function isGlitchgrabReady(): boolean {
+  const ctx = useContext(GlitchgrabContext);
+  return ctx?.ready === true;
 }
 
 function GlitchgrabProviderInner({
@@ -68,14 +105,12 @@ function GlitchgrabProviderInner({
 }: GlitchgrabProviderProps) {
   const visitedPagesRef = useRef<string[]>([]);
 
-  // Initialize breadcrumbs
   useEffect(() => {
     if (enableBreadcrumbs) {
       initBreadcrumbs(maxBreadcrumbs);
     }
   }, [enableBreadcrumbs, maxBreadcrumbs]);
 
-  // Track page visits
   useEffect(() => {
     try {
       if (typeof window === "undefined") return;
@@ -121,7 +156,6 @@ function GlitchgrabProviderInner({
     }
   }, []);
 
-  // Unhandled errors and rejections — skip in development
   useEffect(() => {
     try {
       if (typeof window === "undefined") return;
@@ -260,17 +294,21 @@ function GlitchgrabProviderInner({
     }
   }, []);
 
+  const value = useMemo<InternalContextValue>(
+    () => ({
+      ready: true,
+      token,
+      baseUrl: baseUrl ?? DEFAULT_BASE_URL,
+      reportBug,
+      report,
+      addBreadcrumb,
+      openReportDialog,
+    }),
+    [token, baseUrl, reportBug, report, addBreadcrumb, openReportDialog]
+  );
+
   return (
-    <GlitchgrabContext.Provider
-      value={{
-        token,
-        baseUrl: baseUrl ?? DEFAULT_BASE_URL,
-        reportBug,
-        report,
-        addBreadcrumb,
-        openReportDialog,
-      }}
-    >
+    <GlitchgrabContext.Provider value={value}>
       <GlitchgrabErrorBoundary
         token={token}
         baseUrl={baseUrl}
@@ -286,8 +324,13 @@ function GlitchgrabProviderInner({
 }
 
 export function GlitchgrabProvider(props: GlitchgrabProviderProps) {
-  // No token = passthrough (SDK disabled)
-  if (!props.token) return <>{props.children}</>;
+  if (!props.token) {
+    return (
+      <GlitchgrabContext.Provider value={DISABLED_CONTEXT}>
+        {props.children}
+      </GlitchgrabContext.Provider>
+    );
+  }
 
   const resolvedProps = {
     ...props,
@@ -297,6 +340,10 @@ export function GlitchgrabProvider(props: GlitchgrabProviderProps) {
   try {
     return <GlitchgrabProviderInner {...resolvedProps} />;
   } catch {
-    return <>{props.children}</>;
+    return (
+      <GlitchgrabContext.Provider value={DISABLED_CONTEXT}>
+        {props.children}
+      </GlitchgrabContext.Provider>
+    );
   }
 }
