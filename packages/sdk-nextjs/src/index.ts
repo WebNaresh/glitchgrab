@@ -1,7 +1,7 @@
 "use client";
 
 // ─── Core (required) ─────────────────────────────────────
-export { GlitchgrabProvider, useGlitchgrab } from "./provider";
+export { GlitchgrabProvider, useGlitchgrab, isGlitchgrabReady } from "./provider";
 
 // ─── Optional Components ─────────────────────────────────
 export { ReportButton } from "./report-button";
